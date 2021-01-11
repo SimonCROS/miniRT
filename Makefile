@@ -6,15 +6,15 @@
 #    By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/11/23 11:39:11 by scros             #+#    #+#              #
-#    Updated: 2021/01/11 13:26:27 by scros            ###   ########lyon.fr    #
+#    Updated: 2021/01/11 16:41:40 by scros            ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
 BIN			= bin
 SRC			= src
+INC			= includes
 LIBFT		= libft
 MINILIBX	= mlx
-INC			= includes
 
 SRCS		=	main.c
 
@@ -32,7 +32,7 @@ HEADERS		=
 all:		$(NAME)
 
 $(BIN)/%.o:	$(SRC)/%.c $(HEADERS)
-			$(CC) -Wall -Wextra -Werror -Imlx -c $< -o $@
+			$(CC) -Wall -Wextra -Werror -I$(INC) -I$(LIBFT)/$(INC) -I$(MINILIBX) -c $< -o $@
 
 $(NAME):	compile_lib $(OBJS)
 			$(CC) -Lmlx -lmlx -framework OpenGL -framework AppKit $(OBJS) -o $(NAME)
