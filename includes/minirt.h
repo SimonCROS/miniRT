@@ -1,13 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   
-minirt.h-43.43        :+:      :+:    :+:   */
+/*   minirt.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/01/11 16:54:19 by scros             #+#    #+#             */
-/*   Updated: 2021/01/11 16:54:19 by scros            ###   ########lyon.fr   */
+/*   Created: 2021/01/12 12:31:12 by scros             #+#    #+#             */
+/*   Updated: 2021/01/12 12:51:32 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +14,14 @@ minirt.h-43.43        :+:      :+:    :+:   */
 # define MINIRT_H
 
 # include "libft.h"
+# include "mlx.h"
 
+typedef struct	s_data {
+	void		*img;
+	char		*addr;
+	int			bits_per_pixel;
+	int			line_length;
+	int			endian;
+}				t_data;
 
 #endif

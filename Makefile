@@ -6,7 +6,7 @@
 #    By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/11/23 11:39:11 by scros             #+#    #+#              #
-#    Updated: 2021/01/11 16:41:40 by scros            ###   ########lyon.fr    #
+#    Updated: 2021/01/12 15:25:08 by scros            ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,7 @@ BIN			= bin
 SRC			= src
 INC			= includes
 LIBFT		= libft
-MINILIBX	= mlx
+MINILIBX	= minilibx
 
 SRCS		=	main.c
 
@@ -25,21 +25,23 @@ NAME		= minirt
 CC			= gcc
 RM			= rm -f
 
-CFLAGS		= -Wall -Wextra -Werror 
+CFLAGS		= -Wall -Wextra -Werror
+INCLUDES	= -I$(INC) -I$(LIBFT)/$(INC) -I$(MINILIBX)
 
 HEADERS		= 
 
 all:		$(NAME)
 
 $(BIN)/%.o:	$(SRC)/%.c $(HEADERS)
-			$(CC) -Wall -Wextra -Werror -I$(INC) -I$(LIBFT)/$(INC) -I$(MINILIBX) -c $< -o $@
+			$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 $(NAME):	compile_lib $(OBJS)
-			$(CC) -Lmlx -lmlx -framework OpenGL -framework AppKit $(OBJS) -o $(NAME)
+			ln -sf $(MINILIBX)/libmlx.dylib .
+			$(CC) $(CFLAGS) $(OBJS) -framework OpenGL -framework AppKit -o $(NAME) -L$(MINILIBX) -lmlx
 
 compile_lib:
-			@$(MAKE) -C $(LIBFT)
-			@$(MAKE) -C $(MINILIBX)
+			@ $(MAKE) -C $(LIBFT)
+			@ $(MAKE) -C $(MINILIBX)
 
 re_lib:
 			@$(MAKE) -C $(LIBFT) re
@@ -47,11 +49,9 @@ re_lib:
 
 clean_lib:
 			@$(MAKE) -C $(LIBFT) clean
-			@$(MAKE) -C $(MINILIBX) clean
 
 fclean_lib:
 			@$(MAKE) -C $(LIBFT) fclean
-			@$(MAKE) -C $(MINILIBX) fclean
 
 clean:		clean_lib
 			@echo "Deleting objects...\n"
