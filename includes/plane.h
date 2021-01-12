@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 18:46:03 by scros             #+#    #+#             */
-/*   Updated: 2021/01/11 18:51:38 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/01/12 15:39:07 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 typedef struct	s_plane
 {
 	int			width;
+	int			height;
 	t_vector	position;
 	t_vector	rotation;
 	t_color		color;

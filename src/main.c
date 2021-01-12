@@ -6,13 +6,13 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 13:03:09 by scros             #+#    #+#             */
-/*   Updated: 2021/01/11 16:46:43 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/01/12 15:35:30 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
 
-void	my_mlx_pixel_put(t_data *data, int x, int y, int color)
+void	set_pixel(t_data *data, int x, int y, int color)
 {
 	char	*dst;
 
