@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 13:03:09 by scros             #+#    #+#             */
-/*   Updated: 2021/01/15 18:01:14 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/01/15 18:11:18 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ int		main(void)
 	t_vector3 origin;
 	ft_vector3_init(&origin, -FOV, WID / 2, HEI / 2);
 	t_square *square = new_square(1, ft_vector3_new(1000, WID / 2, HEI / 2), 
-		ft_vector3_new(1, 0, 1), ft_color_from_rgb(255, 0, 0));
+		ft_vector3_new(1, 0, 0), ft_color_from_rgb(255, 0, 0));
 	for (size_t i = 0; i < WID; i++)
 	{
 		for (size_t j = 0; j < HEI; j++)

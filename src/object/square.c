@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/12 15:44:13 by scros             #+#    #+#             */
-/*   Updated: 2021/01/15 18:02:14 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/01/15 18:10:12 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,9 +56,9 @@ short		square_collision(t_square *square, t_vector3 *l0,
 	if (intersect_plane(square->rotation, square->position, l0, l, &t))
 	{
 		ft_vector3_addv(ft_vector3_muld(ft_vector3_copy(&p, l), t), l0);
-		ft_vector3_subv(ft_vector3_copy(&v, &p), l0);
+		ft_vector3_subv(ft_vector3_copy(&v, &p), square->position);
 		d2 = ft_vector3_dotv(&v, &v);
-		return (d2 <= 1000 * 1000);
+		return (d2 <= 850 * 850);
 	}
 	return (0);
 }
