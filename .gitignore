@@ -1,5 +1,6 @@
 minirt
-libmlx.dylib
+*.o
+*.a
+*.dylib
 *.swiftdoc
 *.swiftmodule
-*.o

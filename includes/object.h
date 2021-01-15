@@ -6,13 +6,13 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 18:49:01 by scros             #+#    #+#             */
-/*   Updated: 2021/01/12 15:38:57 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/01/13 16:04:03 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef OBJECTS_H
 # define OBJECTS_H
 
-# include "plane.h"
+# include "square.h"
 
 #endif

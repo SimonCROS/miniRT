@@ -1,36 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minirt.h                                           :+:      :+:    :+:   */
+/*   square.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/01/12 12:31:12 by scros             #+#    #+#             */
-/*   Updated: 2021/01/15 17:21:11 by scros            ###   ########lyon.fr   */
+/*   Created: 2021/01/11 18:46:03 by scros             #+#    #+#             */
+/*   Updated: 2021/01/15 13:34:28 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINIRT_H
-# define MINIRT_H
+#ifndef SQUARE_H
+# define SQUARE_H
 
-# include <math.h>
-# include "libft.h"
-# include "mlx.h"
-# include "object.h"
+# include "vector3.h"
+# include "color.h"
 
-typedef struct	s_data {
-	void		*img;
-	char		*addr;
-	int			bits_per_pixel;
-	int			line_length;
-	int			endian;
-}				t_data;
+typedef struct	s_square
+{
+	int			width;
+	t_vector3	*position;
+	t_vector3	*rotation;
+	t_color		*color;
+}				t_square;
 
-typedef struct	s_vars {
-	void		*mlx;
-	void		*win;
-}				t_vars;
-
-void			set_pixel(t_data *data, int x, int y, int color);
+t_square		*new_square(int width, t_vector3 *position, t_vector3 *rotation,
+	t_color *color);
+short			square_collision(t_square *square, t_vector3 *vector, t_vector3 *start, t_vector3 *pHit, t_vector3 *nHit);
 
 #endif

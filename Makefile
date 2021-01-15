@@ -6,7 +6,7 @@
 #    By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/11/23 11:39:11 by scros             #+#    #+#              #
-#    Updated: 2021/01/12 15:41:58 by scros            ###   ########lyon.fr    #
+#    Updated: 2021/01/14 12:40:20 by scros            ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,11 @@ INC			= includes
 LIBFT		= libft
 MINILIBX	= minilibx
 
-SRCS		=	main.c
+FT			= libft.a
+MLX			= libmlx.dylib
+
+SRCS		=	main.c				\
+				object/square.c		\
 
 OBJS		= $(addprefix $(BIN)/, $(SRCS:.c=.o))
 
@@ -25,7 +29,7 @@ NAME		= minirt
 CC			= gcc
 RM			= rm -f
 
-CFLAGS		= -Wall -Wextra -Werror
+#CFLAGS		= -Wall -Wextra -Werror
 INCLUDES	= -I$(INC) -I$(LIBFT)/$(INC) -I$(MINILIBX)
 
 HEADERS		= 
@@ -33,11 +37,13 @@ HEADERS		=
 all:		$(NAME)
 
 $(BIN)/%.o:	$(SRC)/%.c $(HEADERS)
+			@ mkdir -p $(dir $@);
 			@ $(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 $(NAME):	compile_lib $(OBJS)
-			@ ln -sf $(MINILIBX)/libmlx.dylib .
-			@ $(CC) $(CFLAGS) $(OBJS) -framework OpenGL -framework AppKit -o $(NAME) -L$(MINILIBX) -lmlx
+			@ ln -sf $(MINILIBX)/$(MLX) .
+			@ ln -sf $(LIBFT)/$(FT) .
+			@ $(CC) $(CFLAGS) $(OBJS) $(MLX) $(FT) -o $(NAME)
 
 compile_lib:
 			@ $(MAKE) -C $(LIBFT)

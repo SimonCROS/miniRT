@@ -1,27 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   plane.h                                            :+:      :+:    :+:   */
+/*   camera.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/01/11 18:46:03 by scros             #+#    #+#             */
-/*   Updated: 2021/01/12 15:39:07 by scros            ###   ########lyon.fr   */
+/*   Created: 2021/01/13 16:49:26 by scros             #+#    #+#             */
+/*   Updated: 2021/01/13 16:49:26 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PLANE_H
-# define PLANE_H
-
-# include "geometry.h"
-
-typedef struct	s_plane
-{
-	int			width;
-	int			height;
-	t_vector	position;
-	t_vector	rotation;
-	t_color		color;
-}				t_plane;
-
-#endif
