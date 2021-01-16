@@ -6,7 +6,7 @@
 #    By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/11/23 11:39:11 by scros             #+#    #+#              #
-#    Updated: 2021/01/14 12:40:20 by scros            ###   ########lyon.fr    #
+#    Updated: 2021/01/16 15:47:58 by scros            ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,6 +20,7 @@ FT			= libft.a
 MLX			= libmlx.dylib
 
 SRCS		=	main.c				\
+				object/light.c		\
 				object/square.c		\
 
 OBJS		= $(addprefix $(BIN)/, $(SRCS:.c=.o))

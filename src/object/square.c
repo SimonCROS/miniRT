@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/12 15:44:13 by scros             #+#    #+#             */
-/*   Updated: 2021/01/15 18:10:12 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/01/16 15:43:13 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,12 +37,13 @@ short		intersect_plane(const t_vector3 *n, const t_vector3 *p0,
 	denom = ft_vector3_dotv(n, l);
 	if (denom > 1e-6)
 	{
-		ft_vector3_subv(ft_vector3_copy(&p0l0, p0), l0);
+		p0l0 = ft_vector3_copy(p0);
+		p0l0 = ft_vector3_subv(&p0l0, l0);
 		*t = ft_vector3_dotv(&p0l0, n) / denom;
 		return (*t >= 0);
 	}
 	return (0);
-} 
+}
 
 short		square_collision(t_square *square, t_vector3 *l0,
 	t_vector3 *l, t_vector3 *pHit, t_vector3 *nHit)
@@ -55,9 +56,14 @@ short		square_collision(t_square *square, t_vector3 *l0,
 	t = 0;
 	if (intersect_plane(square->rotation, square->position, l0, l, &t))
 	{
-		ft_vector3_addv(ft_vector3_muld(ft_vector3_copy(&p, l), t), l0);
-		ft_vector3_subv(ft_vector3_copy(&v, &p), square->position);
-		d2 = ft_vector3_dotv(&v, &v);
+		p = ft_vector3_copy(l);
+		p = ft_vector3_muld(&p, t);
+		p = ft_vector3_addv(&p, l0);
+		*pHit = p;
+		*nHit = ft_vector3_copy(square->rotation);
+		v = ft_vector3_copy(&p);
+		v = ft_vector3_subv(&v, square->position);
+		d2 = ft_vector3_length_squared(&v);
 		return (d2 <= 850 * 850);
 	}
 	return (0);
