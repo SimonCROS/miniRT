@@ -1,31 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   square.h                                           :+:      :+:    :+:   */
+/*   sphere.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 18:46:03 by scros             #+#    #+#             */
-/*   Updated: 2021/01/17 14:21:00 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/01/17 16:07:00 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SQUARE_H
-# define SQUARE_H
+#ifndef SPHERE_H
+# define SPHERE_H
 
 # include "vector3.h"
 # include "color.h"
 
-typedef struct	s_square
+typedef struct	s_sphere
 {
-	float		width;
+	float		radius;
 	t_vector3	*position;
-	t_vector3	*rotation;
 	t_color		*color;
-}				t_square;
+}				t_sphere;
 
-t_square		*new_square(float width, t_vector3 *position, t_vector3 *rotation,
-	t_color *color);
-short			square_collision(t_square *square, t_vector3 *origin, t_vector3 *direction, t_vector3 *pHit);
+t_sphere		*new_sphere(float radius, t_vector3 *position, t_color *color);
+short			sphere_collision(t_sphere *sphere, t_vector3 *origin, t_vector3 *dir, float *t0, float *t1);
 
 #endif

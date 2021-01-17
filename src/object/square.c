@@ -6,13 +6,13 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/12 15:44:13 by scros             #+#    #+#             */
-/*   Updated: 2021/01/16 15:43:13 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/01/17 16:28:50 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
 
-t_square	*new_square(int width, t_vector3 *position, t_vector3 *rotation,
+t_square	*new_square(float width, t_vector3 *position, t_vector3 *rotation,
 	t_color *color)
 {
 	t_square	*square;
@@ -46,7 +46,7 @@ short		intersect_plane(const t_vector3 *n, const t_vector3 *p0,
 }
 
 short		square_collision(t_square *square, t_vector3 *l0,
-	t_vector3 *l, t_vector3 *pHit, t_vector3 *nHit)
+	t_vector3 *l, t_vector3 *pHit)
 {
 	float		t;
 	float		d2;
@@ -60,11 +60,10 @@ short		square_collision(t_square *square, t_vector3 *l0,
 		p = ft_vector3_muld(&p, t);
 		p = ft_vector3_addv(&p, l0);
 		*pHit = p;
-		*nHit = ft_vector3_copy(square->rotation);
 		v = ft_vector3_copy(&p);
 		v = ft_vector3_subv(&v, square->position);
 		d2 = ft_vector3_length_squared(&v);
-		return (d2 <= 850 * 850);
+		return (d2 <= square->width * square->width);
 	}
 	return (0);
 }

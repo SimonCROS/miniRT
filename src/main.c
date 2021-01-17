@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 13:03:09 by scros             #+#    #+#             */
-/*   Updated: 2021/01/16 17:18:46 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/01/17 16:29:52 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,26 @@ void	free_square(void *p)
 	free(square);
 }
 
+void	free_light(void *p)
+{
+	t_light *light;
+	
+	light = (t_light*)p;
+	free(light->position);
+	free(light->color);
+	free(light);
+}
+
+void	free_sphere(void *p)
+{
+	t_sphere *sphere;
+	
+	sphere = (t_sphere*)p;
+	free(sphere->position);
+	free(sphere->color);
+	free(sphere);
+}
+
 int		main(void)
 {
 	t_vars	vars;
@@ -65,12 +85,13 @@ int		main(void)
 
 	t_vector3 origin = ft_vector3_news(-FOV, WID / 2, HEI / 2);
 
-	t_light		*light = new_light(0.6, ft_vector3_new(1000, WID / 2 - 200, HEI / 2), ft_color_from_rgb(255, 0, 0));
+	t_list		*lights = ft_lst_new(&free_light);
+	ft_lst_push(lights, new_light(0.6, ft_vector3_new(0, WID / 2 + 20, HEI / 2 - 30), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
 
-	t_list		*list = ft_lst_new(&free_square);
-	ft_lst_push(list, new_square(1, ft_vector3_new(1000, WID / 2, HEI / 2), ft_vector3_new(0.2, 0.2, 0.2), ft_color_from_rgb(255, 0, 0)));
-	ft_lst_push(list, new_square(1, ft_vector3_new(1000, WID / 2 - 100, HEI / 2 - 50), ft_vector3_new(0.2, 0.2, 0.2), ft_color_from_rgb(0, 255, 0)));
-	ft_lst_push(list, new_square(1, ft_vector3_new(1000, WID / 2 + 100, HEI / 2 + 150), ft_vector3_new(0.2, 0.2, -0.2), ft_color_from_rgb(0, 0, 255)));
+	t_list		*squares = ft_lst_new(&free_square);
+	ft_lst_push(squares, new_square(50, ft_vector3_new(0, WID / 2, HEI / 2), ft_vector3_new(0.2, 0.4, 0.2), ft_color_clone(ft_color_from_rgb(255, 0, 0))));
+	ft_lst_push(squares, new_square(60, ft_vector3_new(20, WID / 2, HEI / 2), ft_vector3_new(0.2, 0.2, 0.2), ft_color_clone(ft_color_from_rgb(0, 255, 0))));
+	ft_lst_push(squares, new_square(15, ft_vector3_new(0, WID / 2 + 100, HEI / 2 + 150), ft_vector3_new(0.2, 0.2, -0.2), ft_color_clone(ft_color_from_rgb(0, 0, 255))));
 
 	for (size_t i = 0; i < WID; i++)
 	{
@@ -83,32 +104,68 @@ int		main(void)
 
 			t_vector3		pHit;
 			t_vector3		nHit;
-			float minDist =	-1;
+			float minDist =	INFINITY;
 			t_square *obj = 0;
 
-			t_iterator		*iterator = ft_iterator_new(list);
+			t_iterator		*objectIterator = ft_iterator_new(squares);
 
-			while (ft_iterator_has_next(iterator))
+			while (ft_iterator_has_next(objectIterator))
 			{
-				ft_putendl("aaa");
-				t_square *square = ft_iterator_next(iterator);
-				ft_putendl("bbb");
-				if (square_collision(square, &origin, &ray, &pHit, &nHit))
+				t_square *square = ft_iterator_next(objectIterator);
+				
+				t_vector3 point;
+				if (square_collision(square, &origin, &ray, &point))
 				{
-					obj = square;
+					float distance = ft_vector3_distancev(&point, &origin);
+					if (minDist < 0 || distance < minDist)
+					{
+						pHit = point;
+						minDist = distance;
+						obj = square;
+					}
 				}
 			}
-			if (obj)
-			{
-				//t_vector3	dir = ft_vector3_subv(light->position, pHit);
+			free(objectIterator);
 
-				set_pixel(&img, i, j, ft_color_to_hexa(obj->color));
+			if (!obj)
+				continue;
+
+			t_iterator		*lightIterator = ft_iterator_new(squares);
+
+			while (ft_iterator_has_next(lightIterator))
+			{
+				t_square *light = ft_iterator_next(lightIterator);
+			
+				short hit = 0;
+				t_vector3 dir = ft_vector3_subv(light->position, &pHit);
+				dir = ft_vector3_normalize(&dir);
+
+				objectIterator = ft_iterator_new(squares);
+
+				while (ft_iterator_has_next(objectIterator))
+				{
+					t_vector3 point;
+					t_square *square = ft_iterator_next(objectIterator);
+					if ((hit = square_collision(square, &pHit, &dir, &point)))
+					{
+						if (obj == square && ft_vector3_distancev(&pHit, &point) != 0)
+							hit = 0;
+						else
+							break;
+					}
+				}
+				if (!hit)
+					set_pixel(&img, i, j, ft_color_to_hexa(*(obj->color)));
+				else
+					set_pixel(&img, i, j, 0x00101010);
+				free(objectIterator);
 			}
 		}
 	}
-	ft_lst_clear(list);
+	ft_lst_clear(squares);
 
 	mlx_put_image_to_window(vars.mlx, vars.win, img.img, 0, 0);
+	// mlx_string_put(vars.mlx, vars.win, WID / 2 - 50, HEI / 2 + 80, 0x00CC43BA, "x");
 	mlx_key_hook(vars.win, &key_pressed, &vars);
 	mlx_loop(vars.mlx);
 }

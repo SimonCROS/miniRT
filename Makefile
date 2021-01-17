@@ -6,7 +6,7 @@
 #    By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/11/23 11:39:11 by scros             #+#    #+#              #
-#    Updated: 2021/01/16 15:47:58 by scros            ###   ########lyon.fr    #
+#    Updated: 2021/01/17 14:13:18 by scros            ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,6 +22,7 @@ MLX			= libmlx.dylib
 SRCS		=	main.c				\
 				object/light.c		\
 				object/square.c		\
+				object/sphere.c		\
 
 OBJS		= $(addprefix $(BIN)/, $(SRCS:.c=.o))
 
