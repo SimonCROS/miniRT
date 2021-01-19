@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/12 15:44:13 by scros             #+#    #+#             */
-/*   Updated: 2021/01/17 16:28:50 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/01/19 13:03:06 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,15 +31,14 @@ t_square	*new_square(float width, t_vector3 *position, t_vector3 *rotation,
 short		intersect_plane(const t_vector3 *n, const t_vector3 *p0,
 	const t_vector3 *l0, const t_vector3 *l, float *t) 
 { 
-	float		denom;
+	float		dot;
 	t_vector3	p0l0;
 
-	denom = ft_vector3_dotv(n, l);
-	if (denom > 1e-6)
+	dot = ft_vector3_dotv(n, l);
+	if (dot != 0)
 	{
-		p0l0 = ft_vector3_copy(p0);
-		p0l0 = ft_vector3_subv(&p0l0, l0);
-		*t = ft_vector3_dotv(&p0l0, n) / denom;
+		p0l0 = ft_vector3_subv(p0, l0);
+		*t = ft_vector3_dotv(&p0l0, n) / dot;
 		return (*t >= 0);
 	}
 	return (0);
