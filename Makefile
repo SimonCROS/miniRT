@@ -6,7 +6,7 @@
 #    By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/11/23 11:39:11 by scros             #+#    #+#              #
-#    Updated: 2021/01/17 14:13:18 by scros            ###   ########lyon.fr    #
+#    Updated: 2021/01/22 10:39:09 by scros            ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,6 +20,7 @@ FT			= libft.a
 MLX			= libmlx.dylib
 
 SRCS		=	main.c				\
+				entity/camera.c		\
 				object/light.c		\
 				object/square.c		\
 				object/sphere.c		\
@@ -69,7 +70,7 @@ fclean:		fclean_lib
 			@echo "Deleting objects...\n"
 			@$(RM) $(OBJS)
 			@echo "Deleting $(NAME)\n"
-			@$(RM) $(NAME) libmlx.dylib
+			@$(RM) $(NAME) $(FT) $(MLX)
 
 re:			fclean all
 

@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 13:03:09 by scros             #+#    #+#             */
-/*   Updated: 2021/01/19 12:57:47 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/01/20 14:03:05 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,25 @@ void	free_sphere(void *p)
 	free(sphere);
 }
 
+t_vector3	compute_ray(t_camera *camera, int i, int j)
+{
+	t_vector3	ray;
+	t_vector3	axis;
+	t_vector3	shift;
+	t_vector3	direction;
+	float		angle;
+
+	direction = ft_vector3_news(1, 0, 0);
+	angle = ft_vector3_angle(*camera->direction, direction);
+	axis = ft_vector3_crossv(camera->direction, &direction);
+	shift = ft_vector3_mulv(camera->position, camera->direction);
+	ray = ft_vector3_news(FOV, i, j);
+	ray = ft_vector3_rotate_axis(ray, axis, angle);
+	ray = ft_vector3_subv(&ray, camera->position);
+	ray = ft_vector3_normalize(&ray);	
+	return (ray);
+}
+
 int		render(t_vars *vars)
 {
 	static t_vector3 *rot;
@@ -84,7 +103,7 @@ int		render(t_vars *vars)
 	img.addr = mlx_get_data_addr(img.img, &img.bits_per_pixel, &img.line_length,
 	&img.endian);
 
-	t_vector3 origin = ft_vector3_news(-FOV, WID / 2, HEI / 2);
+	t_camera	*camera = new_camera(ft_vector3_new(-800, 0, 0), ft_vector3_new(1, 0, 0));
 
 	t_list		*lights = ft_lst_new(&free_light);
 	ft_lst_push(lights, new_light(0.6, ft_vector3_new(0, WID / 2 - 100, HEI / 2 - 30), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
@@ -93,15 +112,13 @@ int		render(t_vars *vars)
 	ft_lst_push(squares, new_square(50, ft_vector3_new(0, WID / 2, HEI / 2), ft_vector3_clone(rot), ft_color_clone(ft_color_from_rgb(255, 0, 0))));
 	ft_lst_push(squares, new_square(70, ft_vector3_new(-20, WID / 2 + 50, HEI / 2), ft_vector3_clone(rot), ft_color_clone(ft_color_from_rgb(0, 255, 0))));
 	ft_lst_push(squares, new_square(90, ft_vector3_new(-40, WID / 2 + 100, HEI / 2), ft_vector3_clone(rot), ft_color_clone(ft_color_from_rgb(0, 0, 255))));
+	ft_lst_push(squares, new_square(90, ft_vector3_new(-40, WID / 2 + 300, HEI / 2), ft_vector3_clone(rot), ft_color_clone(ft_color_from_rgb(0, 0, 255))));
 
 	for (size_t i = 0; i < WID; i++)
 	{
 		for (size_t j = 0; j < HEI; j++)
 		{
-			t_vector3 ray;
-			ray = ft_vector3_news(0, i, j);
-			ray = ft_vector3_subv(&ray, &origin);
-			ray = ft_vector3_normalize(&ray);
+			t_vector3		ray = compute_ray(camera, i, j);
 
 			t_vector3		pHit;
 			t_vector3		nHit;
@@ -115,10 +132,10 @@ int		render(t_vars *vars)
 				t_square *square = ft_iterator_next(objectIterator);
 				
 				t_vector3 point;
-				if (square_collision(square, &origin, &ray, &point))
+				if (square_collision(square, camera->position, &ray, &point))
 				{
-					float distance = ft_vector3_distancev(&point, &origin);
-					if (minDist < 0 || distance < minDist)
+					float distance = ft_vector3_distancev(&point, camera->position);
+					if (distance < minDist)
 					{
 						pHit = point;
 						minDist = distance;
@@ -142,8 +159,9 @@ int		render(t_vars *vars)
 				t_vector3 dir = ft_vector3_subv(light->position, &pHit);
 				dir = ft_vector3_normalize(&dir);
 
-				objectIterator = ft_iterator_new(squares);
+				color = *(obj->color);
 
+				objectIterator = ft_iterator_new(squares);
 				while (ft_iterator_has_next(objectIterator))
 				{
 					t_vector3 point;
@@ -156,9 +174,10 @@ int		render(t_vars *vars)
 							break;
 					}
 				}
-				color = *(obj->color);
+
 				if (hit)
 					color = ft_color_divd(color, 2);
+
 				free(objectIterator);
 			}
 			set_pixel(&img, i, j, ft_color_to_hexa(color));
@@ -175,6 +194,7 @@ int		render(t_vars *vars)
 
 	free(squares);
 	free(lights);
+	free(camera);
 	return (0);
 }
 
@@ -185,7 +205,8 @@ int		main(void)
 	vars.mlx = mlx_init();
 	vars.win = mlx_new_window(vars.mlx, WID, HEI, "MiniRT - file.rt");
 
-	mlx_loop_hook(vars.mlx, &render, &vars);
+	render(&vars);
+	// mlx_loop_hook(vars.mlx, &render, &vars);
 	mlx_key_hook(vars.win, &key_pressed, &vars);
 
 	mlx_loop(vars.mlx);
