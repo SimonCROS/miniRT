@@ -19,8 +19,9 @@ typedef struct	s_camera
 {
 	t_vector3	*position;
 	t_vector3	*direction;
+	float		fov;
 }				t_camera;
 
-t_camera			*new_camera(t_vector3 *position, t_vector3 *direction);
+t_camera			*new_camera(t_vector3 *position, t_vector3 *direction, float fov);
 
 #endif

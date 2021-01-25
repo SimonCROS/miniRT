@@ -6,12 +6,19 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/12 12:31:12 by scros             #+#    #+#             */
-/*   Updated: 2021/01/20 13:20:28 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/01/25 13:52:53 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINIRT_H
 # define MINIRT_H
+
+#define WID 960
+#define HEI 540
+// #define WID 5
+// #define HEI 5
+
+#define FOV 0
 
 # include <math.h>
 # include "libft.h"
