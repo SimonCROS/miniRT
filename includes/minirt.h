@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/12 12:31:12 by scros             #+#    #+#             */
-/*   Updated: 2021/01/25 13:52:53 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/01/25 13:55:55 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 // #define WID 5
 // #define HEI 5
 
-#define FOV 0
+#define FOV 60
 
 # include <math.h>
 # include "libft.h"

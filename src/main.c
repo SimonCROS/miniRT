@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 13:03:09 by scros             #+#    #+#             */
-/*   Updated: 2021/01/25 13:54:10 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/01/26 14:31:19 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,16 @@ void	free_light(void *p)
 	free(light);
 }
 
+void	free_plan(void *p)
+{
+	t_plan *plan;
+	
+	plan = (t_plan*)p;
+	free(plan->position);
+	free(plan->rotation);
+	free(plan);
+}
+
 void	free_sphere(void *p)
 {
 	t_sphere *sphere;
@@ -66,11 +76,10 @@ void	free_sphere(void *p)
 
 t_vector3	compute_ray(t_camera *camera, float x, float y)
 {
-	float ratio = WID / HEI;
+	float ratio = WID / (float) HEI;
 	float px = (2 * ((x + 0.5) / WID) - 1) * tan(FOV / 2 * M_PI / 180) * ratio; 
 	float py = (1 - 2 * ((y + 0.5) / HEI)) * tan(FOV / 2 * M_PI / 180);
 	t_vector3 direction = ft_vector3_news(px, py, -1);
-	direction = ft_vector3_subv(&direction, camera->position);
 	direction = ft_vector3_normalize(&direction);
 	return (direction);
 }
@@ -92,7 +101,12 @@ int		render(t_vars *vars)
 	t_camera	*camera = new_camera(ft_vector3_new(0, 0, 0), ft_vector3_new(0, 0, 0), FOV);
 
 	t_list		*lights = ft_lst_new(&free_light);
-	ft_lst_push(lights, new_light(0.6, ft_vector3_new(0, WID / 2 - cam_y_pos, HEI / 2 - 30), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
+	ft_lst_push(lights, new_light(0.6, ft_vector3_new(10, 0, -20), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
+
+	t_list		*plans = ft_lst_new(&free_plan);
+	ft_lst_push(plans, new_plan(ft_vector3_new(0, 0, -40), ft_vector3_clone(rot), ft_color_clone(ft_color_from_rgb(255, 0, 0))));
+	ft_lst_push(plans, new_plan(ft_vector3_new(0, 0, -39), ft_vector3_clone(rot), ft_color_clone(ft_color_from_rgb(0, 255, 0))));
+	ft_lst_push(plans, new_plan(ft_vector3_new(0, 0, -38), ft_vector3_clone(rot), ft_color_clone(ft_color_from_rgb(0, 0, 255))));
 
 	t_list		*squares = ft_lst_new(&free_square);
 	ft_lst_push(squares, new_square(10, ft_vector3_new(0, 0, -40), ft_vector3_clone(rot), ft_color_clone(ft_color_from_rgb(255, 0, 0))));
@@ -138,7 +152,7 @@ int		render(t_vars *vars)
 
 			while (ft_iterator_has_next(lightIterator))
 			{
-				t_square *light = ft_iterator_next(lightIterator);
+				t_light *light = ft_iterator_next(lightIterator);
 			
 				short hit = 0;
 				t_vector3 dir = ft_vector3_subv(light->position, &pHit);
@@ -162,7 +176,12 @@ int		render(t_vars *vars)
 
 				if (hit)
 					color = ft_color_divd(color, 2);
-
+				else {
+					float ratio = fmax(0, ft_vector3_dotv(&dir, obj->rotation));
+					t_color lc = *(light->color);
+					lc = ft_color_muld(lc, ratio);
+					color = ft_color_mul(color, lc.r / (float) 255, lc.g / (float) 255, lc.b / (float) 255);
+				}
 				free(objectIterator);
 			}
 			set_pixel(&img, i, j, ft_color_to_hexa(color));

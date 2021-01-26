@@ -1,29 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sphere.h                                           :+:      :+:    :+:   */
+/*   plan.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 18:46:03 by scros             #+#    #+#             */
-/*   Updated: 2021/01/26 14:35:22 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/01/26 15:59:45 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SPHERE_H
-# define SPHERE_H
+#ifndef PLAN_H
+# define PLAN_H
 
 # include "vector3.h"
 # include "color.h"
 
-typedef struct	s_sphere
+typedef struct	s_plan
 {
-	t_color		*color;
-	t_vector3	*position;
-	float		radius;
-}				t_sphere;
+	t_color			*color;
+	t_vector3		*position;
+	t_vector3		*rotation;
+	t_bipredicate	collides;
+	
+}				t_plan;
 
-t_sphere		*new_sphere(float radius, t_vector3 *position, t_color *color);
-short			sphere_collision(t_sphere *sphere, t_vector3 *origin, t_vector3 *dir, float *t0, float *t1);
+t_plan			*new_plan(t_vector3 *position, t_vector3 *rotation,
+	t_color *color);
+short			plan_collision(t_plan *plan, t_vector3 *origin, t_vector3 *direction, t_vector3 *pHit);
 
 #endif

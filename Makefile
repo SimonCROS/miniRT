@@ -6,7 +6,7 @@
 #    By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/11/23 11:39:11 by scros             #+#    #+#              #
-#    Updated: 2021/01/22 10:39:09 by scros            ###   ########lyon.fr    #
+#    Updated: 2021/01/26 15:43:11 by scros            ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,7 +22,8 @@ MLX			= libmlx.dylib
 SRCS		=	main.c				\
 				entity/camera.c		\
 				object/light.c		\
-				object/square.c		\
+				object/2d/square.c	\
+				object/2d/plan.c	\
 				object/sphere.c		\
 
 OBJS		= $(addprefix $(BIN)/, $(SRCS:.c=.o))
@@ -35,7 +36,7 @@ RM			= rm -f
 #CFLAGS		= -Wall -Wextra -Werror
 INCLUDES	= -I$(INC) -I$(LIBFT)/$(INC) -I$(MINILIBX)
 
-HEADERS		= 
+HEADERS		= includes/minirt.h
 
 all:		$(NAME)
 

@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 18:49:01 by scros             #+#    #+#             */
-/*   Updated: 2021/01/20 13:20:40 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/01/26 13:58:17 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define OBJECTS_H
 
 # include "entity/camera.h"
+# include "objects/plan.h"
 # include "objects/light.h"
 # include "objects/square.h"
 # include "objects/sphere.h"
