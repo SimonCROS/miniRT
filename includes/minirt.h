@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/12 12:31:12 by scros             #+#    #+#             */
-/*   Updated: 2021/01/25 13:55:55 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/01 14:45:08 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,15 @@ typedef struct	s_data {
 	int			line_length;
 	int			endian;
 }				t_data;
+
+typedef struct	s_ray {
+	t_vector3	origin;
+	t_vector3	direction;
+	t_vector3	phit;
+	t_vector3	nhit;
+	t_vector3	color;
+	float		length;
+}				t_ray;
 
 typedef struct	s_vars {
 	void		*mlx;

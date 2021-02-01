@@ -6,16 +6,16 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 16:51:16 by scros             #+#    #+#             */
-/*   Updated: 2021/01/29 15:46:30 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/01 14:20:01 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
 
-int			plan_collides(void *plan, void *hit)
+int			plan_collides(void *vplan, void *vray)
 {
-	(void)plan;
-	(void)hit;
+	(void)vplan;
+	(void)vray;
 	return (1);
 }
 
@@ -36,6 +36,7 @@ t_plan	*new_default_plan(t_vector3 *position, t_vector3 *rotation, t_color *colo
 	if (!(plan = malloc(sizeof(t_plan))))
 		return (NULL);
 	plan->position = position;
+	*rotation = ft_vector3_normalize(rotation);
 	plan->rotation = rotation;
 	plan->collides = collides;
 	plan->color = color;

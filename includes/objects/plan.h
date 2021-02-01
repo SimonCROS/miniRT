@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 18:46:03 by scros             #+#    #+#             */
-/*   Updated: 2021/01/29 15:50:05 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/01 14:41:01 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,10 +29,10 @@ union				u_data
 
 typedef struct		s_plan
 {
-	t_color			*color;
+	t_bipredicate	collides;
 	t_vector3		*position;
 	t_vector3		*rotation;
-	t_bipredicate	collides;
+	t_color			*color;
 	union u_data	data;
 }					t_plan;
 

@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 13:03:09 by scros             #+#    #+#             */
-/*   Updated: 2021/01/29 16:17:36 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/01 15:58:32 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,11 +74,6 @@ t_vector3	compute_ray(t_camera *camera, float x, float y)
 	return (direction);
 }
 
-void debug(void *plan)
-{
-	printf("%#.8X\n", ft_color_to_hexa(*((t_plan*)plan)->color));
-}
-
 int		render(t_vars *vars)
 {
 	static t_vector3 *rot;
@@ -86,7 +81,7 @@ int		render(t_vars *vars)
 	static float cam_x_pos;
 
 	if (!rot)
-		rot = ft_vector3_new(1, 0, 0.4);
+		rot = ft_vector3_new(1, 0, 1);
 
 	t_data	img;
 	img.img = mlx_new_image(vars->mlx, WID, HEI);
@@ -96,13 +91,16 @@ int		render(t_vars *vars)
 	t_camera	*camera = new_camera(ft_vector3_new(cam_x_pos, 0, 0), ft_vector3_new(0, 0, 0), FOV);
 
 	t_list		*lights = ft_lst_new(&free_light);
-	ft_lst_push(lights, new_light(0.6, ft_vector3_new(-20, 0, -20), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
+	ft_lst_push(lights, new_light(0.7, ft_vector3_new(20, 0, 0), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
+	ft_lst_push(lights, new_light(0.5, ft_vector3_new(20, 20, 0), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
+	ft_lst_push(lights, new_light(0, ft_vector3_new(-20, -20, -30), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
+	ft_lst_push(lights, new_light(1, ft_vector3_new(0, 0, -35), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
 
 	t_list		*plans = ft_lst_new(&free_plan);
-	ft_lst_push(plans, new_plan(ft_vector3_new(0, 0, -50), ft_vector3_clone(ft_vector3_new(0, 1, 1)), ft_color_clone(ft_color_from_rgb(150, 50, 150))));
+	ft_lst_push(plans, new_plan(ft_vector3_new(0, -800, -40), ft_vector3_clone(ft_vector3_new(0, 0, 1)), ft_color_clone(ft_color_from_rgb(150, 50, 150))));
 	ft_lst_push(plans, new_square(10, ft_vector3_new(0, 0, -40), ft_vector3_clone(rot), ft_color_clone(ft_color_from_rgb(255, 0, 0))));
-	ft_lst_push(plans, new_square(8, ft_vector3_new(0, 0, -39), ft_vector3_clone(rot), ft_color_clone(ft_color_from_rgb(0, 255, 0))));
-	ft_lst_push(plans, new_square(6, ft_vector3_new(0, 0, -38), ft_vector3_clone(rot), ft_color_clone(ft_color_from_rgb(0, 0, 255))));
+	ft_lst_push(plans, new_square(8, ft_vector3_new(10, 0, -39), ft_vector3_clone(rot), ft_color_clone(ft_color_from_rgb(0, 255, 0))));
+	ft_lst_push(plans, new_square(6, ft_vector3_new(-20, 0, -38), ft_vector3_clone(rot), ft_color_clone(ft_color_from_rgb(0, 0, 255))));
 
 	for (size_t i = 0; i < WID; i++)
 	{
@@ -139,42 +137,40 @@ int		render(t_vars *vars)
 				continue;
 
 			t_iterator		*lightIterator = ft_iterator_new(lights);
-			t_color			color = ft_color_from_hex(0x00000000);
+			t_color			color = *(obj->color);
 
+			float lightAmt = 0;
 			while (ft_iterator_has_next(lightIterator))
 			{
 				t_light *light = ft_iterator_next(lightIterator);
-			
-				short hit = 0;
-				t_vector3 dir = ft_vector3_subv(light->position, &pHit);
-				dir = ft_vector3_normalize(&dir);
 
-				color = *(obj->color);
+				t_vector3 lightDir = ft_vector3_subv(light->position, &pHit);
+				// square of the distance between hitPoint and the light
+				float lightDistance2 = ft_vector3_length_squared(&lightDir); 
+				lightDir = ft_vector3_normalize(&lightDir);
+				float LdotN = fabs(ft_vector3_dotv(&lightDir, obj->rotation));
+				float tNearShadow = INFINITY; 
+				// is the point in shadow, and is the nearest occluding object closer to the object than the light itself?
+				short inShadow = FALSE;
 
 				objectIterator = ft_iterator_new(plans);
 				while (ft_iterator_has_next(objectIterator))
 				{
 					t_vector3 point;
 					t_plan *plan = ft_iterator_next(objectIterator);
-					if ((hit = plan_collision(plan, &pHit, &dir, &point)))
+					if ((inShadow = plan_collision(plan, &pHit, &lightDir, &point)))
 					{
 						if (obj == plan)
-							hit = 0;
+							inShadow = FALSE;
 						else
 							break;
 					}
 				}
-
-				if (hit)
-					color = ft_color_divd(color, 2);
-				else {
-					float ratio = fmax(0, ft_vector3_dotv(&dir, obj->rotation));
-					t_color lc = *(light->color);
-					lc = ft_color_muld(lc, ratio);
-					color = ft_color_mul(color, lc.r / (float) 255, lc.g / (float) 255, lc.b / (float) 255);
-				}
 				free(objectIterator);
+				lightAmt += (1 - inShadow) * light->brightness * LdotN;
 			}
+			lightAmt = fmax(0.2, lightAmt);
+			color = ft_color_muld(color, lightAmt);
 			set_pixel(&img, i, j, ft_color_to_hexa(color));
 		}
 	}
@@ -183,17 +179,19 @@ int		render(t_vars *vars)
 	mlx_put_image_to_window(vars->mlx, vars->win, img.img, 0, 0);
 	// mlx_string_put(vars->mlx, vars->win, WID / 2 - 100 - 4, HEI / 2 - 30 + 3, 0x00CC43BA, "x");
 	
-	// t_vector3 newrot = ft_vector3_rotate_z(*rot, M_PI / (360 / 10));
-	// free(rot);
-	// rot = ft_vector3_clone(&newrot);
-	// cam_y_rot -= 0.1;
-	cam_x_pos += 4;
+	t_vector3 newrot = ft_vector3_rotate_y(*rot, M_PI / (360 / 10));
+	free(rot);
+	rot = ft_vector3_clone(&newrot);
+	// cam_y_rot += 0.1;
+	// cam_x_pos += 4;
 
 	free(plans);
 	free(lights);
 	free(camera);
 	return (0);
 }
+
+#include <sys/time.h>
 
 int		main(void)
 {
@@ -202,9 +200,25 @@ int		main(void)
 	vars.mlx = mlx_init();
 	vars.win = mlx_new_window(vars.mlx, WID, HEI, "MiniRT - file.rt");
 
+	struct timeval stop, start;
+	gettimeofday(&start, NULL);
+
 	render(&vars);
 	// mlx_loop_hook(vars.mlx, &render, &vars);
 	mlx_key_hook(vars.win, &key_pressed, &vars);
+
+	gettimeofday(&stop, NULL);
+	printf("took %lu us\n", (stop.tv_sec - start.tv_sec) * 1000000 + stop.tv_usec - start.tv_usec);
+	printf("int           : %lu\nfloat         : %lu\nt_bipredicate : %lu\nt_vector3     : %lu\nt_color       : %lu\nt_square      : %lu\nu_data        : %lu\nt_plan        : %lu\nt_ray         : %lu\n",
+		sizeof(int),
+		sizeof(float),
+		sizeof(t_bipredicate),
+		sizeof(t_vector3),
+		sizeof(t_color),
+		sizeof(t_square),
+		sizeof(union u_data),
+		sizeof(t_plan),
+		sizeof(t_ray));
 
 	mlx_loop(vars.mlx);
 }
