@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 13:03:09 by scros             #+#    #+#             */
-/*   Updated: 2021/02/01 15:58:32 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/02 12:52:10 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,14 +64,14 @@ void	free_sphere(void *p)
 	free(sphere);
 }
 
-t_vector3	compute_ray(t_camera *camera, float x, float y)
+t_ray	compute_ray(t_camera *camera, float x, float y)
 {
+	t_ray ray;
 	float ratio = WID / (float) HEI;
 	float px = (2 * ((x + 0.5) / WID) - 1) * tan(FOV / 2 * M_PI / 180) * ratio; 
 	float py = (1 - 2 * ((y + 0.5) / HEI)) * tan(FOV / 2 * M_PI / 180);
-	t_vector3 direction = ft_vector3_news(px, py, -1);
-	direction = ft_vector3_normalize(&direction);
-	return (direction);
+	ray.direction = vec3_normalize(vec3_new(px, py, -1));
+	return (ray);
 }
 
 int		render(t_vars *vars)
@@ -81,76 +81,61 @@ int		render(t_vars *vars)
 	static float cam_x_pos;
 
 	if (!rot)
-		rot = ft_vector3_new(1, 0, 1);
+		rot = vec3_malloc(1, 0, 1);
 
 	t_data	img;
 	img.img = mlx_new_image(vars->mlx, WID, HEI);
 	img.addr = mlx_get_data_addr(img.img, &img.bits_per_pixel, &img.line_length,
 	&img.endian);
 
-	t_camera	*camera = new_camera(ft_vector3_new(cam_x_pos, 0, 0), ft_vector3_new(0, 0, 0), FOV);
+	t_camera	*camera = new_camera(vec3_malloc(cam_x_pos, 0, 0), vec3_malloc(0, 0, 0), FOV);
 
 	t_list		*lights = ft_lst_new(&free_light);
-	ft_lst_push(lights, new_light(0.7, ft_vector3_new(20, 0, 0), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
-	ft_lst_push(lights, new_light(0.5, ft_vector3_new(20, 20, 0), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
-	ft_lst_push(lights, new_light(0, ft_vector3_new(-20, -20, -30), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
-	ft_lst_push(lights, new_light(1, ft_vector3_new(0, 0, -35), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
+	ft_lst_push(lights, new_light(0.7, vec3_malloc(20, 0, 0), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
+	ft_lst_push(lights, new_light(0.5, vec3_malloc(20, 20, 0), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
+	ft_lst_push(lights, new_light(0, vec3_malloc(-20, -20, -39), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
+	ft_lst_push(lights, new_light(1, vec3_malloc(0, 0, -35), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
 
 	t_list		*plans = ft_lst_new(&free_plan);
-	ft_lst_push(plans, new_plan(ft_vector3_new(0, -800, -40), ft_vector3_clone(ft_vector3_new(0, 0, 1)), ft_color_clone(ft_color_from_rgb(150, 50, 150))));
-	ft_lst_push(plans, new_square(10, ft_vector3_new(0, 0, -40), ft_vector3_clone(rot), ft_color_clone(ft_color_from_rgb(255, 0, 0))));
-	ft_lst_push(plans, new_square(8, ft_vector3_new(10, 0, -39), ft_vector3_clone(rot), ft_color_clone(ft_color_from_rgb(0, 255, 0))));
-	ft_lst_push(plans, new_square(6, ft_vector3_new(-20, 0, -38), ft_vector3_clone(rot), ft_color_clone(ft_color_from_rgb(0, 0, 255))));
+	ft_lst_push(plans, new_plan(vec3_malloc(0, -800, -40), vec3_malloc(0, 0, 1), ft_color_clone(ft_color_from_rgb(150, 50, 150))));
+	ft_lst_push(plans, new_square(10, vec3_malloc(0, 0, -40), vec3_clone(*rot), ft_color_clone(ft_color_from_rgb(255, 0, 0))));
+	ft_lst_push(plans, new_square(8, vec3_malloc(10, 0, -39), vec3_clone(*rot), ft_color_clone(ft_color_from_rgb(0, 255, 0))));
+	ft_lst_push(plans, new_square(6, vec3_malloc(-20, 0, -38), vec3_clone(*rot), ft_color_clone(ft_color_from_rgb(0, 0, 255))));
 
 	for (size_t i = 0; i < WID; i++)
 	{
 		for (size_t j = 0; j < HEI; j++)
 		{
-			t_vector3		ray = compute_ray(camera, i, j);
-
-			t_vector3		pHit;
-			t_vector3		nHit;
-			float minDist =	INFINITY;
-			t_plan			*obj = 0;
-
+			t_ray			ray = compute_ray(camera, i, j);
 			t_iterator		*objectIterator = ft_iterator_new(plans);
 
 			while (ft_iterator_has_next(objectIterator))
 			{
 				t_plan *plan = ft_iterator_next(objectIterator);
-				
-				t_vector3 point;
-				if (plan_collision(plan, camera->position, &ray, &point))
-				{
-					float distance = ft_vector3_distancev(&point, camera->position);
-					if (distance < minDist)
-					{
-						pHit = point;
-						minDist = distance;
-						obj = plan;
-					}
-				}
+				t_ray obj_ray = ray;
+
+				obj_ray.plan = plan;
+				if (plan_collision(&ray))
+					if (obj_ray.length < ray.length)
+						ray = obj_ray;
 			}
 			free(objectIterator);
 
-			if (!obj)
+			if (!ray.plan)
 				continue;
 
 			t_iterator		*lightIterator = ft_iterator_new(lights);
-			t_color			color = *(obj->color);
 
 			float lightAmt = 0;
 			while (ft_iterator_has_next(lightIterator))
 			{
 				t_light *light = ft_iterator_next(lightIterator);
 
-				t_vector3 lightDir = ft_vector3_subv(light->position, &pHit);
-				// square of the distance between hitPoint and the light
-				float lightDistance2 = ft_vector3_length_squared(&lightDir); 
-				lightDir = ft_vector3_normalize(&lightDir);
-				float LdotN = fabs(ft_vector3_dotv(&lightDir, obj->rotation));
+				t_vector3 lightDir = vec3_subv(*(light->position), ray.phit);
+				float lightDistance2 = vec3_length_squared(lightDir); 
+				lightDir = vec3_normalize(lightDir);
+				float LdotN = fabs(vec3_dotv(lightDir, ray.nhit));
 				float tNearShadow = INFINITY; 
-				// is the point in shadow, and is the nearest occluding object closer to the object than the light itself?
 				short inShadow = FALSE;
 
 				objectIterator = ft_iterator_new(plans);
@@ -158,7 +143,7 @@ int		render(t_vars *vars)
 				{
 					t_vector3 point;
 					t_plan *plan = ft_iterator_next(objectIterator);
-					if ((inShadow = plan_collision(plan, &pHit, &lightDir, &point)))
+					if ((inShadow = plan_collision(plan, &(ray.phit), &lightDir, &point)))
 					{
 						if (obj == plan)
 							inShadow = FALSE;
@@ -179,9 +164,9 @@ int		render(t_vars *vars)
 	mlx_put_image_to_window(vars->mlx, vars->win, img.img, 0, 0);
 	// mlx_string_put(vars->mlx, vars->win, WID / 2 - 100 - 4, HEI / 2 - 30 + 3, 0x00CC43BA, "x");
 	
-	t_vector3 newrot = ft_vector3_rotate_y(*rot, M_PI / (360 / 10));
+	t_vector3 newrot = vec3_rotate_y(*rot, M_PI / (360 / 10));
 	free(rot);
-	rot = ft_vector3_clone(&newrot);
+	rot = vec3_clone(&newrot);
 	// cam_y_rot += 0.1;
 	// cam_x_pos += 4;
 
@@ -203,8 +188,8 @@ int		main(void)
 	struct timeval stop, start;
 	gettimeofday(&start, NULL);
 
-	render(&vars);
-	// mlx_loop_hook(vars.mlx, &render, &vars);
+	// render(&vars);
+	mlx_loop_hook(vars.mlx, &render, &vars);
 	mlx_key_hook(vars.win, &key_pressed, &vars);
 
 	gettimeofday(&stop, NULL);

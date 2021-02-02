@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 18:46:03 by scros             #+#    #+#             */
-/*   Updated: 2021/02/01 14:41:01 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/02 13:04:28 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ union				u_data
 
 typedef struct		s_plan
 {
-	t_bipredicate	collides;
+	t_predicate		collides;
 	t_vector3		*position;
 	t_vector3		*rotation;
 	t_color			*color;
@@ -38,9 +38,8 @@ typedef struct		s_plan
 
 t_plan				*new_plan(t_vector3 *position, t_vector3 *rotation, t_color *color);
 t_plan				*new_default_plan(t_vector3 *position, t_vector3 *rotation,
-	t_color *color, t_bipredicate collides);
-short				plan_collision(t_plan *plan, t_vector3 *l0,
-	t_vector3 *l, t_vector3 *pHit);
+	t_color *color, t_predicate collides);
+short				plan_collision(t_plan *ray);
 int					plan_collides(void *plan, void *hit);
 
 

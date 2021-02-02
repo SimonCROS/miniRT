@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/12 15:44:13 by scros             #+#    #+#             */
-/*   Updated: 2021/01/29 15:50:53 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/02 12:58:05 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,16 +23,12 @@ t_plan	*new_square(float width, t_vector3 *position, t_vector3 *rotation,
 	return (plan);
 }
 
-int			square_collides(void *vplan, void *vhit)
+int			square_collides(t_ray *ray)
 {
-	t_plan		*plan;
-	t_vector3	*hit;
 	t_vector3	v;
 	float		d2;
 
-	plan = (t_plan*)vplan;
-	hit = (t_vector3*)vhit;
-	v = ft_vector3_subv(hit, plan->position);
-	d2 = ft_vector3_length_squared(&v);
-	return (d2 <= plan->data.square.width * plan->data.square.width);
+	v = vec3_subv(ray->phit, *(ray->plan->position));
+	d2 = vec3_length_squared(v);
+	return (d2 <= ray->plan->data.square.width * ray->plan->data.square.width);
 }
