@@ -6,12 +6,12 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 18:49:01 by scros             #+#    #+#             */
-/*   Updated: 2021/01/26 13:58:17 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/02 15:43:33 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef OBJECTS_H
-# define OBJECTS_H
+#ifndef OBJECT_H
+# define OBJECT_H
 
 # include "entity/camera.h"
 # include "objects/plan.h"

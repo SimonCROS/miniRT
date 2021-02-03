@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 13:03:09 by scros             #+#    #+#             */
-/*   Updated: 2021/02/02 12:52:10 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/03 13:45:59 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,11 @@ t_ray	compute_ray(t_camera *camera, float x, float y)
 	float px = (2 * ((x + 0.5) / WID) - 1) * tan(FOV / 2 * M_PI / 180) * ratio; 
 	float py = (1 - 2 * ((y + 0.5) / HEI)) * tan(FOV / 2 * M_PI / 180);
 	ray.direction = vec3_normalize(vec3_new(px, py, -1));
+	ray.color = ft_color_from_rgb(0, 0, 0);
+	ray.light = 1;
+	ray.origin = camera->position;
+	ray.plan = NULL;
+	ray.length = INFINITY;
 	return (ray);
 }
 
@@ -114,15 +119,18 @@ int		render(t_vars *vars)
 				t_plan *plan = ft_iterator_next(objectIterator);
 				t_ray obj_ray = ray;
 
-				obj_ray.plan = plan;
-				if (plan_collision(&ray))
+				if (plan_collision(plan, &obj_ray))
 					if (obj_ray.length < ray.length)
+					{
 						ray = obj_ray;
+						ray.plan = plan;
+					}
 			}
 			free(objectIterator);
 
 			if (!ray.plan)
 				continue;
+			ray.color = *(ray.plan->color);
 
 			t_iterator		*lightIterator = ft_iterator_new(lights);
 
@@ -139,13 +147,18 @@ int		render(t_vars *vars)
 				short inShadow = FALSE;
 
 				objectIterator = ft_iterator_new(plans);
+
+				t_ray light_ray;
+				light_ray.origin = &(ray.phit);
+				light_ray.plan = NULL;
+				light_ray.direction = lightDir;
 				while (ft_iterator_has_next(objectIterator))
 				{
 					t_vector3 point;
 					t_plan *plan = ft_iterator_next(objectIterator);
-					if ((inShadow = plan_collision(plan, &(ray.phit), &lightDir, &point)))
+					if ((inShadow = plan_collision(plan, &light_ray)))
 					{
-						if (obj == plan)
+						if (plan == ray.plan)
 							inShadow = FALSE;
 						else
 							break;
@@ -155,8 +168,8 @@ int		render(t_vars *vars)
 				lightAmt += (1 - inShadow) * light->brightness * LdotN;
 			}
 			lightAmt = fmax(0.2, lightAmt);
-			color = ft_color_muld(color, lightAmt);
-			set_pixel(&img, i, j, ft_color_to_hexa(color));
+			ray.color = ft_color_muld(ray.color, lightAmt);
+			set_pixel(&img, i, j, ft_color_to_hexa(ray.color));
 		}
 	}
 	ft_lst_clear(plans);
@@ -166,7 +179,7 @@ int		render(t_vars *vars)
 	
 	t_vector3 newrot = vec3_rotate_y(*rot, M_PI / (360 / 10));
 	free(rot);
-	rot = vec3_clone(&newrot);
+	rot = vec3_clone(newrot);
 	// cam_y_rot += 0.1;
 	// cam_x_pos += 4;
 
@@ -188,8 +201,8 @@ int		main(void)
 	struct timeval stop, start;
 	gettimeofday(&start, NULL);
 
-	// render(&vars);
-	mlx_loop_hook(vars.mlx, &render, &vars);
+	render(&vars);
+	// mlx_loop_hook(vars.mlx, &render, &vars);
 	mlx_key_hook(vars.win, &key_pressed, &vars);
 
 	gettimeofday(&stop, NULL);

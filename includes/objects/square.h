@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 18:46:03 by scros             #+#    #+#             */
-/*   Updated: 2021/01/29 15:50:19 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/03 13:20:57 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,6 @@
 
 t_plan	*new_square(float width, t_vector3 *position, t_vector3 *rotation,
 	t_color *color);
-int			square_collides(void *plan, void *hit);
+int			square_collides(void *plan, void *ray);
 
 #endif
