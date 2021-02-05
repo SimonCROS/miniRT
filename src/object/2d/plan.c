@@ -6,20 +6,11 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 16:51:16 by scros             #+#    #+#             */
-/*   Updated: 2021/02/05 11:07:31 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/05 13:24:45 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
-
-t_plan	*new_plan(t_vector3 *position, t_vector3 *rotation, t_color *color)
-{
-	t_plan	*plan;
-
-	if (!(plan = new_default_plan(position, rotation, color, &collides_plan)))
-		return (NULL);
-	return (plan);
-}
 
 int			collides_plan(void *plan, void *ray)
 {
@@ -28,15 +19,23 @@ int			collides_plan(void *plan, void *ray)
 	return (1);
 }
 
-t_plan	*new_default_plan(t_vector3 *position, t_vector3 *rotation, t_color *color, t_bipredicate collides)
+t_plan	*new_plan(t_vector3 position, t_vector3 rotation, t_color color)
+{
+	t_plan	*plan;
+
+	if (!(plan = new_default_plan(position, rotation, color, &collides_plan)))
+		return (NULL);
+	return (plan);
+}
+
+t_plan	*new_default_plan(t_vector3 position, t_vector3 rotation, t_color color, t_bipredicate collides)
 {
 	t_plan	*plan;
 
 	if (!(plan = malloc(sizeof(t_plan))))
 		return (NULL);
 	plan->position = position;
-	*rotation = vec3_normalize(*rotation);
-	plan->rotation = rotation;
+	plan->rotation = vec3_normalize(rotation);
 	plan->collides = collides;
 	plan->color = color;
 	return (plan);
@@ -58,17 +57,17 @@ short		intersect_plan(const t_vector3 *n, const t_vector3 *p0,
 	return (0);
 }
 
-short		plan_collision(t_plan *plan, t_ray *ray)
+int			plan_collision(t_plan *plan, t_ray *ray)
 {
 	float		t;
 	t_vector3	p;
 
-	if (intersect_plan(plan->rotation, plan->position, ray->origin, ray->direction, &(ray->length)))
+	if (intersect_plan(&plan->rotation, &plan->position, ray->origin, ray->direction, &(ray->length)))
 	{
 		p = vec3_muld(ray->direction, ray->length);
 		p = vec3_addv(p, *(ray->origin));
 		ray->phit = p;
-		ray->nhit = *(plan->rotation);
+		ray->nhit = plan->rotation;
 		return (plan->collides(plan, ray));
 	}
 	return (0);

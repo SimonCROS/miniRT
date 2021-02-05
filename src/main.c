@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 13:03:09 by scros             #+#    #+#             */
-/*   Updated: 2021/02/03 13:52:42 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/05 13:24:15 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,9 +48,6 @@ void	free_plan(void *p)
 	t_plan *plan;
 	
 	plan = (t_plan*)p;
-	free(plan->position);
-	free(plan->rotation);
-	free(plan->color);
 	free(plan);
 }
 
@@ -80,12 +77,12 @@ t_ray	compute_ray(t_camera *camera, float x, float y)
 
 int		render(t_vars *vars)
 {
-	static t_vector3 *rot;
+	static t_vector3 rot;
 	static float cam_y_rot;
 	static float cam_x_pos;
 
-	if (!rot)
-		rot = vec3_malloc(1, 0, 1);
+	if (vec3_length(rot) == 0)
+		rot = vec3_new(1, 0, 1);
 
 	t_data	img;
 	img.img = mlx_new_image(vars->mlx, WID, HEI);
@@ -101,10 +98,11 @@ int		render(t_vars *vars)
 	ft_lst_push(lights, new_light(1, vec3_malloc(0, 0, -35), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
 
 	t_list		*plans = ft_lst_new(&free_plan);
-	ft_lst_push(plans, new_plan(vec3_malloc(0, -800, -40), vec3_malloc(0, 0, 1), ft_color_clone(ft_color_from_rgb(150, 50, 150))));
-	ft_lst_push(plans, new_square(10, vec3_malloc(0, 0, -40), vec3_clone(*rot), ft_color_clone(ft_color_from_rgb(255, 0, 0))));
-	ft_lst_push(plans, new_square(8, vec3_malloc(10, 0, -39), vec3_clone(*rot), ft_color_clone(ft_color_from_rgb(0, 255, 0))));
-	ft_lst_push(plans, new_square(6, vec3_malloc(-20, 0, -38), vec3_clone(*rot), ft_color_clone(ft_color_from_rgb(0, 0, 255))));
+	ft_lst_push(plans, new_plan(vec3_new(0, -800, -40), vec3_new(0, 0, 1), ft_color_from_rgb(150, 50, 150)));
+	ft_lst_push(plans, new_square(10, vec3_new(0, 0, -40), rot, ft_color_from_rgb(255, 0, 0)));
+	ft_lst_push(plans, new_square(8, vec3_new(10, 0, -39), rot, ft_color_from_rgb(0, 255, 0)));
+	ft_lst_push(plans, new_square(6, vec3_new(-20, 0, -38), rot, ft_color_from_rgb(0, 0, 255)));
+	ft_lst_push(plans, new_triangle(vec3_new(-10, -5, -20), vec3_new(10, -5, -20), vec3_new(0, 10, -20), ft_color_from_rgb(0, 255, 255)));
 
 	for (size_t i = 0; i < WID; i++)
 	{
@@ -130,7 +128,7 @@ int		render(t_vars *vars)
 
 			if (!plan)
 				continue;
-			ray.color = *(plan->color);
+			ray.color = plan->color;
 
 			t_iterator		*lightIterator = ft_iterator_new(lights);
 
@@ -175,9 +173,7 @@ int		render(t_vars *vars)
 
 	mlx_put_image_to_window(vars->mlx, vars->win, img.img, 0, 0);
 	
-	t_vector3 newrot = vec3_rotate_y(*rot, M_PI / (360 / 10));
-	free(rot);
-	rot = vec3_clone(newrot);
+	rot = vec3_rotate_y(rot, M_PI / (360 / 10));
 	// cam_y_rot += 0.1;
 	// cam_x_pos += 4;
 
@@ -212,7 +208,7 @@ int		main(void)
 		sizeof(t_vector3),
 		sizeof(t_color),
 		sizeof(t_square),
-		sizeof(union u_data),
+		sizeof(t_type),
 		sizeof(t_plan),
 		sizeof(t_ray));
 
