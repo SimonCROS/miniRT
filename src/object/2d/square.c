@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/12 15:44:13 by scros             #+#    #+#             */
-/*   Updated: 2021/02/03 13:20:18 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/05 11:07:24 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,13 +17,13 @@ t_plan	*new_square(float width, t_vector3 *position, t_vector3 *rotation,
 {
 	t_plan	*plan;
 
-	if (!(plan = new_default_plan(position, rotation, color, &square_collides)))
+	if (!(plan = new_default_plan(position, rotation, color, &collides_square)))
 		return (NULL);
 	plan->data.square.width = width;
 	return (plan);
 }
 
-int			square_collides(void *a1, void *a2)
+int			collides_square(void *a1, void *a2)
 {
 	t_ray		*ray;
 	t_plan		*plan;

@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 18:46:03 by scros             #+#    #+#             */
-/*   Updated: 2021/02/03 13:20:45 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/05 12:48:11 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,24 +23,33 @@ typedef struct		s_square
 	float			width;
 }					t_square;
 
-union				u_data
+typedef struct		s_triangle
+{
+	t_vector3		dir1;
+	t_vector3		dir2;
+}					t_triangle;
+
+typedef union		u_type
 {
 	t_square		square;
-};
+	t_triangle		triangle;
+}					t_type;
 
 typedef struct		s_plan
 {
-	t_bipredicate		collides;
+	t_bipredicate	collides;
 	t_vector3		*position;
 	t_vector3		*rotation;
 	t_color			*color;
-	union u_data	data;
+	t_type			data;
 }					t_plan;
 
 t_plan				*new_plan(t_vector3 *position, t_vector3 *rotation, t_color *color);
+t_plan				*new_square(float width, t_vector3 *position, t_vector3 *rotation, t_color *color);
 t_plan				*new_default_plan(t_vector3 *position, t_vector3 *rotation, t_color *color, t_bipredicate collides);
-short				plan_collision(t_plan *plan, t_ray *ray);
-int					plan_collides(void *plan, void *ray);
+int					collides_square(void *plan, void *ray);
+int					collides_plan(void *plan, void *ray);
+int					plan_collision(t_plan *plan, t_ray *ray);
 
 
 #endif

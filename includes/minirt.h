@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/12 12:31:12 by scros             #+#    #+#             */
-/*   Updated: 2021/02/03 13:08:39 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/05 12:46:45 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,6 @@ typedef struct	s_ray {
 	t_vector3		phit;
 	t_vector3		nhit;
 	t_vector3		*origin;
-	struct s_plan	*plan;
 	t_color			color;
 	float			length;
 	float			light;

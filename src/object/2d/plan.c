@@ -6,26 +6,26 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 16:51:16 by scros             #+#    #+#             */
-/*   Updated: 2021/02/03 13:21:15 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/05 11:07:31 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
 
-int			plan_collides(void *plan, void *ray)
-{
-	(void)plan;
-	(void)ray;
-	return (1);
-}
-
 t_plan	*new_plan(t_vector3 *position, t_vector3 *rotation, t_color *color)
 {
 	t_plan	*plan;
 
-	if (!(plan = new_default_plan(position, rotation, color, &plan_collides)))
+	if (!(plan = new_default_plan(position, rotation, color, &collides_plan)))
 		return (NULL);
 	return (plan);
+}
+
+int			collides_plan(void *plan, void *ray)
+{
+	(void)plan;
+	(void)ray;
+	return (1);
 }
 
 t_plan	*new_default_plan(t_vector3 *position, t_vector3 *rotation, t_color *color, t_bipredicate collides)

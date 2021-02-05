@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 13:03:09 by scros             #+#    #+#             */
-/*   Updated: 2021/02/03 13:45:59 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/03 13:52:42 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,6 @@ t_ray	compute_ray(t_camera *camera, float x, float y)
 	ray.color = ft_color_from_rgb(0, 0, 0);
 	ray.light = 1;
 	ray.origin = camera->position;
-	ray.plan = NULL;
 	ray.length = INFINITY;
 	return (ray);
 }
@@ -98,7 +97,7 @@ int		render(t_vars *vars)
 	t_list		*lights = ft_lst_new(&free_light);
 	ft_lst_push(lights, new_light(0.7, vec3_malloc(20, 0, 0), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
 	ft_lst_push(lights, new_light(0.5, vec3_malloc(20, 20, 0), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
-	ft_lst_push(lights, new_light(0, vec3_malloc(-20, -20, -39), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
+	ft_lst_push(lights, new_light(1, vec3_malloc(-20, -20, -39), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
 	ft_lst_push(lights, new_light(1, vec3_malloc(0, 0, -35), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
 
 	t_list		*plans = ft_lst_new(&free_plan);
@@ -112,25 +111,26 @@ int		render(t_vars *vars)
 		for (size_t j = 0; j < HEI; j++)
 		{
 			t_ray			ray = compute_ray(camera, i, j);
+			t_plan			*plan;
 			t_iterator		*objectIterator = ft_iterator_new(plans);
 
 			while (ft_iterator_has_next(objectIterator))
 			{
-				t_plan *plan = ft_iterator_next(objectIterator);
+				t_plan *plan_test = ft_iterator_next(objectIterator);
 				t_ray obj_ray = ray;
 
-				if (plan_collision(plan, &obj_ray))
+				if (plan_collision(plan_test, &obj_ray))
 					if (obj_ray.length < ray.length)
 					{
 						ray = obj_ray;
-						ray.plan = plan;
+						plan = plan_test;
 					}
 			}
 			free(objectIterator);
 
-			if (!ray.plan)
+			if (!plan)
 				continue;
-			ray.color = *(ray.plan->color);
+			ray.color = *(plan->color);
 
 			t_iterator		*lightIterator = ft_iterator_new(lights);
 
@@ -150,15 +150,14 @@ int		render(t_vars *vars)
 
 				t_ray light_ray;
 				light_ray.origin = &(ray.phit);
-				light_ray.plan = NULL;
 				light_ray.direction = lightDir;
 				while (ft_iterator_has_next(objectIterator))
 				{
 					t_vector3 point;
-					t_plan *plan = ft_iterator_next(objectIterator);
-					if ((inShadow = plan_collision(plan, &light_ray)))
+					t_plan *plan_test = ft_iterator_next(objectIterator);
+					if ((inShadow = plan_collision(plan_test, &light_ray)))
 					{
-						if (plan == ray.plan)
+						if (plan_test == plan)
 							inShadow = FALSE;
 						else
 							break;
@@ -175,7 +174,6 @@ int		render(t_vars *vars)
 	ft_lst_clear(plans);
 
 	mlx_put_image_to_window(vars->mlx, vars->win, img.img, 0, 0);
-	// mlx_string_put(vars->mlx, vars->win, WID / 2 - 100 - 4, HEI / 2 - 30 + 3, 0x00CC43BA, "x");
 	
 	t_vector3 newrot = vec3_rotate_y(*rot, M_PI / (360 / 10));
 	free(rot);
