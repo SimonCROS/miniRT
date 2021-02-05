@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 13:03:09 by scros             #+#    #+#             */
-/*   Updated: 2021/02/05 13:34:04 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/05 14:34:05 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,10 @@ int		render(t_vars *vars)
 	ft_lst_push(plans, new_square(10, vec3_new(0, 0, -40), rot, ft_color_from_rgb(255, 0, 0)));
 	ft_lst_push(plans, new_square(8, vec3_new(10, 0, -39), rot, ft_color_from_rgb(0, 255, 0)));
 	ft_lst_push(plans, new_square(6, vec3_new(-20, 0, -38), rot, ft_color_from_rgb(0, 0, 255)));
-	ft_lst_push(plans, new_triangle(vec3_new(-10, -5, -20), vec3_new(10, -5, -20), vec3_new(0, 10, -20), ft_color_from_rgb(0, 255, 255)));
+	ft_lst_push(plans, new_triangle(vec3_new(-10, -5, -35), vec3_new(10, -5, -35), vec3_new(0, 10, -25), ft_color_from_rgb(0, 255, 255)));
+	ft_lst_push(plans, new_triangle(vec3_new(25, 0, -35), vec3_new(30, 0, -35), vec3_new(30, 8, -35), ft_color_from_rgb(0, 255, 255)));
+	ft_lst_push(plans, new_triangle(vec3_new(25, 8, -35), vec3_new(25, 0, -35), vec3_new(30, 8, -35), ft_color_from_rgb(255, 255, 0)));
+	ft_lst_push(plans, new_triangle(vec3_new(0, -15, -35), vec3_new(-5, -8, -40), vec3_new(5, -8, -35), ft_color_from_rgb(255, 150, 0)));
 
 	for (size_t i = 0; i < WID; i++)
 	{
