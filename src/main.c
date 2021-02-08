@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 13:03:09 by scros             #+#    #+#             */
-/*   Updated: 2021/02/05 16:08:11 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/08 16:08:42 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,30 +80,31 @@ int		render(t_vars *vars)
 	static float cam_x_pos;
 
 	if (vec3_length(rot) == 0)
-		rot = vec3_new(1, 0, 1);
+		rot = vec3_new(0, 1, 0);
 
 	t_data	img;
 	img.img = mlx_new_image(vars->mlx, WID, HEI);
-	img.addr = mlx_get_data_addr(img.img, &img.bits_per_pixel, &img.line_length,
-	&img.endian);
+	img.addr = mlx_get_data_addr(img.img, &img.bits_per_pixel, &img.line_length, &img.endian);
 
 	t_camera	*camera = new_camera(vec3_malloc(cam_x_pos, 0, 0), vec3_malloc(0, 0, 0), FOV);
 
 	t_list		*lights = ft_lst_new(&free_light);
-	ft_lst_push(lights, new_light(0.7, vec3_malloc(20, 0, 0), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
-	ft_lst_push(lights, new_light(0.5, vec3_malloc(20, 20, 0), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
-	ft_lst_push(lights, new_light(1, vec3_malloc(-20, -20, -39), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
-	ft_lst_push(lights, new_light(1, vec3_malloc(0, 0, -35), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
+	// ft_lst_push(lights, new_light(0.7, vec3_malloc(20, 0, 0), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
+	ft_lst_push(lights, new_light(1, vec3_malloc(20, 20, 0), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
+	// ft_lst_push(lights, new_light(1, vec3_malloc(-20, -20, -39), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
+	// ft_lst_push(lights, new_light(1, vec3_malloc(0, 0, -35), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
 
 	t_list		*plans = ft_lst_new(&free_plan);
-	ft_lst_push(plans, new_plan(vec3_new(0, 0, -40), vec3_new(0, 0, 1), ft_color_from_rgb(150, 50, 150)));
-	ft_lst_push(plans, new_square(10, vec3_new(0, 0, -40), rot, ft_color_from_rgb(255, 0, 0)));
-	ft_lst_push(plans, new_square(8, vec3_new(10, 0, -39), rot, ft_color_from_rgb(0, 255, 0)));
-	ft_lst_push(plans, new_square(6, vec3_new(-20, 0, -38), rot, ft_color_from_rgb(0, 0, 255)));
+	// ft_lst_push(plans, new_plan(vec3_new(0, 0, -40), vec3_new(0, 0, 1), ft_color_from_rgb(150, 50, 150)));
+	// ft_lst_push(plans, new_circle(10, vec3_new(0, 0, -39), rot, ft_color_from_rgb(255, 0, 0)));
+	// ft_lst_push(plans, new_circle(8, vec3_new(10, 0, -38), rot, ft_color_from_rgb(0, 255, 0)));
+
+	ft_lst_push(plans, new_square(100, vec3_new(0, -5, -25), rot, ft_color_from_rgb(0, 0, 255)));
+
 	ft_lst_push(plans, new_triangle(vec3_new(-10, -5, -35), vec3_new(10, -5, -35), vec3_new(0, 10, -25), ft_color_from_rgb(0, 255, 255)));
-	ft_lst_push(plans, new_triangle(vec3_new(25, 0, -35), vec3_new(30, 0, -35), vec3_new(30, 8, -35), ft_color_from_rgb(0, 255, 255)));
-	ft_lst_push(plans, new_triangle(vec3_new(25, 8, -35), vec3_new(25, 0, -35), vec3_new(30, 8, -35), ft_color_from_rgb(255, 255, 0)));
-	ft_lst_push(plans, new_triangle(vec3_new(0, -15, -35), vec3_new(-5, -8, -40), vec3_new(5, -8, -35), ft_color_from_rgb(255, 150, 0)));
+	// ft_lst_push(plans, new_triangle(vec3_new(25, 0, -35), vec3_new(30, 0, -35), vec3_new(30, 8, -35), ft_color_from_rgb(0, 255, 255)));
+	// ft_lst_push(plans, new_triangle(vec3_new(25, 8, -35), vec3_new(25, 0, -35), vec3_new(30, 8, -35), ft_color_from_rgb(255, 255, 0)));
+	// ft_lst_push(plans, new_triangle(vec3_new(0, -15, -35), vec3_new(-5, -8, -40), vec3_new(5, -8, -35), ft_color_from_rgb(255, 150, 0)));
 
 	for (size_t i = 0; i < WID; i++)
 	{
@@ -150,6 +151,7 @@ int		render(t_vars *vars)
 				t_ray light_ray;
 				light_ray.origin = &(ray.phit);
 				light_ray.direction = lightDir;
+				light_ray.length = INFINITY;
 				while (ft_iterator_has_next(objectIterator))
 				{
 					t_vector3 point;

@@ -6,7 +6,7 @@
 #    By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/11/23 11:39:11 by scros             #+#    #+#              #
-#    Updated: 2021/02/05 11:09:58 by scros            ###   ########lyon.fr    #
+#    Updated: 2021/02/08 13:02:54 by scros            ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,6 +23,7 @@ SRCS		=	main.c				\
 				entity/camera.c		\
 				object/light.c		\
 				object/2d/square.c	\
+				object/2d/circle.c	\
 				object/2d/triangle.c\
 				object/2d/plan.c	\
 				# object/3d/sphere.c	\
