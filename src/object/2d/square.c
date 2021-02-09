@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/12 15:44:13 by scros             #+#    #+#             */
-/*   Updated: 2021/02/08 16:07:31 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/09 13:24:42 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 int			collides_square(void *arg1, void *arg2)
 {
 	t_ray		*ray;
-	t_plan		*plan;
+	t_object		*plan;
 	t_vector3	c1;
 	t_vector3	c2;
 	t_vector3	c3;
@@ -50,10 +50,10 @@ int			collides_square(void *arg1, void *arg2)
 	return (0);
 }
 
-t_plan	*new_square(float width, t_vector3 position, t_vector3 rotation,
+t_object	*new_square(float width, t_vector3 position, t_vector3 rotation,
 	t_color color)
 {
-	t_plan		*plan;
+	t_object		*plan;
 	float		mid;
 	t_vector3	diagonal;
 

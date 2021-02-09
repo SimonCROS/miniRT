@@ -6,7 +6,7 @@
 #    By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/11/23 11:39:11 by scros             #+#    #+#              #
-#    Updated: 2021/02/08 13:02:54 by scros            ###   ########lyon.fr    #
+#    Updated: 2021/02/09 14:02:11 by scros            ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,7 +26,7 @@ SRCS		=	main.c				\
 				object/2d/circle.c	\
 				object/2d/triangle.c\
 				object/2d/plan.c	\
-				# object/3d/sphere.c	\
+				object/3d/sphere.c	\
 
 OBJS		= $(addprefix $(BIN)/, $(SRCS:.c=.o))
 

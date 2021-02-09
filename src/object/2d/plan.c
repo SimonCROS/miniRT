@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 16:51:16 by scros             #+#    #+#             */
-/*   Updated: 2021/02/05 13:24:45 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/09 13:34:45 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,26 +19,37 @@ int			collides_plan(void *plan, void *ray)
 	return (1);
 }
 
-t_plan	*new_plan(t_vector3 position, t_vector3 rotation, t_color color)
+t_object	*new_plan(t_vector3 position, t_vector3 rotation, t_color color)
 {
-	t_plan	*plan;
+	t_object	*plan;
 
 	if (!(plan = new_default_plan(position, rotation, color, &collides_plan)))
 		return (NULL);
 	return (plan);
 }
 
-t_plan	*new_default_plan(t_vector3 position, t_vector3 rotation, t_color color, t_bipredicate collides)
+t_object	*new_default_plan(t_vector3 position, t_vector3 rotation, t_color color, t_bipredicate collides)
 {
-	t_plan	*plan;
+	t_object	*plan;
 
-	if (!(plan = malloc(sizeof(t_plan))))
+	if (!(plan = new_default_object(position, rotation, color, collides)))
 		return (NULL);
-	plan->position = position;
-	plan->rotation = vec3_normalize(rotation);
-	plan->collides = collides;
-	plan->color = color;
+	plan->is_plan = 1;
 	return (plan);
+}
+
+t_object	*new_default_object(t_vector3 position, t_vector3 rotation, t_color color, t_bipredicate collides)
+{
+	t_object	*object;
+
+	if (!(object = malloc(sizeof(t_object))))
+		return (NULL);
+	object->position = position;
+	object->rotation = vec3_normalize(rotation);
+	object->collides = collides;
+	object->color = color;
+	object->is_plan = 0;
+	return (object);
 }
 
 short		intersect_plan(const t_vector3 *n, const t_vector3 *p0,
@@ -57,18 +68,20 @@ short		intersect_plan(const t_vector3 *n, const t_vector3 *p0,
 	return (0);
 }
 
-int			plan_collision(t_plan *plan, t_ray *ray)
+int			collision(t_object *object, t_ray *ray)
 {
 	float		t;
 	t_vector3	p;
 
-	if (intersect_plan(&plan->rotation, &plan->position, ray->origin, ray->direction, &(ray->length)))
+	if (!object->is_plan)
+		return (object->collides(object, ray));
+	else if (intersect_plan(&object->rotation, &object->position, ray->origin, ray->direction, &(ray->length)))
 	{
 		p = vec3_muld(ray->direction, ray->length);
 		p = vec3_addv(p, *(ray->origin));
 		ray->phit = p;
-		ray->nhit = plan->rotation;
-		return (plan->collides(plan, ray));
+		ray->nhit = object->rotation;
+		return (object->collides(object, ray));
 	}
 	return (0);
 }

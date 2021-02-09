@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/12 15:44:13 by scros             #+#    #+#             */
-/*   Updated: 2021/02/08 16:03:50 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/09 13:34:35 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 int			collides_triangle(void *arg1, void *arg2)
 {
 	t_ray		*ray;
-	t_plan		*plan;
+	t_object	*plan;
 	t_vector3	c1;
 	t_vector3	c2;
 	t_vector3	c3;
@@ -38,12 +38,12 @@ int			collides_triangle(void *arg1, void *arg2)
 	return (0);
 }
 
-t_plan	*new_triangle(t_vector3 p1, t_vector3 p2, t_vector3 p3, t_color color)
+t_object	*new_triangle(t_vector3 p1, t_vector3 p2, t_vector3 p3, t_color color)
 {
-	t_plan	*plan;
-	t_vector3 center;
-	t_vector3 dir1;
-	t_vector3 dir2;
+	t_object	*plan;
+	t_vector3	center;
+	t_vector3	dir1;
+	t_vector3	dir2;
 
 	center = vec3_divd(vec3_addv(p1, vec3_addv(p2, p3)), 3);
 	dir1 = vec3_subv(p2, p1);

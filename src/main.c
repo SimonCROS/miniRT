@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 13:03:09 by scros             #+#    #+#             */
-/*   Updated: 2021/02/08 16:08:42 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/09 15:07:36 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,20 +43,10 @@ void	free_light(void *p)
 
 void	free_plan(void *p)
 {
-	t_plan *plan;
+	t_object *plan;
 	
-	plan = (t_plan*)p;
+	plan = (t_object*)p;
 	free(plan);
-}
-
-void	free_sphere(void *p)
-{
-	t_sphere *sphere;
-	
-	sphere = (t_sphere*)p;
-	free(sphere->position);
-	free(sphere->color);
-	free(sphere);
 }
 
 t_ray	compute_ray(t_camera *camera, float x, float y)
@@ -95,11 +85,12 @@ int		render(t_vars *vars)
 	// ft_lst_push(lights, new_light(1, vec3_malloc(0, 0, -35), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
 
 	t_list		*plans = ft_lst_new(&free_plan);
-	// ft_lst_push(plans, new_plan(vec3_new(0, 0, -40), vec3_new(0, 0, 1), ft_color_from_rgb(150, 50, 150)));
+	ft_lst_push(plans, new_plan(vec3_new(0, -5, -25), vec3_new(0, 1, 0), ft_color_from_rgb(0, 0, 255)));
+	ft_lst_push(plans, new_sphere(10, vec3_new(8, 0, -15), ft_color_from_rgb(255, 200, 0)));
 	// ft_lst_push(plans, new_circle(10, vec3_new(0, 0, -39), rot, ft_color_from_rgb(255, 0, 0)));
 	// ft_lst_push(plans, new_circle(8, vec3_new(10, 0, -38), rot, ft_color_from_rgb(0, 255, 0)));
 
-	ft_lst_push(plans, new_square(100, vec3_new(0, -5, -25), rot, ft_color_from_rgb(0, 0, 255)));
+	// ft_lst_push(plans, new_square(100, vec3_new(0, -5, -25), rot, ft_color_from_rgb(0, 0, 255)));
 
 	ft_lst_push(plans, new_triangle(vec3_new(-10, -5, -35), vec3_new(10, -5, -35), vec3_new(0, 10, -25), ft_color_from_rgb(0, 255, 255)));
 	// ft_lst_push(plans, new_triangle(vec3_new(25, 0, -35), vec3_new(30, 0, -35), vec3_new(30, 8, -35), ft_color_from_rgb(0, 255, 255)));
@@ -111,15 +102,15 @@ int		render(t_vars *vars)
 		for (size_t j = 0; j < HEI; j++)
 		{
 			t_ray			ray = compute_ray(camera, i, j);
-			t_plan			*plan = NULL;
+			t_object			*plan = NULL;
 			t_iterator		*objectIterator = ft_iterator_new(plans);
 
 			while (ft_iterator_has_next(objectIterator))
 			{
-				t_plan *plan_test = ft_iterator_next(objectIterator);
+				t_object *plan_test = ft_iterator_next(objectIterator);
 				t_ray obj_ray = ray;
 
-				if (plan_collision(plan_test, &obj_ray))
+				if (collision(plan_test, &obj_ray))
 					if (obj_ray.length < ray.length)
 					{
 						ray = obj_ray;
@@ -155,8 +146,8 @@ int		render(t_vars *vars)
 				while (ft_iterator_has_next(objectIterator))
 				{
 					t_vector3 point;
-					t_plan *plan_test = ft_iterator_next(objectIterator);
-					if ((inShadow = plan_collision(plan_test, &light_ray)))
+					t_object *plan_test = ft_iterator_next(objectIterator);
+					if ((inShadow = collision(plan_test, &light_ray)))
 					{
 						if (plan_test == plan)
 							inShadow = FALSE;
@@ -204,7 +195,7 @@ int		main(void)
 
 	gettimeofday(&stop, NULL);
 	printf("took %lu us\n", (stop.tv_sec - start.tv_sec) * 1000000 + stop.tv_usec - start.tv_usec);
-	printf("int           : %lu\nfloat         : %lu\nt_bipredicate : %lu\nt_vector3     : %lu\nt_color       : %lu\nt_square      : %lu\nu_data        : %lu\nt_plan        : %lu\nt_ray         : %lu\n",
+	printf("int           : %lu\nfloat         : %lu\nt_bipredicate : %lu\nt_vector3     : %lu\nt_color       : %lu\nt_square      : %lu\nu_data        : %lu\nt_object      : %lu\nt_ray         : %lu\n",
 		sizeof(int),
 		sizeof(float),
 		sizeof(t_bipredicate),
@@ -212,7 +203,7 @@ int		main(void)
 		sizeof(t_color),
 		sizeof(t_square),
 		sizeof(t_type),
-		sizeof(t_plan),
+		sizeof(t_object),
 		sizeof(t_ray));
 
 	mlx_loop(vars.mlx);
