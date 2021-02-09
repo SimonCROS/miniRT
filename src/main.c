@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 13:03:09 by scros             #+#    #+#             */
-/*   Updated: 2021/02/09 15:44:33 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/09 15:47:40 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ int		render(t_vars *vars)
 
 	t_list		*lights = ft_lst_new(&free_light);
 	// ft_lst_push(lights, new_light(0.7, vec3_malloc(20, 0, 0), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
-	ft_lst_push(lights, new_light(1, vec3_malloc(8, 5, 0), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
+	ft_lst_push(lights, new_light(1, vec3_malloc(4, 6, 0), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
 	// ft_lst_push(lights, new_light(1, vec3_malloc(-20, -20, -39), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
 	// ft_lst_push(lights, new_light(1, vec3_malloc(0, 0, -35), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
 
@@ -94,7 +94,6 @@ int		render(t_vars *vars)
 	// ft_lst_push(plans, new_square(100, vec3_new(0, -5, -25), rot, ft_color_from_rgb(0, 0, 255)));
 
 	ft_lst_push(plans, new_triangle(vec3_new(-10, -5, -35), vec3_new(10, -5, -35), vec3_new(0, 10, -25), ft_color_from_rgb(0, 255, 255)));
-	ft_lst_push(plans, new_triangle(vec3_new(-8, -3, -30), vec3_new(8, -3, -30), vec3_new(0, 7, -20), ft_color_from_rgb(255, 0, 255)));
 	// ft_lst_push(plans, new_triangle(vec3_new(25, 0, -35), vec3_new(30, 0, -35), vec3_new(30, 8, -35), ft_color_from_rgb(0, 255, 255)));
 	// ft_lst_push(plans, new_triangle(vec3_new(25, 8, -35), vec3_new(25, 0, -35), vec3_new(30, 8, -35), ft_color_from_rgb(255, 255, 0)));
 	// ft_lst_push(plans, new_triangle(vec3_new(0, -15, -35), vec3_new(-5, -8, -40), vec3_new(5, -8, -35), ft_color_from_rgb(255, 150, 0)));
