@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 13:03:09 by scros             #+#    #+#             */
-/*   Updated: 2021/02/09 15:47:40 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/10 10:52:44 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,20 +80,23 @@ int		render(t_vars *vars)
 	t_camera	*camera = new_camera(vec3_malloc(cam_x_pos, 0, 0), vec3_malloc(0, 0, 0), FOV);
 
 	t_list		*lights = ft_lst_new(&free_light);
-	// ft_lst_push(lights, new_light(0.7, vec3_malloc(20, 0, 0), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
-	ft_lst_push(lights, new_light(1, vec3_malloc(4, 6, 0), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
-	// ft_lst_push(lights, new_light(1, vec3_malloc(-20, -20, -39), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
+	ft_lst_push(lights, new_light(0.7, vec3_malloc(-20, 8, -30), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
+	ft_lst_push(lights, new_light(1, vec3_malloc(15, 10, -8), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
+
+	ft_lst_push(lights, new_light(1, vec3_malloc(0, 0, -10), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
+
 	// ft_lst_push(lights, new_light(1, vec3_malloc(0, 0, -35), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
 
 	t_list		*plans = ft_lst_new(&free_plan);
-	ft_lst_push(plans, new_plan(vec3_new(0, -5, -25), vec3_new(0, 1, 0), ft_color_from_rgb(0, 0, 255)));
-	ft_lst_push(plans, new_sphere(7, vec3_new(8, 0, -15), ft_color_from_rgb(255, 200, 0)));
-	// ft_lst_push(plans, new_circle(10, vec3_new(0, 0, -39), rot, ft_color_from_rgb(255, 0, 0)));
-	// ft_lst_push(plans, new_circle(8, vec3_new(10, 0, -38), rot, ft_color_from_rgb(0, 255, 0)));
 
+	ft_lst_push(plans, new_plan(vec3_new(0, -5, -25), vec3_new(0, 1, 0), ft_color_from_rgb(0, 0, 255)));
+	ft_lst_push(plans, new_triangle(vec3_new(-10, -5, -35), vec3_new(10, -5, -35), vec3_new(0, 10, -25), ft_color_from_rgb(0, 255, 255)));
+	ft_lst_push(plans, new_sphere(7, vec3_new(8, 0, -15), ft_color_from_rgb(255, 200, 0)));
+
+	// ft_lst_push(plans, new_circle(10, vec3_new(0, 0, -25), vec3_new(0, 0, 1), ft_color_from_rgb(255, 0, 0)));
 	// ft_lst_push(plans, new_square(100, vec3_new(0, -5, -25), rot, ft_color_from_rgb(0, 0, 255)));
 
-	ft_lst_push(plans, new_triangle(vec3_new(-10, -5, -35), vec3_new(10, -5, -35), vec3_new(0, 10, -25), ft_color_from_rgb(0, 255, 255)));
+	// ft_lst_push(plans, new_circle(8, vec3_new(10, 0, -38), rot, ft_color_from_rgb(0, 255, 0)));
 	// ft_lst_push(plans, new_triangle(vec3_new(25, 0, -35), vec3_new(30, 0, -35), vec3_new(30, 8, -35), ft_color_from_rgb(0, 255, 255)));
 	// ft_lst_push(plans, new_triangle(vec3_new(25, 8, -35), vec3_new(25, 0, -35), vec3_new(30, 8, -35), ft_color_from_rgb(255, 255, 0)));
 	// ft_lst_push(plans, new_triangle(vec3_new(0, -15, -35), vec3_new(-5, -8, -40), vec3_new(5, -8, -35), ft_color_from_rgb(255, 150, 0)));
@@ -103,7 +106,7 @@ int		render(t_vars *vars)
 		for (size_t j = 0; j < HEI; j++)
 		{
 			t_ray			ray = compute_ray(camera, i, j);
-			t_object			*plan = NULL;
+			t_object		*plan = NULL;
 			t_iterator		*objectIterator = ft_iterator_new(plans);
 
 			while (ft_iterator_has_next(objectIterator))
@@ -112,11 +115,13 @@ int		render(t_vars *vars)
 				t_ray obj_ray = ray;
 
 				if (collision(plan_test, &obj_ray))
+				{
 					if (obj_ray.length < ray.length)
 					{
 						ray = obj_ray;
 						plan = plan_test;
 					}
+				}
 			}
 			free(objectIterator);
 
@@ -134,7 +139,7 @@ int		render(t_vars *vars)
 				t_vector3 lightDir = vec3_subv(*(light->position), ray.phit);
 				float lightDistance2 = vec3_length_squared(lightDir); 
 				lightDir = vec3_normalize(lightDir);
-				float LdotN = fabs(vec3_dotv(lightDir, ray.nhit));
+				float LdotN = fmaxf(0, vec3_dotv(lightDir, ray.nhit));
 				float tNearShadow = INFINITY; 
 				short inShadow = FALSE;
 
