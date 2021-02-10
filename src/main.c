@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 13:03:09 by scros             #+#    #+#             */
-/*   Updated: 2021/02/10 14:19:51 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/10 15:34:26 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ int		render(t_vars *vars)
 	static float lum_x_pos;
 
 	if (vec3_length(rot) == 0)
-		rot = vec3_new(0, 0, 1);
+		rot = vec3_new(0, 1, 0);
 
 	t_data	img;
 	img.img = mlx_new_image(vars->mlx, WID, HEI);
@@ -81,19 +81,20 @@ int		render(t_vars *vars)
 
 	t_list		*lights = ft_lst_new(&free_light);
 	// ft_lst_push(lights, new_light(0.7, vec3_malloc(-20, 8, -30), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
-	// ft_lst_push(lights, new_light(1, vec3_malloc(15, 10, -8), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
+	ft_lst_push(lights, new_light(1, vec3_malloc(15, 10, -8), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
 
 	// ft_lst_push(lights, new_light(1, vec3_malloc(0, 0, -10), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
 
-	ft_lst_push(lights, new_light(1, vec3_malloc(0, 0, -20), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
+	// ft_lst_push(lights, new_light(1, vec3_malloc(0, 0, -20), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
 
 	t_list		*plans = ft_lst_new(&free_plan);
 
 	// ft_lst_push(plans, new_plan(vec3_new(0, -5, -25), vec3_new(0, 1, 0), ft_color_from_rgb(0, 0, 255)));
 	// ft_lst_push(plans, new_sphere(7, vec3_new(8, 0, -15), ft_color_from_rgb(255, 200, 0)));
-	// ft_lst_push(plans, new_triangle(vec3_new(-10, -5, -35), vec3_new(10, -5, -35), vec3_new(0, 10, -35), ft_color_from_rgb(0, 255, 255)));
+	ft_lst_push(plans, new_cylinder(5, 7, vec3_new(0, 0, -30), rot, ft_color_from_rgb(255, 200, 0)));
+	// ft_lst_push(plans, new_triangle(vec3_new(-10, -5, -35), vec3_new(10, -5, -35), vec3_new(0, 10, -25), ft_color_from_rgb(0, 255, 255)));
 
-	ft_lst_push(plans, new_square(10, vec3_new(0, 0, -25), rot, ft_color_from_rgb(255, 0, 0)));
+	// ft_lst_push(plans, new_square(10, vec3_new(0, 0, -25), rot, ft_color_from_rgb(255, 0, 0)));
 
 	// ft_lst_push(plans, new_square(100, vec3_new(0, -5, -25), rot, ft_color_from_rgb(0, 0, 255)));
 	// ft_lst_push(plans, new_circle(8, vec3_new(10, 0, -38), rot, ft_color_from_rgb(0, 255, 0)));
@@ -174,10 +175,8 @@ int		render(t_vars *vars)
 	ft_lst_clear(plans);
 
 	mlx_put_image_to_window(vars->mlx, vars->win, img.img, 0, 0);
-	
+
 	rot = vec3_rotate_x(rot, M_PI / (360 / 10));
-	rot = vec3_rotate_y(rot, M_PI / (360 / 10));
-	rot = vec3_rotate_z(rot, M_PI / (360 / 10));
 	// cam_y_rot += 0.1;
 	// cam_x_pos += 4;
 	// lum_x_pos += 2;
@@ -201,7 +200,7 @@ int		main(void)
 	gettimeofday(&start, NULL);
 
 	render(&vars);
-	mlx_loop_hook(vars.mlx, &render, &vars);
+	// mlx_loop_hook(vars.mlx, &render, &vars);
 	mlx_key_hook(vars.win, &key_pressed, &vars);
 
 	gettimeofday(&stop, NULL);

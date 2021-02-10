@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/17 14:12:21 by scros             #+#    #+#             */
-/*   Updated: 2021/02/09 15:14:29 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/10 14:37:30 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,12 +23,6 @@ int			collides_sphere(void *arg1, void *arg2)
 	ray = arg2;
 
 	to_center = vec3_subv(object->position, *(ray->origin));
-	/*
-	** float a = vec3_dotv(ray->direction, ray->direction);
-	** float b = 2 * vec3_dotv(ray->direction, to_center);
-	** float c = vec3_dotv(to_center, to_center) - object->data.sphere.radius * object->data.sphere.radius;
-	** if (!solveQuadratic(a, b, c, t0, t1)) return 0;
-	*/
 	float tca = vec3_dotv(to_center, ray->direction); 
 	if (tca < 0) return 0;
 	float d2 = vec3_dotv(to_center, to_center) - tca * tca;
