@@ -6,18 +6,21 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/12 12:31:12 by scros             #+#    #+#             */
-/*   Updated: 2021/02/10 10:45:58 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/10 13:58:51 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINIRT_H
 # define MINIRT_H
 
-# define WID 960
-# define HEI 540
+// # define WID 2560
+// # define HEI 1440
 
-// # define WID (960 / 4)
-// # define HEI (540 / 4)
+// # define WID 960
+// # define HEI 540
+
+# define WID (960 / 4)
+# define HEI (540 / 4)
 
 # define FOV 60
 

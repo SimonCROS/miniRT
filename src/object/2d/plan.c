@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 16:51:16 by scros             #+#    #+#             */
-/*   Updated: 2021/02/09 13:34:45 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/10 12:43:26 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,8 @@ int			collision(t_object *object, t_ray *ray)
 		p = vec3_addv(p, *(ray->origin));
 		ray->phit = p;
 		ray->nhit = object->rotation;
+		if (vec3_dotv(object->rotation, ray->direction) > 0)
+			ray->nhit = vec3_negate(ray->nhit);
 		return (object->collides(object, ray));
 	}
 	return (0);
