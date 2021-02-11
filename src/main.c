@@ -71,7 +71,7 @@ int		render(t_vars *vars)
 	static float lum_x_pos;
 
 	if (vec3_length(rot) == 0)
-		rot = vec3_new(0, 1, 0);
+		rot = vec3_new(0, 1, 1);
 
 	t_data	img;
 	img.img = mlx_new_image(vars->mlx, WID, HEI);
@@ -81,7 +81,7 @@ int		render(t_vars *vars)
 
 	t_list		*lights = ft_lst_new(&free_light);
 	// ft_lst_push(lights, new_light(0.7, vec3_malloc(-20, 8, -30), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
-	ft_lst_push(lights, new_light(1, vec3_malloc(15, 10, -8), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
+	ft_lst_push(lights, new_light(1, vec3_malloc(8, 8, 5), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
 
 	// ft_lst_push(lights, new_light(1, vec3_malloc(0, 0, -10), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
 
@@ -91,8 +91,9 @@ int		render(t_vars *vars)
 
 	// ft_lst_push(plans, new_plan(vec3_new(0, -5, -25), vec3_new(0, 1, 0), ft_color_from_rgb(0, 0, 255)));
 	// ft_lst_push(plans, new_sphere(7, vec3_new(8, 0, -15), ft_color_from_rgb(255, 200, 0)));
-	ft_lst_push(plans, new_cylinder(5, 7, vec3_new(0, 0, -30), rot, ft_color_from_rgb(255, 200, 0)));
 	// ft_lst_push(plans, new_triangle(vec3_new(-10, -5, -35), vec3_new(10, -5, -35), vec3_new(0, 10, -25), ft_color_from_rgb(0, 255, 255)));
+
+	ft_lst_push(plans, new_cylinder(5, 4, vec3_new(0, 0, -10), rot, ft_color_from_rgb(255, 200, 0)));
 
 	// ft_lst_push(plans, new_square(10, vec3_new(0, 0, -25), rot, ft_color_from_rgb(255, 0, 0)));
 
@@ -176,7 +177,7 @@ int		render(t_vars *vars)
 
 	mlx_put_image_to_window(vars->mlx, vars->win, img.img, 0, 0);
 
-	rot = vec3_rotate_x(rot, M_PI / (360 / 10));
+	rot = vec3_rotate_x(rot, M_PI / (360 / 2));
 	// cam_y_rot += 0.1;
 	// cam_x_pos += 4;
 	// lum_x_pos += 2;
@@ -193,7 +194,11 @@ int		main(void)
 {
 	t_vars	vars;
 
-	vars.mlx = mlx_init();
+	if (!(vars.mlx = mlx_init())) {
+		printf("Error, can't generate the frame\n");
+		exit(1);
+	}
+	printf("Launching\n");
 	vars.win = mlx_new_window(vars.mlx, WID, HEI, "MiniRT - file.rt");
 
 	struct timeval stop, start;

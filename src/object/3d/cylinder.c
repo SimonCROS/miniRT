@@ -46,30 +46,71 @@ int intersect_cylinder(t_object *cp, t_ray *r, double *current_z)
     return (test_intersect(t, current_z));
 }
 
+int			intersect_side(t_object *object, t_ray *ray, double z) {
+	ray->length = z;
+	ray->phit = vec3_muld(ray->direction, z);
+	t_ray to_bot;
+	to_bot.direction = object->rotation;
+	to_bot.origin = &(ray->phit);
+	if (!intersect_plan(object->data.cylinder.position2, object->rotation, &to_bot))
+		return 0;
+	to_bot.direction = vec3_negate(object->rotation);
+	if (!intersect_plan(object->position, object->rotation, &to_bot))
+		return 0;
+	t_vector3 point = vec3_addv(vec3_muld(object->rotation, to_bot.length), object->position);
+	ray->nhit = vec3_normalize(vec3_subv(ray->phit, point));
+	return 1;
+}
+
+int			intersect_base(t_vector3 position, t_vector3 rotation, t_ray *ray, float radius) {
+	t_vector3	v;
+	float		d2;
+	t_vector3	p;
+
+	if (intersect_plan(position, rotation, ray))
+	{
+		p = vec3_muld(ray->direction, ray->length);
+		p = vec3_addv(p, *(ray->origin));
+		ray->phit = p;
+		ray->nhit = rotation;
+		if (vec3_dotv(rotation, ray->direction) > 0)
+			ray->nhit = vec3_negate(ray->nhit);
+		v = vec3_subv(ray->phit, position);
+		d2 = vec3_length_squared(v);
+		if (d2 <= radius * radius)
+			return 1;
+	}
+	return 0;
+}
+
 int			collides_cylinder(void *arg1, void *arg2)
 {
 	t_ray		*ray;
 	t_object	*object;
 	double		z;
-	int			intersect;
-
+	
 	object = arg1;
 	ray = arg2;
 	z = INFINITY;
-	intersect = intersect_cylinder(object, ray, &z);
-	ray->length = z;
-	ray->phit = vec3_muld(ray->direction, z);
-	ray->nhit = vec3_normalize(vec3_subv(ray->phit, object->position));
-	return (intersect);
+	if (!intersect_cylinder(object, ray, &z))
+		return 0;
+	if (intersect_side(object, ray, z))
+		return 1;
+	if (intersect_base(object->position, object->rotation, ray, object->data.cylinder.radius))
+		return 1;
+	if (intersect_base(object->data.cylinder.position2, object->rotation, ray, object->data.cylinder.radius))
+		return 1;
+	return 0;
 }
 
 t_object		*new_cylinder(float diametre, float height, t_vector3 position, t_vector3 rotation, t_color color)
 {
 	t_object	*object;
 
-	if (!(object = new_default_object(position, rotation, color, &collides_cylinder)))
+	if (!(object = new_default_object(vec3_subv(position, vec3_muld(rotation, height / 2)), rotation, color, &collides_cylinder)))
 		return (NULL);
 	object->data.cylinder.radius = diametre / 2;
 	object->data.cylinder.height = height;
+	object->data.cylinder.position2 = vec3_addv(position, vec3_muld(rotation, height / 2));
 	return (object);
 }

@@ -52,30 +52,28 @@ t_object	*new_default_object(t_vector3 position, t_vector3 rotation, t_color col
 	return (object);
 }
 
-short		intersect_plan(const t_vector3 *n, const t_vector3 *p0,
-	const t_vector3 *l0, t_vector3 l, float *t) 
+int			intersect_plan(t_vector3 position, t_vector3 rotation, t_ray *ray)
 {
 	float		dot;
 	t_vector3	p0l0;
 
-	dot = vec3_dotv(*n, l);
+	dot = vec3_dotv(rotation, ray->direction);
 	if (dot != 0)
 	{
-		p0l0 = vec3_subv(*p0, *l0);
-		*t = vec3_dotv(p0l0, *n) / dot;
-		return (*t >= 0);
+		p0l0 = vec3_subv(position, *(ray->origin));
+		ray->length = vec3_dotv(p0l0, rotation) / dot;
+		return (ray->length >= 0);
 	}
 	return (0);
 }
 
 int			collision(t_object *object, t_ray *ray)
 {
-	float		t;
 	t_vector3	p;
 
 	if (!object->is_plan)
 		return (object->collides(object, ray));
-	else if (intersect_plan(&object->rotation, &object->position, ray->origin, ray->direction, &(ray->length)))
+	else if (intersect_plan(object->position, object->rotation, ray))
 	{
 		p = vec3_muld(ray->direction, ray->length);
 		p = vec3_addv(p, *(ray->origin));

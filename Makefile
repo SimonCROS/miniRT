@@ -14,10 +14,19 @@ BIN			= bin
 SRC			= src
 INC			= includes
 LIBFT		= libft
-MINILIBX	= minilibx
+
+LINUX			= 1
+
+MINILIBX_OS_X	= minilibx
+MINILIBX_LINUX	= minilibx-linux
+ifeq ($(LINUX),1)
+MINILIBX		= $(MINILIBX_LINUX)
+else
+MINILIBX		= $(MINILIBX_OS_X)
+endif
 
 FT			= libft.a
-MLX			= libmlx.dylib
+MLX			= libmlx.a # libmlx.dylib
 
 SRCS		=	main.c				\
 				entity/camera.c		\
@@ -36,7 +45,7 @@ NAME		= minirt
 CC			= gcc
 RM			= rm -f
 
-#CFLAGS		= -Wall -Wextra -Werror
+CFLAGS		= # -Wall -Wextra -Werror
 INCLUDES	= -I$(INC) -I$(LIBFT)/$(INC) -I$(MINILIBX)
 
 HEADERS		= includes/minirt.h
@@ -50,7 +59,11 @@ $(BIN)/%.o:	$(SRC)/%.c $(HEADERS)
 $(NAME):	compile_lib $(OBJS)
 			@ ln -sf $(MINILIBX)/$(MLX) .
 			@ ln -sf $(LIBFT)/$(FT) .
+ifeq ($(LINUX),1)
+			@ $(CC) $(CFLAGS) $(OBJS) $(MLX) $(FT) -o $(NAME) -lm -lXext -lX11
+else
 			@ $(CC) $(CFLAGS) $(OBJS) $(MLX) $(FT) -o $(NAME)
+endif
 
 compile_lib:
 			@ $(MAKE) -C $(LIBFT)
@@ -68,7 +81,7 @@ fclean_lib:
 
 clean:		clean_lib
 			@echo "Deleting objects...\n"
-			@$(RM) $(OBJS) libmlx.dylib
+			@$(RM) $(OBJS) $(MLX)
 
 fclean:		fclean_lib
 			@echo "Deleting objects...\n"

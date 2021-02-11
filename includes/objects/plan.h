@@ -30,6 +30,7 @@ typedef struct		s_sphere
 
 typedef struct		s_cylinder
 {
+	t_vector3		position2;
 	float			radius;
 	float			height;
 }					t_cylinder;
@@ -77,6 +78,7 @@ t_object			*new_circle(float diametre, t_vector3 position, t_vector3 rotation, t
 t_object			*new_default_plan(t_vector3 position, t_vector3 rotation, t_color color, t_bipredicate collides);
 t_object			*new_default_object(t_vector3 position, t_vector3 rotation, t_color color, t_bipredicate collides);
 t_object			*new_cylinder(float diametre, float height, t_vector3 position, t_vector3 rotation, t_color color);
+int					intersect_plan(t_vector3 position, t_vector3 rotation, t_ray *ray);
 int					collision(t_object *object, t_ray *ray);
 
 #endif

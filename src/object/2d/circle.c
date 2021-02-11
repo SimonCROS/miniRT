@@ -15,7 +15,7 @@
 int			collides_circle(void *a1, void *a2)
 {
 	t_ray		*ray;
-	t_object		*plan;
+	t_object	*plan;
 	t_vector3	v;
 	float		d2;
 
