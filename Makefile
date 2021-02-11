@@ -15,18 +15,19 @@ SRC			= src
 INC			= includes
 LIBFT		= libft
 
-LINUX			= 1
+LINUX			= 0
 
 MINILIBX_OS_X	= minilibx
 MINILIBX_LINUX	= minilibx-linux
-ifeq ($(LINUX),1)
-MINILIBX		= $(MINILIBX_LINUX)
-else
+ifeq ($(LINUX),0)
 MINILIBX		= $(MINILIBX_OS_X)
+MLX				= libmlx.dylib
+else
+MINILIBX		= $(MINILIBX_LINUX)
+MLX				= libmlx.a
 endif
 
 FT			= libft.a
-MLX			= libmlx.a # libmlx.dylib
 
 SRCS		=	main.c				\
 				entity/camera.c		\
