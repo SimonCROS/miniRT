@@ -12,7 +12,7 @@
 
 #include "minirt.h"
 
-int test_intersect(double t[2], double *current_z)
+int test_intersect(float t[2], float *current_z)
 {
 	int retvalue;
 
@@ -30,14 +30,14 @@ int test_intersect(double t[2], double *current_z)
 	return (retvalue);
 }
 
-int intersect_cylinder(t_object *cp, t_ray *r, double *current_z)
+int intersect_cylinder(t_object *cp, t_ray *r, float *current_z)
 {
     t_vector3 eye = vec3_subv(*(r->origin), cp->position);
-    double a = vec3_dotv(r->direction, r->direction) - pow(vec3_dotv(r->direction, cp->rotation), 2);
-    double b = 2 * (vec3_dotv(r->direction, eye) - vec3_dotv(r->direction, cp->rotation) * vec3_dotv(eye, cp->rotation));
-    double c = vec3_dotv(eye, eye) - pow(vec3_dotv(eye, cp->rotation), 2) - cp->data.cylinder.radius * cp->data.cylinder.radius;
-    double t[2];
-    double delta;
+    float a = vec3_dotv(r->direction, r->direction) - pow(vec3_dotv(r->direction, cp->rotation), 2);
+    float b = 2 * (vec3_dotv(r->direction, eye) - vec3_dotv(r->direction, cp->rotation) * vec3_dotv(eye, cp->rotation));
+    float c = vec3_dotv(eye, eye) - pow(vec3_dotv(eye, cp->rotation), 2) - cp->data.cylinder.radius * cp->data.cylinder.radius;
+    float t[2];
+    float delta;
     delta = sqrt((b * b) - (4 * a * c));
     if (delta < 0)
         return (0);
@@ -46,9 +46,9 @@ int intersect_cylinder(t_object *cp, t_ray *r, double *current_z)
     return (test_intersect(t, current_z));
 }
 
-int			intersect_side(t_object *object, t_ray *ray, double z) {
-	ray->length = z;
-	ray->phit = vec3_muld(ray->direction, z);
+int			intersect_side(t_object *object, t_ray *ray)
+{
+	ray->phit = vec3_muld(ray->direction, ray->length);
 	t_ray to_bot;
 	to_bot.direction = object->rotation;
 	to_bot.origin = &(ray->phit);
@@ -62,7 +62,8 @@ int			intersect_side(t_object *object, t_ray *ray, double z) {
 	return 1;
 }
 
-int			intersect_base(t_vector3 position, t_vector3 rotation, t_ray *ray, float radius) {
+int			intersect_base(t_vector3 position, t_vector3 rotation, t_ray *ray, float radius)
+{
 	t_vector3	v;
 	float		d2;
 	t_vector3	p;
@@ -87,20 +88,35 @@ int			collides_cylinder(void *arg1, void *arg2)
 {
 	t_ray		*ray;
 	t_object	*object;
-	double		z;
-	
+	t_ray		tmp;
+	int			collides;
+
 	object = arg1;
 	ray = arg2;
-	z = INFINITY;
-	if (!intersect_cylinder(object, ray, &z))
+	collides = FALSE;
+	if (!intersect_cylinder(object, ray, &(ray->length)))
 		return 0;
-	if (intersect_side(object, ray, z))
-		return 1;
-	if (intersect_base(object->position, object->rotation, ray, object->data.cylinder.radius))
-		return 1;
-	if (intersect_base(object->data.cylinder.position2, object->rotation, ray, object->data.cylinder.radius))
-		return 1;
-	return 0;
+	if (intersect_side(object, ray))
+		collides = TRUE;
+	tmp = *ray;
+	tmp.length = INFINITY;
+	if (intersect_base(object->position, object->rotation, &tmp, object->data.cylinder.radius))
+	{
+		if (!collides || tmp.length < ray->length)
+		{
+			*ray = tmp;
+			collides = TRUE;
+		}
+	}
+	tmp = *ray;
+	tmp.length = INFINITY;
+	if (intersect_base(object->data.cylinder.position2, object->rotation, &tmp, object->data.cylinder.radius))
+		if (!collides || tmp.length < ray->length)
+		{
+			*ray = tmp;
+			collides = TRUE;
+		}
+	return collides;
 }
 
 t_object		*new_cylinder(float diametre, float height, t_vector3 position, t_vector3 rotation, t_color color)

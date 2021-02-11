@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 13:03:09 by scros             #+#    #+#             */
-/*   Updated: 2021/02/10 15:34:26 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/11 11:14:42 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -205,7 +205,7 @@ int		main(void)
 	gettimeofday(&start, NULL);
 
 	render(&vars);
-	// mlx_loop_hook(vars.mlx, &render, &vars);
+	mlx_loop_hook(vars.mlx, &render, &vars);
 	mlx_key_hook(vars.win, &key_pressed, &vars);
 
 	gettimeofday(&stop, NULL);

@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 16:51:16 by scros             #+#    #+#             */
-/*   Updated: 2021/02/10 15:22:52 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/11 11:05:51 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,7 @@ t_object	*new_default_object(t_vector3 position, t_vector3 rotation, t_color col
 int			intersect_plan(t_vector3 position, t_vector3 rotation, t_ray *ray)
 {
 	float		dot;
+	float		length;
 	t_vector3	p0l0;
 
 	dot = vec3_dotv(rotation, ray->direction);
