@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 13:03:09 by scros             #+#    #+#             */
-/*   Updated: 2021/02/11 11:14:42 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/11 11:55:59 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ int		render(t_vars *vars)
 
 	t_list		*lights = ft_lst_new(&free_light);
 	// ft_lst_push(lights, new_light(0.7, vec3_malloc(-20, 8, -30), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
-	ft_lst_push(lights, new_light(1, vec3_malloc(8, 8, 5), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
+	ft_lst_push(lights, new_light(1, vec3_malloc(0, 0, 10), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
 
 	// ft_lst_push(lights, new_light(1, vec3_malloc(0, 0, -10), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
 
@@ -91,9 +91,14 @@ int		render(t_vars *vars)
 
 	// ft_lst_push(plans, new_plan(vec3_new(0, -5, -25), vec3_new(0, 1, 0), ft_color_from_rgb(0, 0, 255)));
 	// ft_lst_push(plans, new_sphere(7, vec3_new(8, 0, -15), ft_color_from_rgb(255, 200, 0)));
-	// ft_lst_push(plans, new_triangle(vec3_new(-10, -5, -35), vec3_new(10, -5, -35), vec3_new(0, 10, -25), ft_color_from_rgb(0, 255, 255)));
 
-	ft_lst_push(plans, new_cylinder(5, 4, vec3_new(0, 0, -10), rot, ft_color_from_rgb(255, 200, 0)));
+	ft_lst_push(plans, new_triangle(vec3_new(-10, -5, -25), vec3_new(10, -5, -25), vec3_new(0, 10, -25), ft_color_from_rgb(0, 255, 255)));
+	ft_lst_push(plans, new_triangle(vec3_new(10, -5, -25), vec3_new(30, -5, -25), vec3_new(20, 10, -25), ft_color_from_rgb(0, 255, 255)));
+	ft_lst_push(plans, new_triangle(vec3_new(30, -5, -25), vec3_new(50, -5, -25), vec3_new(40, 10, -25), ft_color_from_rgb(0, 255, 255)));
+
+	// ft_lst_push(plans, new_cylinder(6, 6, vec3_new(0, 0, -10), rot, ft_color_from_rgb(0, 255, 255)));
+	// ft_lst_push(plans, new_cylinder(6, 6, vec3_new(6, 0, -10), rot, ft_color_from_rgb(0, 255, 255)));
+	// ft_lst_push(plans, new_cylinder(6, 6, vec3_new(12, 0, -10), rot, ft_color_from_rgb(0, 255, 255)));
 
 	// ft_lst_push(plans, new_square(10, vec3_new(0, 0, -25), rot, ft_color_from_rgb(255, 0, 0)));
 
@@ -177,9 +182,9 @@ int		render(t_vars *vars)
 
 	mlx_put_image_to_window(vars->mlx, vars->win, img.img, 0, 0);
 
-	rot = vec3_rotate_x(rot, M_PI / (360 / 2));
+	// rot = vec3_rotate_x(rot, M_PI / (360 / 2));
 	// cam_y_rot += 0.1;
-	// cam_x_pos += 4;
+	cam_x_pos += 0.1;
 	// lum_x_pos += 2;
 
 	free(plans);

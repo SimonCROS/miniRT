@@ -48,7 +48,7 @@ int intersect_cylinder(t_object *cp, t_ray *r, float *current_z)
 
 int			intersect_side(t_object *object, t_ray *ray)
 {
-	ray->phit = vec3_muld(ray->direction, ray->length);
+	ray->phit = vec3_addv(vec3_muld(ray->direction, ray->length), *(ray->origin));
 	t_ray to_bot;
 	to_bot.direction = object->rotation;
 	to_bot.origin = &(ray->phit);
