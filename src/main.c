@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 13:03:09 by scros             #+#    #+#             */
-/*   Updated: 2021/02/11 12:58:17 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/12 15:24:41 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,11 +56,22 @@ t_ray	compute_ray(t_camera *camera, float x, float y)
 	float px = (2 * ((x + 0.5) / WID) - 1) * tan(FOV / 2 * M_PI / 180) * ratio; 
 	float py = (1 - 2 * ((y + 0.5) / HEI)) * tan(FOV / 2 * M_PI / 180);
 	ray.direction = vec3_normalize(vec3_new(px, py, -1));
-	ray.color = ft_color_from_rgb(0, 0, 0);
+	ray.color = color_new(0, 0, 0);
 	ray.light = 1;
 	ray.origin = camera->position;
 	ray.length = INFINITY;
 	return (ray);
+}
+
+float	color_mag(const t_color color) {
+	return (sqrtf(color.r * color.r + color.g * color.g + color.b * color.b));
+}
+
+t_color	color_normalize(const t_color color) {
+	float length;
+
+	length = color_mag(color);
+	return (color_new(color.r / length * 255, color.g / length * 255, color.b / length * 255));
 }
 
 int		render(t_vars *vars)
@@ -77,55 +88,19 @@ int		render(t_vars *vars)
 	img.img = mlx_new_image(vars->mlx, WID, HEI);
 	img.addr = mlx_get_data_addr(img.img, &img.bits_per_pixel, &img.line_length, &img.endian);
 
-	t_camera	*camera = new_camera(vec3_malloc(cam_x_pos, 0, 0), vec3_malloc(0, 0, 0), FOV);
+	t_camera	*camera = new_camera(vec3_malloc(0, 5, 50), vec3_malloc(0, 0, 0), FOV);
 
 	t_list		*lights = ft_lst_new(&free_light);
-	ft_lst_push(lights, new_light(0.5, vec3_malloc(0, 2, 10), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
-	ft_lst_push(lights, new_light(0.5, vec3_malloc(0, 2, -15), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
-	ft_lst_push(lights, new_light(0.5, vec3_malloc(0, 2, -40), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
-	ft_lst_push(lights, new_light(0.5, vec3_malloc(0, 2, -65), ft_color_clone(ft_color_from_rgb(255, 255, 255))));
+	// ft_lst_push(lights, new_light(1, vec3_malloc(0, 10, 15), color_clone(color_new(0, 255, 0))));
+	// ft_lst_push(lights, new_light(1, vec3_malloc(10, 1, 15), color_clone(color_new(255, 0, 0))));
+	ft_lst_push(lights, new_light(100, vec3_malloc(-10, 1, 15), color_clone(color_new(0, 0, 255))));
 
 	t_list		*plans = ft_lst_new(&free_plan);
-
-	ft_lst_push(plans, new_plan(vec3_new(0, -5, -25), vec3_new(0, 1, 0), ft_color_from_rgb(0, 0, 255)));
-
-	ft_lst_push(plans, new_triangle(vec3_new(-8, -5, -70), vec3_new(8, -5, -70), vec3_new(0, 8, -70), ft_color_from_rgb(255, 255, 255)));
-
-	ft_lst_push(plans, new_sphere(6, vec3_new(-12, 10, -10), ft_color_from_rgb(120, 36, 237)));
-	ft_lst_push(plans, new_sphere(6, vec3_new(-12, 10, -20), ft_color_from_rgb(120, 36, 237)));
-	ft_lst_push(plans, new_sphere(6, vec3_new(-12, 10, -30), ft_color_from_rgb(120, 36, 237)));
-	ft_lst_push(plans, new_sphere(6, vec3_new(-12, 10, -40), ft_color_from_rgb(120, 36, 237)));
-	ft_lst_push(plans, new_sphere(6, vec3_new(-12, 10, -50), ft_color_from_rgb(120, 36, 237)));
-	ft_lst_push(plans, new_sphere(6, vec3_new(-12, 10, -60), ft_color_from_rgb(120, 36, 237)));
-	ft_lst_push(plans, new_sphere(6, vec3_new(-12, 10, -70), ft_color_from_rgb(120, 36, 237)));
-
-	ft_lst_push(plans, new_sphere(6, vec3_new(12, 10, -10), ft_color_from_rgb(120, 36, 237)));
-	ft_lst_push(plans, new_sphere(6, vec3_new(12, 10, -20), ft_color_from_rgb(120, 36, 237)));
-	ft_lst_push(plans, new_sphere(6, vec3_new(12, 10, -30), ft_color_from_rgb(120, 36, 237)));
-	ft_lst_push(plans, new_sphere(6, vec3_new(12, 10, -40), ft_color_from_rgb(120, 36, 237)));
-	ft_lst_push(plans, new_sphere(6, vec3_new(12, 10, -50), ft_color_from_rgb(120, 36, 237)));
-	ft_lst_push(plans, new_sphere(6, vec3_new(12, 10, -60), ft_color_from_rgb(120, 36, 237)));
-	ft_lst_push(plans, new_sphere(6, vec3_new(12, 10, -70), ft_color_from_rgb(120, 36, 237)));
-
-	ft_lst_push(plans, new_cylinder(4, 14, vec3_new(-12, 2, -10), vec3_new(0, 1, 0), ft_color_from_rgb(0, 150, 150)));
-	ft_lst_push(plans, new_cylinder(4, 14, vec3_new(-12, 2, -20), vec3_new(0, 1, 0), ft_color_from_rgb(0, 150, 150)));
-	ft_lst_push(plans, new_cylinder(4, 14, vec3_new(-12, 2, -30), vec3_new(0, 1, 0), ft_color_from_rgb(0, 150, 150)));
-	ft_lst_push(plans, new_cylinder(4, 14, vec3_new(-12, 2, -40), vec3_new(0, 1, 0), ft_color_from_rgb(0, 150, 150)));
-	ft_lst_push(plans, new_cylinder(4, 14, vec3_new(-12, 2, -50), vec3_new(0, 1, 0), ft_color_from_rgb(0, 150, 150)));
-	ft_lst_push(plans, new_cylinder(4, 14, vec3_new(-12, 2, -60), vec3_new(0, 1, 0), ft_color_from_rgb(0, 150, 150)));
-	ft_lst_push(plans, new_cylinder(4, 14, vec3_new(-12, 2, -70), vec3_new(0, 1, 0), ft_color_from_rgb(0, 150, 150)));
-
-	ft_lst_push(plans, new_cylinder(4, 14, vec3_new(12, 2, -10), vec3_new(0, 1, 0), ft_color_from_rgb(0, 150, 150)));
-	ft_lst_push(plans, new_cylinder(4, 14, vec3_new(12, 2, -20), vec3_new(0, 1, 0), ft_color_from_rgb(0, 150, 150)));
-	ft_lst_push(plans, new_cylinder(4, 14, vec3_new(12, 2, -30), vec3_new(0, 1, 0), ft_color_from_rgb(0, 150, 150)));
-	ft_lst_push(plans, new_cylinder(4, 14, vec3_new(12, 2, -40), vec3_new(0, 1, 0), ft_color_from_rgb(0, 150, 150)));
-	ft_lst_push(plans, new_cylinder(4, 14, vec3_new(12, 2, -50), vec3_new(0, 1, 0), ft_color_from_rgb(0, 150, 150)));
-	ft_lst_push(plans, new_cylinder(4, 14, vec3_new(12, 2, -60), vec3_new(0, 1, 0), ft_color_from_rgb(0, 150, 150)));
-	ft_lst_push(plans, new_cylinder(4, 14, vec3_new(12, 2, -70), vec3_new(0, 1, 0), ft_color_from_rgb(0, 150, 150)));
-
-	ft_lst_push(plans, new_square(70, vec3_new(8.5, -39, -35), vec3_new(1, 0, 0), ft_color_from_rgb(36, 163, 237)));
-	ft_lst_push(plans, new_square(70, vec3_new(-8.5, -39, -35), vec3_new(1, 0, 0), ft_color_from_rgb(36, 163, 237)));
-	ft_lst_push(plans, new_square(17.5, vec3_new(0, -12.5, -71), vec3_new(0, 0, 1), ft_color_from_rgb(36, 163, 237)));
+	// ft_lst_push(plans, new_plan(vec3_new(0, 0, -40), vec3_new(0, 0, 1), color_new(100, 100, 100)));
+	// ft_lst_push(plans, new_plan(vec3_new(20, 0, 0), vec3_new(1, 0, 0), color_new(100, 100, 100)));
+	// ft_lst_push(plans, new_plan(vec3_new(-20, 0, 0), vec3_new(-1, 0, 0), color_new(100, 100, 100)));
+	// ft_lst_push(plans, new_plan(vec3_new(0, 0, 0), vec3_new(0, 1, 0), color_new(100, 100, 100)));
+	ft_lst_push(plans, new_sphere(10, vec3_new(0, 5, 0), color_new(255, 5, 5)));
 
 	for (size_t i = 0; i < WID; i++)
 	{
@@ -153,11 +128,10 @@ int		render(t_vars *vars)
 
 			if (!plan)
 				continue;
-			ray.color = plan->color;
+			ray.color = color_mulf(plan->color, 0.2);
 
 			t_iterator		*lightIterator = ft_iterator_new(lights);
 
-			float lightAmt = 0;
 			while (ft_iterator_has_next(lightIterator))
 			{
 				t_light *light = ft_iterator_next(lightIterator);
@@ -190,11 +164,10 @@ int		render(t_vars *vars)
 					}
 				}
 				free(objectIterator);
-				lightAmt += (1 - inShadow) * light->brightness * LdotN;
+				float atm = (1 - inShadow) * light->brightness * LdotN;
+				ray.color = color_add(ray.color, color_mul(plan->color, color_mulf(color_mulf(*(light->color), light->brightness), atm)));
 			}
-			lightAmt = fmax(0.2, lightAmt);
-			ray.color = ft_color_muld(ray.color, lightAmt);
-			set_pixel(&img, i, j, ft_color_to_hexa(ray.color));
+			set_pixel(&img, i, j, color_to_hex(ray.color));
 		}
 	}
 	ft_lst_clear(plans);

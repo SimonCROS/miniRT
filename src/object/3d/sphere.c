@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/17 14:12:21 by scros             #+#    #+#             */
-/*   Updated: 2021/02/10 14:37:30 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/12 10:33:45 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ int			collides_sphere(void *arg1, void *arg2)
 		if (t0 < 0) return 0;
 	}
 	ray->length = t0;
-	ray->phit = vec3_muld(ray->direction, ray->length);
+	ray->phit = vec3_addv(*(ray->origin), vec3_muld(ray->direction, ray->length));
 	ray->nhit = vec3_normalize(vec3_subv(ray->phit, object->position));
 	return 1;
 }
