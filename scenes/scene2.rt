@@ -1,0 +1,10 @@
+t_camera	*camera = new_camera(vec3_malloc(0, 10, 30), vec3_malloc(0, 0, 0), FOV);
+
+t_list		*lights = ft_lst_new(&free_light);
+ft_lst_push(lights, new_light(1, vec3_malloc(-8.66, 5, 15), color_clone(color_new(255, 0, 0))));
+ft_lst_push(lights, new_light(1, vec3_malloc(0, 20, 15), color_clone(color_new(0, 255, 0))));
+ft_lst_push(lights, new_light(1, vec3_malloc(8.66, 5, 15), color_clone(color_new(0, 0, 255))));
+
+t_list		*plans = ft_lst_new(&free_plan);
+ft_lst_push(plans, new_sphere(10, vec3_new(0, 10, 0), color_new(255, 255, 255)));
+ft_lst_push(plans, new_triangle(vec3_new(-12.99, 2.5, 0), vec3_new(0, 25, 0), vec3_new(12.99, 2.5, 0), color_new(150, 150, 150)));
