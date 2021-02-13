@@ -63,17 +63,6 @@ t_ray	compute_ray(t_camera *camera, float x, float y)
 	return (ray);
 }
 
-float	color_mag(const t_color color) {
-	return (sqrtf(color.r * color.r + color.g * color.g + color.b * color.b));
-}
-
-t_color	color_normalize(const t_color color) {
-	float length;
-
-	length = color_mag(color);
-	return (color_new(color.r / length * 255, color.g / length * 255, color.b / length * 255));
-}
-
 int		render(t_vars *vars)
 {
 	static t_vector3 rot;
@@ -88,19 +77,17 @@ int		render(t_vars *vars)
 	img.img = mlx_new_image(vars->mlx, WID, HEI);
 	img.addr = mlx_get_data_addr(img.img, &img.bits_per_pixel, &img.line_length, &img.endian);
 
-	t_camera	*camera = new_camera(vec3_malloc(0, 5, 50), vec3_malloc(0, 0, 0), FOV);
+	t_camera	*camera = new_camera(vec3_malloc(0, 10, 30), vec3_malloc(0, 0, 0), FOV);
 
 	t_list		*lights = ft_lst_new(&free_light);
-	// ft_lst_push(lights, new_light(1, vec3_malloc(0, 10, 15), color_clone(color_new(0, 255, 0))));
-	// ft_lst_push(lights, new_light(1, vec3_malloc(10, 1, 15), color_clone(color_new(255, 0, 0))));
-	ft_lst_push(lights, new_light(100, vec3_malloc(-10, 1, 15), color_clone(color_new(0, 0, 255))));
+	ft_lst_push(lights, new_light(1, vec3_malloc(-8.66, 5, 15), color_clone(color_new(255, 0, 0))));
+	ft_lst_push(lights, new_light(1, vec3_malloc(0, 20, 15), color_clone(color_new(0, 255, 0))));
+	ft_lst_push(lights, new_light(1, vec3_malloc(8.66, 5, 15), color_clone(color_new(0, 0, 255))));
 
 	t_list		*plans = ft_lst_new(&free_plan);
-	// ft_lst_push(plans, new_plan(vec3_new(0, 0, -40), vec3_new(0, 0, 1), color_new(100, 100, 100)));
-	// ft_lst_push(plans, new_plan(vec3_new(20, 0, 0), vec3_new(1, 0, 0), color_new(100, 100, 100)));
-	// ft_lst_push(plans, new_plan(vec3_new(-20, 0, 0), vec3_new(-1, 0, 0), color_new(100, 100, 100)));
-	// ft_lst_push(plans, new_plan(vec3_new(0, 0, 0), vec3_new(0, 1, 0), color_new(100, 100, 100)));
-	ft_lst_push(plans, new_sphere(10, vec3_new(0, 5, 0), color_new(255, 5, 5)));
+	ft_lst_push(plans, new_sphere(10, vec3_new(0, 10, 0), color_new(255, 255, 255)));
+	ft_lst_push(plans, new_triangle(vec3_new(-12.99, 2.5, 0), vec3_new(0, 25, 0), vec3_new(12.99, 2.5, 0), color_new(150, 150, 150)));
+
 
 	for (size_t i = 0; i < WID; i++)
 	{
