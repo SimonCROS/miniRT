@@ -16,11 +16,14 @@
 // # define WID 2560
 // # define HEI 1440
 
-# define WID 960
-# define HEI 540
+// # define WID 960
+// # define HEI 540
 
 // # define WID (960 / 4)
 // # define HEI (540 / 4)
+
+# define WID 100
+# define HEI 50
 
 # define FOV 60
 

@@ -12,10 +12,10 @@
 
 #include "minirt.h"
 
-int			collides_plan(void *plan, void *ray)
+int			collides_plan(void *arg1, void *arg2)
 {
-	(void)plan;
-	(void)ray;
+	(void)arg1;
+	(void)arg2;
 	return (1);
 }
 
@@ -55,7 +55,6 @@ t_object	*new_default_object(t_vector3 position, t_vector3 rotation, t_color col
 int			intersect_plan(t_vector3 position, t_vector3 rotation, t_ray *ray)
 {
 	float		dot;
-	float		length;
 	t_vector3	p0l0;
 
 	dot = vec3_dotv(rotation, ray->direction);

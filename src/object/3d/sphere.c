@@ -23,7 +23,7 @@ int			collides_sphere(void *arg1, void *arg2)
 	ray = arg2;
 
 	to_center = vec3_subv(object->position, *(ray->origin));
-	float tca = vec3_dotv(to_center, ray->direction); 
+	float tca = vec3_dotv(to_center, ray->direction);
 	if (tca < 0) return 0;
 	float d2 = vec3_dotv(to_center, to_center) - tca * tca;
 	float radius2 = object->data.sphere.radius * object->data.sphere.radius;
