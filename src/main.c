@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 13:03:09 by scros             #+#    #+#             */
-/*   Updated: 2021/02/15 13:22:22 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/15 14:11:35 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -207,6 +207,7 @@ int		render(t_vars *vars)
 						ray.color = color_add(ray.color, color_mul(plan->color, color_mulf(color_mulf(*(light->color), light->brightness), atm)));
 					}
 					set_pixel(&img, x + start_x, y + start_y, color_to_hex(ray.color));
+					free(lightIterator);
 				}
 			}
 			mlx_sync(MLX_SYNC_WIN_FLUSH_CMD, vars->win);
