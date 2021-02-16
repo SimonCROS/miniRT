@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 13:03:09 by scros             #+#    #+#             */
-/*   Updated: 2021/02/16 16:06:55 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/16 16:10:43 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -190,10 +190,9 @@ t_scene	*get_scene(char *file)
 			return (NULL);
 
 t_list		*cameras = ft_lst_new(NULL);
-ft_lst_push(cameras, new_camera(vec3_malloc(10, 0, 0), vec3_malloc(0, 0, 1), FOV));
 ft_lst_push(cameras, new_camera(vec3_malloc(0, 0, 0), vec3_malloc(0, 0, 1), FOV));
-ft_lst_push(cameras, new_camera(vec3_malloc(-12, 20, 30), vec3_malloc(1, -1, 1), FOV));
-ft_lst_push(cameras, new_camera(vec3_malloc(12, 20, -30), vec3_malloc(-1, -1, 1), FOV));
+ft_lst_push(cameras, new_camera(vec3_malloc(-12, 20, -15), vec3_malloc(1, -1, 1), FOV));
+ft_lst_push(cameras, new_camera(vec3_malloc(12, 20, 90), vec3_malloc(-1, -1, -1), FOV));
 
 t_list		*lights = ft_lst_new(&free_light);
 ft_lst_push(lights, new_light(0.5, vec3_malloc(0, 2, -10), color_clone(color_new(255, 255, 255))));
