@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/12 12:31:12 by scros             #+#    #+#             */
-/*   Updated: 2021/02/16 13:41:16 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/16 14:13:48 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ typedef struct		s_scene {
 	t_list			*cameras;
 	t_list			*lights;
 	t_list			*objects;
-	int				camera_index;
+	int				index;
 }					t_scene;
 
 # include "object.h"

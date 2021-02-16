@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 13:03:09 by scros             #+#    #+#             */
-/*   Updated: 2021/02/16 13:54:00 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/16 14:57:46 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -245,21 +245,42 @@ t_scene	*get_scene(char *file)
 	return (scene);
 }
 
-int		render(t_vars *vars)
+int		render(t_vars *vars, char *file)
 {
 	t_scene *scene;
 
-	scene = get_scene("file.rt");
-	return (render2(vars, scene->cameras->first->value, scene->lights, scene->objects));
+	scene = get_scene(file);
+	return (render2(vars, ft_lst_get(scene->cameras, scene->index), scene->lights, scene->objects));
 }
 
 int		on_key_pressed(int i, t_vars *vars)
 {
+	static int	started;
+	t_scene		*scene;
+
 	if (i == 53)
 		return (on_close(vars));
-	if (i == 36)
-		return (render(vars));
-	printf("%d\n", i);
+	if (!started && i == 36)
+	{
+		started = 1;
+		return (render(vars, "file.rt"));
+	}
+	if (started)
+	{
+		scene = get_scene(NULL);
+
+		if (i == 123 || i == 125 || i == 126 || i == 124)
+		{
+			if (i == 123 || i == 125)
+				scene->index--;
+			if (i == 124 || i == 126)
+				scene->index++;
+			scene->index %= scene->cameras->size;
+			if (scene->index < 0)
+				scene->index = scene->cameras->size + scene->index;
+			return (render(vars, "file.rt"));
+		}
+	}
 	return (0);
 }
 
