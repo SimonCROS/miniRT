@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/12 12:31:12 by scros             #+#    #+#             */
-/*   Updated: 2021/02/16 14:13:48 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/16 15:54:26 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,8 @@
 # define WID 960
 # define HEI 540
 
-# define RENDER_WID 100
-# define RENDER_HEI 40
+# define RENDER_WID 150
+# define RENDER_HEI 50
 
 // # define WID (960 / 4)
 // # define HEI (540 / 4)
