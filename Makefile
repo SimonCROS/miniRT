@@ -6,7 +6,7 @@
 #    By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/11/23 11:39:11 by scros             #+#    #+#              #
-#    Updated: 2021/02/15 10:38:30 by scros            ###   ########lyon.fr    #
+#    Updated: 2021/02/16 13:04:22 by scros            ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -41,7 +41,7 @@ SRCS		=	main.c				\
 
 OBJS		= $(addprefix $(BIN)/, $(SRCS:.c=.o))
 
-NAME		= minirt
+NAME		= miniRT
 
 CC			= gcc
 RM			= rm -f
