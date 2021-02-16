@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 13:03:09 by scros             #+#    #+#             */
-/*   Updated: 2021/02/16 14:57:46 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/16 15:02:03 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -269,7 +269,7 @@ int		on_key_pressed(int i, t_vars *vars)
 	{
 		scene = get_scene(NULL);
 
-		if (i == 123 || i == 125 || i == 126 || i == 124)
+		if (i == 123 || i == 125 || i == 124 || i == 126)
 		{
 			if (i == 123 || i == 125)
 				scene->index--;
