@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/17 14:12:21 by scros             #+#    #+#             */
-/*   Updated: 2021/02/12 10:33:45 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/17 14:35:14 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int			collides_sphere(void *arg1, void *arg2)
 	object = arg1;
 	ray = arg2;
 
-	to_center = vec3_subv(object->position, *(ray->origin));
+	to_center = vec3_subv(object->position, ray->origin);
 	float tca = vec3_dotv(to_center, ray->direction);
 	if (tca < 0) return 0;
 	float d2 = vec3_dotv(to_center, to_center) - tca * tca;
@@ -42,7 +42,7 @@ int			collides_sphere(void *arg1, void *arg2)
 		if (t0 < 0) return 0;
 	}
 	ray->length = t0;
-	ray->phit = vec3_addv(*(ray->origin), vec3_muld(ray->direction, ray->length));
+	ray->phit = vec3_addv(ray->origin, vec3_muld(ray->direction, ray->length));
 	ray->nhit = vec3_normalize(vec3_subv(ray->phit, object->position));
 	return 1;
 }

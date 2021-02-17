@@ -6,11 +6,12 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 13:03:09 by scros             #+#    #+#             */
-/*   Updated: 2021/02/16 16:10:43 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/17 14:51:04 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
+#include "matrix.h"
 
 void	set_pixel(t_data *data, int x, int y, int color)
 {
@@ -18,12 +19,6 @@ void	set_pixel(t_data *data, int x, int y, int color)
 
 	dst = data->addr + (y * data->line_length + x * (data->bits_per_pixel / 8));
 	*(unsigned int*)dst = color;
-}
-
-int		on_opened(t_vars *vars)
-{
-	printf("ameklnfbnnri\n");
-	return (0);
 }
 
 int		on_close(t_vars *vars)
@@ -52,19 +47,6 @@ void	free_object(void *p)
 	free(object);
 }
 
-t_vector3	camera_direction(t_vector3 dir, t_vector3 rot)
-{
-	static t_vector3	default_vector = (t_vector3) { 0, 0, 1 };
-	t_vector3			axis;
-	float				angle;
-
-	axis = vec3_crossv(default_vector, vec3_normalize(rot));
-	if (vec3_length_squared(axis) == 0)
-		axis = (t_vector3) { 0, 1, 0 };
-	angle = vec3_angle(default_vector, vec3_normalize(rot));
-	return (vec3_rotate_axis(dir, vec3_normalize(axis), angle));
-}
-
 t_ray	compute_ray(t_camera *camera, float x, float y)
 {
 	t_ray ray;
@@ -72,7 +54,7 @@ t_ray	compute_ray(t_camera *camera, float x, float y)
 	float px = (2 * ((x + 0.5) / WID) - 1) * tan(FOV / 2 * M_PI / 180) * ratio;
 	float py = (1 - 2 * ((y + 0.5) / HEI)) * tan(FOV / 2 * M_PI / 180);
 	ray.direction = vec3_normalize(vec3_new(px, py, 1));
-	ray.direction = vec3_normalize(camera_direction(ray.direction, *(camera->direction)));
+	ray.direction = vec3_normalize(mat44_mul_vec(camera->c2w, ray.direction));
 	ray.color = color_new(0, 0, 0);
 	ray.light = 1;
 	ray.origin = camera->position;
@@ -147,7 +129,7 @@ int		render2(t_vars *vars, t_camera *camera, t_list *lights, t_list *objects)
 						objectIterator = ft_iterator_new(objects);
 
 						t_ray light_ray;
-						light_ray.origin = &(ray.phit);
+						light_ray.origin = ray.phit;
 						light_ray.direction = lightDir;
 						light_ray.length = INFINITY;
 						while (ft_iterator_has_next(objectIterator))
@@ -190,9 +172,9 @@ t_scene	*get_scene(char *file)
 			return (NULL);
 
 t_list		*cameras = ft_lst_new(NULL);
-ft_lst_push(cameras, new_camera(vec3_malloc(0, 0, 0), vec3_malloc(0, 0, 1), FOV));
-ft_lst_push(cameras, new_camera(vec3_malloc(-12, 20, -15), vec3_malloc(1, -1, 1), FOV));
-ft_lst_push(cameras, new_camera(vec3_malloc(12, 20, 90), vec3_malloc(-1, -1, -1), FOV));
+ft_lst_push(cameras, new_camera(vec3_new(0, 0, 0), vec3_new(0, 0, -1), FOV));
+ft_lst_push(cameras, new_camera(vec3_new(40, 30, 0), vec3_new(1, 1, -1), FOV));
+ft_lst_push(cameras, new_camera(vec3_new(12, 20, 90), vec3_new(0.5, 0.6, 1), FOV));
 
 t_list		*lights = ft_lst_new(&free_light);
 ft_lst_push(lights, new_light(0.5, vec3_malloc(0, 2, -10), color_clone(color_new(255, 255, 255))));

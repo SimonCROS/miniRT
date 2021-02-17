@@ -32,7 +32,7 @@ int test_intersect(float t[2], float *current_z)
 
 int intersect_cylinder(t_object *cp, t_ray *r, float *current_z)
 {
-    t_vector3 eye = vec3_subv(*(r->origin), cp->position);
+    t_vector3 eye = vec3_subv(r->origin, cp->position);
     float a = vec3_dotv(r->direction, r->direction) - pow(vec3_dotv(r->direction, cp->rotation), 2);
     float b = 2 * (vec3_dotv(r->direction, eye) - vec3_dotv(r->direction, cp->rotation) * vec3_dotv(eye, cp->rotation));
     float c = vec3_dotv(eye, eye) - pow(vec3_dotv(eye, cp->rotation), 2) - cp->data.cylinder.radius * cp->data.cylinder.radius;
@@ -48,10 +48,10 @@ int intersect_cylinder(t_object *cp, t_ray *r, float *current_z)
 
 int			intersect_side(t_object *object, t_ray *ray)
 {
-	ray->phit = vec3_addv(vec3_muld(ray->direction, ray->length), *(ray->origin));
+	ray->phit = vec3_addv(vec3_muld(ray->direction, ray->length), ray->origin);
 	t_ray to_bot;
 	to_bot.direction = object->rotation;
-	to_bot.origin = &(ray->phit);
+	to_bot.origin = ray->phit;
 	if (!intersect_plan(object->data.cylinder.position2, object->rotation, &to_bot))
 		return 0;
 	to_bot.direction = vec3_negate(object->rotation);
@@ -71,7 +71,7 @@ int			intersect_base(t_vector3 position, t_vector3 rotation, t_ray *ray, float r
 	if (intersect_plan(position, rotation, ray))
 	{
 		p = vec3_muld(ray->direction, ray->length);
-		p = vec3_addv(p, *(ray->origin));
+		p = vec3_addv(p, ray->origin);
 		ray->phit = p;
 		ray->nhit = rotation;
 		if (vec3_dotv(rotation, ray->direction) > 0)

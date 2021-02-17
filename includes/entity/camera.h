@@ -13,15 +13,16 @@
 #ifndef CAMERA_H
 # define CAMERA_H
 
-# include "vector3.h"
+# include "matrix.h"
 
 typedef struct	s_camera
 {
-	t_vector3	*position;
-	t_vector3	*direction;
+	t_vector3	position;
+	t_vector3	direction;
+	t_matrix44	c2w;
 	float		fov;
 }				t_camera;
 
-t_camera			*new_camera(t_vector3 *position, t_vector3 *direction, float fov);
+t_camera		*new_camera(t_vector3 position, t_vector3 direction, float fov);
 
 #endif
