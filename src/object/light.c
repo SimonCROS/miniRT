@@ -6,13 +6,13 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/12 15:44:13 by scros             #+#    #+#             */
-/*   Updated: 2021/02/01 12:41:52 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/17 15:35:40 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
 
-t_light	*new_light(float brightness, t_vector3 *position, t_color *color)
+t_light	*new_light(float brightness, t_vector3 position, t_color color)
 {
 	t_light	*light;
 

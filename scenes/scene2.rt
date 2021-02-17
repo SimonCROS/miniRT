@@ -1,15 +1,11 @@
 t_list		*cameras = ft_lst_new(NULL);
-ft_lst_push(cameras, new_camera(vec3_malloc(0, 10, -30), vec3_malloc(0, 0, 1), FOV));
-ft_lst_push(cameras, new_camera(vec3_malloc(-20, 10, -30), vec3_malloc(0, 0, 1), FOV));
-ft_lst_push(cameras, new_camera(vec3_malloc(20, 10, -30), vec3_malloc(0, 0, 1), FOV));
-ft_lst_push(cameras, new_camera(vec3_malloc(0, 10, 30), vec3_malloc(0, 0, -1), FOV));
-ft_lst_push(cameras, new_camera(vec3_malloc(-12, 40, -30), vec3_malloc(1, -1, 1), FOV));
+ft_lst_push(cameras, new_camera(vec3_new(0, 10, -30), vec3_new(0, 0, 1), FOV));
 
-t_list		*lights = ft_lst_new(&free_light);
-ft_lst_push(lights, new_light(1, vec3_malloc(-8.66, 5, -15), color_clone(color_new(255, 0, 0))));
-ft_lst_push(lights, new_light(1, vec3_malloc(0, 20, -15), color_clone(color_new(0, 255, 0))));
-ft_lst_push(lights, new_light(1, vec3_malloc(8.66, 5, -15), color_clone(color_new(0, 0, 255))));
+t_list		*lights = ft_lst_new(&free);
+ft_lst_push(lights, new_light(1, vec3_new(-8.66, 5, -15), color_new(255, 0, 0)));
+ft_lst_push(lights, new_light(1, vec3_new(0, 20, -15), color_new(0, 255, 0)));
+ft_lst_push(lights, new_light(1, vec3_new(8.66, 5, -15), color_new(0, 0, 255)));
 
-t_list		*objects = ft_lst_new(&free_object);
+t_list		*objects = ft_lst_new(&free);
 ft_lst_push(objects, new_sphere(10, vec3_new(0, 10, 0), color_new(255, 255, 255)));
 ft_lst_push(objects, new_triangle(vec3_new(-12.99, 2.5, 0), vec3_new(0, 25, 0), vec3_new(12.99, 2.5, 0), color_new(150, 150, 150)));

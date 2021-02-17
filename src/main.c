@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 13:03:09 by scros             #+#    #+#             */
-/*   Updated: 2021/02/17 15:29:52 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/17 15:36:23 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,24 +27,6 @@ int		on_close(t_vars *vars)
 	// TODO FREE ALL
 	exit(0);
 	return (0);
-}
-
-void	free_light(void *p)
-{
-	t_light *light;
-	
-	light = (t_light*)p;
-	free(light->position);
-	free(light->color);
-	free(light);
-}
-
-void	free_object(void *p)
-{
-	t_object *object;
-	
-	object = (t_object*)p;
-	free(object);
 }
 
 t_ray	compute_ray(t_camera *camera, float x, float y)
@@ -119,7 +101,7 @@ int		render2(t_vars *vars, t_camera *camera, t_list *lights, t_list *objects)
 					{
 						t_light *light = ft_iterator_next(lightIterator);
 
-						t_vector3 lightDir = vec3_subv(*(light->position), ray.phit);
+						t_vector3 lightDir = vec3_subv(light->position, ray.phit);
 						float lightDistance2 = vec3_length_squared(lightDir); 
 						lightDir = vec3_normalize(lightDir);
 						float LdotN = fmaxf(0, vec3_dotv(lightDir, ray.nhit));
@@ -148,7 +130,7 @@ int		render2(t_vars *vars, t_camera *camera, t_list *lights, t_list *objects)
 						}
 						free(objectIterator);
 						float atm = (1 - inShadow) * light->brightness * LdotN;
-						ray.color = color_add(ray.color, color_mul(object->color, color_mulf(color_mulf(*(light->color), light->brightness), atm)));
+						ray.color = color_add(ray.color, color_mul(object->color, color_mulf(color_mulf(light->color, light->brightness), atm)));
 					}
 					set_pixel(&img, x + start_x, y + start_y, color_to_hex(ray.color));
 					free(lightIterator);
@@ -174,12 +156,12 @@ t_scene	*get_scene(char *file)
 t_list		*cameras = ft_lst_new(NULL);
 ft_lst_push(cameras, new_camera(vec3_new(0, 10, -30), vec3_new(0, 0, 1), FOV));
 
-t_list		*lights = ft_lst_new(&free_light);
-ft_lst_push(lights, new_light(1, vec3_malloc(-8.66, 5, -15), color_clone(color_new(255, 0, 0))));
-ft_lst_push(lights, new_light(1, vec3_malloc(0, 20, -15), color_clone(color_new(0, 255, 0))));
-ft_lst_push(lights, new_light(1, vec3_malloc(8.66, 5, -15), color_clone(color_new(0, 0, 255))));
+t_list		*lights = ft_lst_new(&free);
+ft_lst_push(lights, new_light(1, vec3_new(-8.66, 5, -15), color_new(255, 0, 0)));
+ft_lst_push(lights, new_light(1, vec3_new(0, 20, -15), color_new(0, 255, 0)));
+ft_lst_push(lights, new_light(1, vec3_new(8.66, 5, -15), color_new(0, 0, 255)));
 
-t_list		*objects = ft_lst_new(&free_object);
+t_list		*objects = ft_lst_new(&free);
 ft_lst_push(objects, new_sphere(10, vec3_new(0, 10, 0), color_new(255, 255, 255)));
 ft_lst_push(objects, new_triangle(vec3_new(-12.99, 2.5, 0), vec3_new(0, 25, 0), vec3_new(12.99, 2.5, 0), color_new(150, 150, 150)));
 
