@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 13:03:09 by scros             #+#    #+#             */
-/*   Updated: 2021/02/17 15:36:23 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/17 15:54:19 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,6 @@ int		render2(t_vars *vars, t_camera *camera, t_list *lights, t_list *objects)
 	t_data	img;
 	img.img = mlx_new_image(vars->mlx, WID, HEI);
 	img.addr = mlx_get_data_addr(img.img, &img.bits_per_pixel, &img.line_length, &img.endian);
-	mlx_sync(MLX_SYNC_IMAGE_WRITABLE, img.img);
 
 	size_t i_iter = ceilf(WID / (float)RENDER_WID);
 	size_t j_iter = ceilf(HEI / (float)RENDER_HEI);
@@ -140,7 +139,6 @@ int		render2(t_vars *vars, t_camera *camera, t_list *lights, t_list *objects)
 			mlx_put_image_to_window(vars->mlx, vars->win, img.img, 0, 0);
 		}
 	}
-	mlx_sync(MLX_SYNC_WIN_CMD_COMPLETED, vars->win);
 	return (0);
 }
 
@@ -196,6 +194,8 @@ int		on_key_pressed(int i, t_vars *vars)
 
 		if (i == 123 || i == 125 || i == 124 || i == 126)
 		{
+			if (scene->cameras->size == 1)
+				return (0);
 			if (i == 123 || i == 125)
 				scene->index--;
 			if (i == 124 || i == 126)
