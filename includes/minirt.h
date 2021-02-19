@@ -76,7 +76,6 @@ typedef struct		s_thread_data
 	size_t			height;
 	t_camera		*camera;
 	t_scene			*scene;
-	int				*alive_threads;
 	int				id;
 	size_t			x;
 	size_t			y;

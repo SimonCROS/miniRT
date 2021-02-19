@@ -14,8 +14,9 @@
 #include "matrix.h"
 #include <pthread.h>
 
-pthread_mutex_t*	mutex;
-pthread_cond_t*		cond;
+static int alive_threads;
+static pthread_mutex_t mutex_flush			= PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t mutex_alive_threads	= PTHREAD_MUTEX_INITIALIZER;
 
 void	set_pixel(t_data *data, int x, int y, int color)
 {
@@ -124,6 +125,8 @@ void	render_chunk(t_data image, t_camera *camera, t_scene *scene, size_t chunk_x
 	}
 }
 
+#include "mlx_int.h"
+
 void	*render_thread(void *data)
 {
 	t_thread_data	*thread_data;
@@ -131,8 +134,8 @@ void	*render_thread(void *data)
 	size_t j_iter;
 
 	thread_data = (t_thread_data*)data;
-	i_iter = ceilf(thread_data->width / thread_data->chunk_width);
-	j_iter = ceilf(thread_data->height / thread_data->chunk_height);
+	i_iter = ceilf(thread_data->width / (float)thread_data->chunk_width);
+	j_iter = ceilf(thread_data->height / (float)thread_data->chunk_height);
 
 	for (size_t j = 0; j < j_iter; j++)
 	{
@@ -143,15 +146,16 @@ void	*render_thread(void *data)
 			size_t start_x = thread_data->chunk_width * i + thread_data->x;
 			render_chunk(thread_data->image, thread_data->camera, thread_data->scene, start_x, start_y, thread_data->width, thread_data->height, thread_data->chunk_width, thread_data->chunk_height);
 
-			pthread_mutex_lock(mutex);
-			mlx_sync(MLX_SYNC_WIN_FLUSH_CMD, thread_data->vars->win);
+			pthread_mutex_lock(&mutex_flush);
+			// mlx_sync(MLX_SYNC_WIN_FLUSH_CMD, thread_data->vars->win);
+			((t_xvar*)thread_data->vars->mlx)->do_flush = 1;
 			mlx_put_image_to_window(thread_data->vars->mlx, thread_data->vars->win, thread_data->image.img, 0, 0);
-			pthread_mutex_unlock(mutex);
+			pthread_mutex_unlock(&mutex_flush);
 		}
 	}
-	pthread_mutex_lock(mutex);
-	(*(thread_data->alive_threads))--;
-	pthread_mutex_unlock(mutex);
+	pthread_mutex_lock(&mutex_alive_threads);
+	alive_threads--;
+	pthread_mutex_unlock(&mutex_alive_threads);
 	free(data);
 	pthread_exit(NULL);
 }
@@ -159,7 +163,6 @@ void	*render_thread(void *data)
 int		render2(t_vars *vars, t_camera *camera, t_scene *scene)
 {
 	static pthread_t		threads[NUM_THREADS];
-	static int				alive_threads;
 	t_data					img;
 	t_thread_data			thread_data;
 	t_thread_data			*malloced_data;
@@ -178,7 +181,7 @@ int		render2(t_vars *vars, t_camera *camera, t_scene *scene)
 	}
 	img.img = mlx_new_image(vars->mlx, WID, HEI);
 	img.addr = mlx_get_data_addr(img.img, &img.bits_per_pixel, &img.line_length, &img.endian);
-	mlx_sync(MLX_SYNC_IMAGE_WRITABLE, img.img);
+	// mlx_sync(MLX_SYNC_IMAGE_WRITABLE, img.img);
 
 	thread_id = 0;
 	thread_line = 4;
@@ -192,7 +195,6 @@ int		render2(t_vars *vars, t_camera *camera, t_scene *scene)
 	thread_data.height = thread_height;
 	thread_data.camera = camera;
 	thread_data.scene = scene;
-	thread_data.alive_threads = &alive_threads;
 	thread_data.chunk_width = fminf(CHUNK_WID, thread_width);
 	thread_data.chunk_height = fminf(CHUNK_HEI, thread_height);
 	for (size_t i = 0; i < thread_line; i++)
@@ -212,7 +214,7 @@ int		render2(t_vars *vars, t_camera *camera, t_scene *scene)
 	}
 
 	camera->render = img.img;
-	mlx_sync(MLX_SYNC_WIN_CMD_COMPLETED, vars->win);
+	// mlx_sync(MLX_SYNC_WIN_CMD_COMPLETED, vars->win);
 	return (0);
 }
 
@@ -298,9 +300,9 @@ int		on_key_pressed(int i, t_vars *vars)
 	static int	started;
 	t_scene		*scene;
 
-	if (i == 53)
+	if (i == 53 || i == 65307)
 		return (on_close(vars));
-	if (!started && i == 36)
+	if (!started && (i == 36 || i == 65293))
 	{
 		started = 1;
 		return (render(vars, "file.rt"));
@@ -309,13 +311,13 @@ int		on_key_pressed(int i, t_vars *vars)
 	{
 		scene = get_scene(NULL);
 
-		if (i == 123 || i == 125 || i == 124 || i == 126)
+		if (i == 123 || i == 125 || i == 124 || i == 126 || i == 65361 || i == 65362 || i == 65363 || i == 65364)
 		{
 			if (scene->cameras->size == 1)
 				return (0);
-			if (i == 123 || i == 125)
+			if (i == 123 || i == 125 || i == 65361 || i == 65363)
 				scene->index--;
-			if (i == 124 || i == 126)
+			if (i == 124 || i == 126 || i == 65362 || i == 65364)
 				scene->index++;
 			scene->index %= scene->cameras->size;
 			if (scene->index < 0)
@@ -331,18 +333,11 @@ int		on_key_pressed(int i, t_vars *vars)
 int		main(void)
 {
 	t_vars	vars;
-	pthread_mutex_t mutex_var;
-    pthread_cond_t cond_var;
 
 	if (!(vars.mlx = mlx_init())) {
 		printf("Error, can't generate the frame\n");
 		exit(1);
 	}
-    mutex = &mutex_var;
-    cond = &cond_var;
-
-    pthread_mutex_init(mutex, NULL); 
-    pthread_cond_init(cond, NULL);
 
 	printf("Launching\n");
 	vars.win = mlx_new_window(vars.mlx, WID, HEI, "MiniRT - file.rt");

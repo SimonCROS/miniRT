@@ -15,7 +15,7 @@ SRC			= src
 INC			= includes
 LIBFT		= libft
 
-LINUX			= 0
+LINUX			= 1
 
 MINILIBX_OS_X	= minilibx
 MINILIBX_LINUX	= minilibx-linux
