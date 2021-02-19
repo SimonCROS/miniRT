@@ -6,13 +6,16 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 13:03:09 by scros             #+#    #+#             */
-/*   Updated: 2021/02/19 15:49:57 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/19 16:07:29 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
 #include "matrix.h"
 #include <pthread.h>
+
+pthread_mutex_t*	mutex;
+pthread_cond_t*		cond;
 
 void	set_pixel(t_data *data, int x, int y, int color)
 {
@@ -140,11 +143,15 @@ void	*render_thread(void *data)
 			size_t start_x = thread_data->chunk_width * i + thread_data->x;
 			render_chunk(thread_data->image, thread_data->camera, thread_data->scene, start_x, start_y, thread_data->width, thread_data->height, thread_data->chunk_width, thread_data->chunk_height);
 
+			pthread_mutex_lock(mutex);
 			mlx_sync(MLX_SYNC_WIN_FLUSH_CMD, thread_data->vars->win);
 			mlx_put_image_to_window(thread_data->vars->mlx, thread_data->vars->win, thread_data->image.img, 0, 0);
+			pthread_mutex_unlock(mutex);
 		}
 	}
+	pthread_mutex_lock(mutex);
 	(*(thread_data->alive_threads))--;
+	pthread_mutex_unlock(mutex);
 	free(data);
 	pthread_exit(NULL);
 }
@@ -171,6 +178,7 @@ int		render2(t_vars *vars, t_camera *camera, t_scene *scene)
 	}
 	img.img = mlx_new_image(vars->mlx, WID, HEI);
 	img.addr = mlx_get_data_addr(img.img, &img.bits_per_pixel, &img.line_length, &img.endian);
+	mlx_sync(MLX_SYNC_IMAGE_WRITABLE, img.img);
 
 	thread_id = 0;
 	thread_line = 4;
@@ -204,6 +212,7 @@ int		render2(t_vars *vars, t_camera *camera, t_scene *scene)
 	}
 
 	camera->render = img.img;
+	mlx_sync(MLX_SYNC_WIN_CMD_COMPLETED, vars->win);
 	return (0);
 }
 
@@ -322,11 +331,19 @@ int		on_key_pressed(int i, t_vars *vars)
 int		main(void)
 {
 	t_vars	vars;
+	pthread_mutex_t mutex_var;
+    pthread_cond_t cond_var;
 
 	if (!(vars.mlx = mlx_init())) {
 		printf("Error, can't generate the frame\n");
 		exit(1);
 	}
+    mutex = &mutex_var;
+    cond = &cond_var;
+
+    pthread_mutex_init(mutex, NULL); 
+    pthread_cond_init(cond, NULL);
+
 	printf("Launching\n");
 	vars.win = mlx_new_window(vars.mlx, WID, HEI, "MiniRT - file.rt");
 

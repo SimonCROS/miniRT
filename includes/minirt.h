@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/12 12:31:12 by scros             #+#    #+#             */
-/*   Updated: 2021/02/19 15:50:25 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/19 16:07:58 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,8 @@
 
 # define FOV 60
 
-# define CHUNK_WID 1000
-# define CHUNK_HEI 1000
+# define CHUNK_WID 200
+# define CHUNK_HEI 200
 
 # include <math.h>
 # include "libft.h"
