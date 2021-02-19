@@ -6,12 +6,13 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 13:03:09 by scros             #+#    #+#             */
-/*   Updated: 2021/02/19 13:36:32 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/19 15:00:19 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
 #include "matrix.h"
+#include <pthread.h>
 
 void	set_pixel(t_data *data, int x, int y, int color)
 {
@@ -44,21 +45,21 @@ t_ray	compute_ray(t_camera *camera, float x, float y)
 	return (ray);
 }
 
-void	render_chunk(t_data *image, t_camera *camera, t_scene *scene, size_t chunk_x, size_t chunk_y)
+void	render_chunk(t_data image, t_camera *camera, t_scene *scene, size_t chunk_x, size_t chunk_y, size_t thread_width, size_t thread_height, int id)
 {
 	t_iterator		objectIterator = iterator_new(scene->objects);
 	t_iterator		lightIterator = iterator_new(scene->lights);
 
-	for (size_t x = 0; x < RENDER_WID; x++)
+	for (size_t x = chunk_x; x < chunk_x + RENDER_WID; x++)
 	{
-		if (x + chunk_x >= WID)
+		if (x >= WID || x >= chunk_x + thread_width)
 			break;
-		for (size_t y = 0; y < RENDER_HEI; y++)
+		for (size_t y = chunk_y; y < chunk_y + RENDER_HEI; y++)
 		{
-			if (y + chunk_y >= HEI)
+			if (y >= HEI || y >= chunk_y + thread_height)
 				break;
 
-			t_ray			ray = compute_ray(camera, x + chunk_x, y + chunk_y);
+			t_ray			ray = compute_ray(camera, x, y);
 			t_object		*object = NULL;
 
 			while (iterator_has_next(&objectIterator))
@@ -115,16 +116,49 @@ void	render_chunk(t_data *image, t_camera *camera, t_scene *scene, size_t chunk_
 				ray.color = color_add(ray.color, color_mul(object->color, color_mulf(color_mulf(light->color, light->brightness), atm)));
 			}
 			iterator_reset(&lightIterator);
-			set_pixel(image, x + chunk_x, y + chunk_y, color_to_hex(ray.color));
+			set_pixel(&image, x, y, color_to_hex(ray.color));
 		}
 	}
 }
 
-// #define NUM_THREADS 5
+void	*render_thread(void *data)
+{
+	t_thread_data	*thread_data;
+	size_t i_iter;
+	size_t j_iter;
+
+	thread_data = (t_thread_data*)data;
+	i_iter = ceilf(thread_data->width / (float)RENDER_WID);
+	j_iter = ceilf(thread_data->height / (float)RENDER_HEI);
+
+	for (size_t j = 0; j < j_iter; j++)
+	{
+		size_t start_y = (RENDER_HEI) * j + thread_data->y;
+
+		for (size_t i = 0; i < i_iter; i++)
+		{
+			size_t start_x = (RENDER_WID) * i + thread_data->x;
+			render_chunk(thread_data->image, thread_data->camera, thread_data->scene, start_x, start_y, thread_data->width, thread_data->height, thread_data->id);
+
+			mlx_sync(MLX_SYNC_WIN_FLUSH_CMD, thread_data->vars->win);
+			mlx_put_image_to_window(thread_data->vars->mlx, thread_data->vars->win, thread_data->image.img, 0, 0);
+		}
+	}
+	pthread_exit(NULL);
+}
 
 int		render2(t_vars *vars, t_camera *camera, t_scene *scene)
 {
-	t_data	img;
+	t_data			img;
+	t_thread_data	thread_data;
+	t_thread_data	*malloced_data;
+	t_thread_data	*threads_data[NUM_THREADS];
+	pthread_t		threads[NUM_THREADS];
+	size_t			thread_line;
+	size_t			thread_column;
+	size_t			thread_width;
+	size_t			thread_height;
+	int				thread_id;
 
 	if (camera->render)
 	{
@@ -134,22 +168,34 @@ int		render2(t_vars *vars, t_camera *camera, t_scene *scene)
 	img.img = mlx_new_image(vars->mlx, WID, HEI);
 	img.addr = mlx_get_data_addr(img.img, &img.bits_per_pixel, &img.line_length, &img.endian);
 
-	size_t i_iter = ceilf(WID / (float)RENDER_WID);
-	size_t j_iter = ceilf(HEI / (float)RENDER_HEI);
+	thread_id = 0;
+	thread_line = 4;
+	thread_column = 2;
+	thread_width = ceilf(WID / thread_line);
+	thread_height = ceilf(HEI / thread_column);
 
-	for (size_t j = 0; j < j_iter; j++)
+	thread_data.vars = vars;
+	thread_data.image = img;
+	thread_data.width = thread_width;
+	thread_data.height = thread_height;
+	thread_data.camera = camera;
+	thread_data.scene = scene;
+	for (size_t i = 0; i < thread_line; i++)
 	{
-		size_t start_y = (RENDER_HEI) * j;
-
-		for (size_t i = 0; i < i_iter; i++)
+		for (size_t j = 0; j < thread_column; j++)
 		{
-			size_t start_x = (RENDER_WID) * i;
-			render_chunk(&img, camera, scene, start_x, start_y);
-
-			mlx_sync(MLX_SYNC_WIN_FLUSH_CMD, vars->win);
-			mlx_put_image_to_window(vars->mlx, vars->win, img.img, 0, 0);
+			thread_data.id = thread_id;
+			thread_data.x = thread_width * i;
+			thread_data.y = thread_height * j;
+			if (!(malloced_data = malloc(sizeof(t_thread_data))))
+				return (1);
+			*malloced_data = thread_data;
+			threads_data[thread_id] = malloced_data;
+			pthread_create(&threads[thread_id], NULL, render_thread, threads_data[thread_id]);
+			thread_id++;
 		}
 	}
+
 	camera->render = img.img;
 	return (0);
 }

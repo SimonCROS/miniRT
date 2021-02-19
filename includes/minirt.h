@@ -6,12 +6,14 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/12 12:31:12 by scros             #+#    #+#             */
-/*   Updated: 2021/02/19 11:20:03 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/19 14:59:47 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINIRT_H
 # define MINIRT_H
+
+# define NUM_THREADS 8
 
 // # define WID 2560
 // # define HEI 1440
@@ -65,6 +67,19 @@ typedef struct		s_scene {
 }					t_scene;
 
 # include "object.h"
+
+typedef struct		s_thread_data
+{
+	t_vars			*vars;
+	t_data			image;
+	size_t			width;
+	size_t			height;
+	t_camera		*camera;
+	t_scene			*scene;
+	int				id;
+	size_t			x;
+	size_t			y;
+}					t_thread_data;
 
 void				set_pixel(t_data *data, int x, int y, int color);
 
