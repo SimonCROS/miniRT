@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 13:03:09 by scros             #+#    #+#             */
-/*   Updated: 2021/02/19 11:17:29 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/19 13:36:32 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,17 +44,98 @@ t_ray	compute_ray(t_camera *camera, float x, float y)
 	return (ray);
 }
 
-int		render2(t_vars *vars, t_camera *camera, t_list *lights, t_list *objects)
+void	render_chunk(t_data *image, t_camera *camera, t_scene *scene, size_t chunk_x, size_t chunk_y)
+{
+	t_iterator		objectIterator = iterator_new(scene->objects);
+	t_iterator		lightIterator = iterator_new(scene->lights);
+
+	for (size_t x = 0; x < RENDER_WID; x++)
+	{
+		if (x + chunk_x >= WID)
+			break;
+		for (size_t y = 0; y < RENDER_HEI; y++)
+		{
+			if (y + chunk_y >= HEI)
+				break;
+
+			t_ray			ray = compute_ray(camera, x + chunk_x, y + chunk_y);
+			t_object		*object = NULL;
+
+			while (iterator_has_next(&objectIterator))
+			{
+				t_object *object_test = iterator_next(&objectIterator);
+				t_ray obj_ray = ray;
+
+				if (collision(object_test, &obj_ray))
+				{
+					if (obj_ray.length < ray.length)
+					{
+						ray = obj_ray;
+						object = object_test;
+					}
+				}
+			}
+			iterator_reset(&objectIterator);
+
+			if (!object)
+				continue;
+			ray.color = color_mulf(object->color, 0.2);
+
+			while (iterator_has_next(&lightIterator))
+			{
+				t_light *light = iterator_next(&lightIterator);
+
+				t_vector3 lightDir = vec3_subv(light->position, ray.phit);
+				float lightDistance2 = vec3_length_squared(lightDir); 
+				lightDir = vec3_normalize(lightDir);
+				float LdotN = fmaxf(0, vec3_dotv(lightDir, ray.nhit));
+				float tNearShadow = INFINITY; 
+				short inShadow = FALSE;
+
+				t_ray light_ray;
+				light_ray.origin = ray.phit;
+				light_ray.direction = lightDir;
+				light_ray.length = INFINITY;
+				while (iterator_has_next(&objectIterator))
+				{
+					t_vector3 point;
+					t_object *obj_test = iterator_next(&objectIterator);
+					if (obj_test == object)
+						continue;
+					if ((inShadow = collision(obj_test, &light_ray)))
+					{
+						if (light_ray.length * light_ray.length > lightDistance2)
+							inShadow = 0;
+						else
+							break;
+					}
+				}
+				iterator_reset(&objectIterator);
+				float atm = (1 - inShadow) * light->brightness * LdotN;
+				ray.color = color_add(ray.color, color_mul(object->color, color_mulf(color_mulf(light->color, light->brightness), atm)));
+			}
+			iterator_reset(&lightIterator);
+			set_pixel(image, x + chunk_x, y + chunk_y, color_to_hex(ray.color));
+		}
+	}
+}
+
+// #define NUM_THREADS 5
+
+int		render2(t_vars *vars, t_camera *camera, t_scene *scene)
 {
 	t_data	img;
+
+	if (camera->render)
+	{
+		mlx_put_image_to_window(vars->mlx, vars->win, camera->render, 0, 0);
+		return (0);
+	}
 	img.img = mlx_new_image(vars->mlx, WID, HEI);
 	img.addr = mlx_get_data_addr(img.img, &img.bits_per_pixel, &img.line_length, &img.endian);
 
 	size_t i_iter = ceilf(WID / (float)RENDER_WID);
 	size_t j_iter = ceilf(HEI / (float)RENDER_HEI);
-
-	t_iterator		objectIterator = iterator_new(objects);
-	t_iterator		lightIterator = iterator_new(lights);
 
 	for (size_t j = 0; j < j_iter; j++)
 	{
@@ -63,82 +144,13 @@ int		render2(t_vars *vars, t_camera *camera, t_list *lights, t_list *objects)
 		for (size_t i = 0; i < i_iter; i++)
 		{
 			size_t start_x = (RENDER_WID) * i;
+			render_chunk(&img, camera, scene, start_x, start_y);
 
-			for (size_t x = 0; x < RENDER_WID; x++)
-			{
-				if (x + start_x >= WID)
-					break;
-				for (size_t y = 0; y < RENDER_HEI; y++)
-				{
-					if (y + start_y >= HEI)
-						break;
-
-					t_ray			ray = compute_ray(camera, x + start_x, y + start_y);
-					t_object		*object = NULL;
-
-					while (iterator_has_next(&objectIterator))
-					{
-						t_object *object_test = iterator_next(&objectIterator);
-						t_ray obj_ray = ray;
-
-						if (collision(object_test, &obj_ray))
-						{
-							if (obj_ray.length < ray.length)
-							{
-								ray = obj_ray;
-								object = object_test;
-							}
-						}
-					}
-					iterator_reset(&objectIterator);
-
-					if (!object)
-						continue;
-					ray.color = color_mulf(object->color, 0.2);
-
-					while (iterator_has_next(&lightIterator))
-					{
-						t_light *light = iterator_next(&lightIterator);
-
-						t_vector3 lightDir = vec3_subv(light->position, ray.phit);
-						float lightDistance2 = vec3_length_squared(lightDir); 
-						lightDir = vec3_normalize(lightDir);
-						float LdotN = fmaxf(0, vec3_dotv(lightDir, ray.nhit));
-						float tNearShadow = INFINITY; 
-						short inShadow = FALSE;
-
-						objectIterator = iterator_new(objects);
-
-						t_ray light_ray;
-						light_ray.origin = ray.phit;
-						light_ray.direction = lightDir;
-						light_ray.length = INFINITY;
-						while (iterator_has_next(&objectIterator))
-						{
-							t_vector3 point;
-							t_object *obj_test = iterator_next(&objectIterator);
-							if (obj_test == object)
-								continue;
-							if ((inShadow = collision(obj_test, &light_ray)))
-							{
-								if (light_ray.length * light_ray.length > lightDistance2)
-									inShadow = 0;
-								else
-									break;
-							}
-						}
-						iterator_reset(&objectIterator);
-						float atm = (1 - inShadow) * light->brightness * LdotN;
-						ray.color = color_add(ray.color, color_mul(object->color, color_mulf(color_mulf(light->color, light->brightness), atm)));
-					}
-					iterator_reset(&lightIterator);
-					set_pixel(&img, x + start_x, y + start_y, color_to_hex(ray.color));
-				}
-			}
 			mlx_sync(MLX_SYNC_WIN_FLUSH_CMD, vars->win);
 			mlx_put_image_to_window(vars->mlx, vars->win, img.img, 0, 0);
 		}
 	}
+	camera->render = img.img;
 	return (0);
 }
 
@@ -220,7 +232,7 @@ int		render(t_vars *vars, char *file)
 	// TODO remove ^^
 	clock_t begin = clock();
 
-	int tmp = render2(vars, ft_lst_get(scene->cameras, scene->index), scene->lights, scene->objects);
+	int tmp = render2(vars, ft_lst_get(scene->cameras, scene->index), scene);
 
 	// TODO remove ^^
 	clock_t end = clock();

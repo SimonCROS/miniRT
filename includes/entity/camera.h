@@ -20,6 +20,7 @@ typedef struct	s_camera
 	t_vector3	position;
 	t_vector3	direction;
 	t_matrix44	c2w;
+	void		*render;
 	float		fov;
 }				t_camera;
 

@@ -6,7 +6,7 @@
 #    By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/11/23 11:39:11 by scros             #+#    #+#              #
-#    Updated: 2021/02/16 13:04:22 by scros            ###   ########lyon.fr    #
+#    Updated: 2021/02/19 13:18:02 by scros            ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -53,6 +53,11 @@ HEADERS		= includes/minirt.h
 
 all:		$(NAME)
 
+LIBRARIES	= -lpthread
+ifeq ($(LINUX),1)
+LIBRARIES	+= -lm -lXext -lX11
+endif
+
 $(BIN)/%.o:	$(SRC)/%.c $(HEADERS)
 			@ mkdir -p $(dir $@);
 			@ $(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
@@ -60,11 +65,7 @@ $(BIN)/%.o:	$(SRC)/%.c $(HEADERS)
 $(NAME):	compile_lib $(OBJS)
 			@ ln -sf $(MINILIBX)/$(MLX) .
 			@ ln -sf $(LIBFT)/$(FT) .
-ifeq ($(LINUX),1)
-			@ $(CC) $(CFLAGS) $(OBJS) $(MLX) $(FT) -o $(NAME) -lm -lXext -lX11
-else
-			@ $(CC) $(CFLAGS) $(OBJS) $(MLX) $(FT) -o $(NAME)
-endif
+			$(CC) $(CFLAGS) $(OBJS) $(MLX) $(FT) -o $(NAME) $(LIBRARIES)
 
 compile_lib:
 			@ $(MAKE) -C $(LIBFT)
