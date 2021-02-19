@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 13:03:09 by scros             #+#    #+#             */
-/*   Updated: 2021/02/19 15:00:19 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/19 15:49:57 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,18 +45,18 @@ t_ray	compute_ray(t_camera *camera, float x, float y)
 	return (ray);
 }
 
-void	render_chunk(t_data image, t_camera *camera, t_scene *scene, size_t chunk_x, size_t chunk_y, size_t thread_width, size_t thread_height, int id)
+void	render_chunk(t_data image, t_camera *camera, t_scene *scene, size_t chunk_x, size_t chunk_y, size_t thread_width, size_t thread_height, size_t chunk_width, size_t chunk_height)
 {
 	t_iterator		objectIterator = iterator_new(scene->objects);
 	t_iterator		lightIterator = iterator_new(scene->lights);
 
-	for (size_t x = chunk_x; x < chunk_x + RENDER_WID; x++)
+	for (size_t x = chunk_x; x < chunk_x + chunk_width; x++)
 	{
-		if (x >= WID || x >= chunk_x + thread_width)
+		if (x >= WID)
 			break;
-		for (size_t y = chunk_y; y < chunk_y + RENDER_HEI; y++)
+		for (size_t y = chunk_y; y < chunk_y + chunk_height; y++)
 		{
-			if (y >= HEI || y >= chunk_y + thread_height)
+			if (y >= HEI)
 				break;
 
 			t_ray			ray = compute_ray(camera, x, y);
@@ -128,38 +128,42 @@ void	*render_thread(void *data)
 	size_t j_iter;
 
 	thread_data = (t_thread_data*)data;
-	i_iter = ceilf(thread_data->width / (float)RENDER_WID);
-	j_iter = ceilf(thread_data->height / (float)RENDER_HEI);
+	i_iter = ceilf(thread_data->width / thread_data->chunk_width);
+	j_iter = ceilf(thread_data->height / thread_data->chunk_height);
 
 	for (size_t j = 0; j < j_iter; j++)
 	{
-		size_t start_y = (RENDER_HEI) * j + thread_data->y;
+		size_t start_y = thread_data->chunk_height * j + thread_data->y;
 
 		for (size_t i = 0; i < i_iter; i++)
 		{
-			size_t start_x = (RENDER_WID) * i + thread_data->x;
-			render_chunk(thread_data->image, thread_data->camera, thread_data->scene, start_x, start_y, thread_data->width, thread_data->height, thread_data->id);
+			size_t start_x = thread_data->chunk_width * i + thread_data->x;
+			render_chunk(thread_data->image, thread_data->camera, thread_data->scene, start_x, start_y, thread_data->width, thread_data->height, thread_data->chunk_width, thread_data->chunk_height);
 
 			mlx_sync(MLX_SYNC_WIN_FLUSH_CMD, thread_data->vars->win);
 			mlx_put_image_to_window(thread_data->vars->mlx, thread_data->vars->win, thread_data->image.img, 0, 0);
 		}
 	}
+	(*(thread_data->alive_threads))--;
+	free(data);
 	pthread_exit(NULL);
 }
 
 int		render2(t_vars *vars, t_camera *camera, t_scene *scene)
 {
-	t_data			img;
-	t_thread_data	thread_data;
-	t_thread_data	*malloced_data;
-	t_thread_data	*threads_data[NUM_THREADS];
-	pthread_t		threads[NUM_THREADS];
-	size_t			thread_line;
-	size_t			thread_column;
-	size_t			thread_width;
-	size_t			thread_height;
-	int				thread_id;
+	static pthread_t		threads[NUM_THREADS];
+	static int				alive_threads;
+	t_data					img;
+	t_thread_data			thread_data;
+	t_thread_data			*malloced_data;
+	size_t					thread_line;
+	size_t					thread_column;
+	size_t					thread_width;
+	size_t					thread_height;
+	int						thread_id;
 
+	if (alive_threads)
+		return (0);
 	if (camera->render)
 	{
 		mlx_put_image_to_window(vars->mlx, vars->win, camera->render, 0, 0);
@@ -180,6 +184,9 @@ int		render2(t_vars *vars, t_camera *camera, t_scene *scene)
 	thread_data.height = thread_height;
 	thread_data.camera = camera;
 	thread_data.scene = scene;
+	thread_data.alive_threads = &alive_threads;
+	thread_data.chunk_width = fminf(CHUNK_WID, thread_width);
+	thread_data.chunk_height = fminf(CHUNK_HEI, thread_height);
 	for (size_t i = 0; i < thread_line; i++)
 	{
 		for (size_t j = 0; j < thread_column; j++)
@@ -190,8 +197,8 @@ int		render2(t_vars *vars, t_camera *camera, t_scene *scene)
 			if (!(malloced_data = malloc(sizeof(t_thread_data))))
 				return (1);
 			*malloced_data = thread_data;
-			threads_data[thread_id] = malloced_data;
-			pthread_create(&threads[thread_id], NULL, render_thread, threads_data[thread_id]);
+			alive_threads++;
+			pthread_create(&threads[thread_id], NULL, render_thread, malloced_data);
 			thread_id++;
 		}
 	}
@@ -209,7 +216,7 @@ t_scene	*get_scene(char *file)
 		if (!(scene = malloc(sizeof(t_scene))))
 			return (NULL);
 
-t_list		*cameras = ft_lst_new(NULL);
+t_list		*cameras = ft_lst_new(&free);
 ft_lst_push(cameras, new_camera(vec3_new(0, 0, 0), vec3_new(0, 0, 1), FOV));
 ft_lst_push(cameras, new_camera(vec3_new(40, 30, 0), vec3_new(-1, -1, 1), FOV));
 ft_lst_push(cameras, new_camera(vec3_new(12, 20, 90), vec3_new(-0.5, -0.6, -1), FOV));
@@ -274,16 +281,7 @@ int		render(t_vars *vars, char *file)
 	t_scene *scene;
 
 	scene = get_scene(file);
-
-	// TODO remove ^^
-	clock_t begin = clock();
-
-	int tmp = render2(vars, ft_lst_get(scene->cameras, scene->index), scene);
-
-	// TODO remove ^^
-	clock_t end = clock();
-	printf("%lf\n", (double)(end - begin) / CLOCKS_PER_SEC);
-	return (tmp);
+	return (render2(vars, ft_lst_get(scene->cameras, scene->index), scene));
 }
 
 int		on_key_pressed(int i, t_vars *vars)
@@ -337,4 +335,5 @@ int		main(void)
 	mlx_string_put(vars.mlx, vars.win, 0, 50, ~0, "Press enter to start");
 
 	mlx_loop(vars.mlx);
+	pthread_exit(NULL);
 }

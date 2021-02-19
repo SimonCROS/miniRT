@@ -6,7 +6,7 @@
 #    By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/11/23 11:39:11 by scros             #+#    #+#              #
-#    Updated: 2021/02/19 14:49:32 by scros            ###   ########lyon.fr    #
+#    Updated: 2021/02/19 15:27:07 by scros            ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -60,12 +60,12 @@ endif
 
 $(BIN)/%.o:	$(SRC)/%.c $(HEADERS)
 			@ mkdir -p $(dir $@);
-			@ $(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@ -g
+			$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 $(NAME):	compile_lib $(OBJS)
 			@ ln -sf $(MINILIBX)/$(MLX) .
 			@ ln -sf $(LIBFT)/$(FT) .
-			$(CC) $(CFLAGS) $(OBJS) $(MLX) $(FT) -o $(NAME) $(LIBRARIES) -g
+			@ $(CC) $(CFLAGS) $(OBJS) $(MLX) $(FT) -o $(NAME) $(LIBRARIES)
 
 compile_lib:
 			@ $(MAKE) -C $(LIBFT)

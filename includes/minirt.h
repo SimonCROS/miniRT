@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/12 12:31:12 by scros             #+#    #+#             */
-/*   Updated: 2021/02/19 14:59:47 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/19 15:50:25 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,6 @@
 # define WID 960
 # define HEI 540
 
-# define RENDER_WID 100
-# define RENDER_HEI 50
-
 // # define WID (960 / 4)
 // # define HEI (540 / 4)
 
@@ -31,6 +28,9 @@
 // # define HEI 150
 
 # define FOV 60
+
+# define CHUNK_WID 1000
+# define CHUNK_HEI 1000
 
 # include <math.h>
 # include "libft.h"
@@ -76,9 +76,12 @@ typedef struct		s_thread_data
 	size_t			height;
 	t_camera		*camera;
 	t_scene			*scene;
+	int				*alive_threads;
 	int				id;
 	size_t			x;
 	size_t			y;
+	size_t			chunk_width;
+	size_t			chunk_height;
 }					t_thread_data;
 
 void				set_pixel(t_data *data, int x, int y, int color);
