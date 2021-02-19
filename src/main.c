@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 13:03:09 by scros             #+#    #+#             */
-/*   Updated: 2021/02/17 15:54:19 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/19 11:17:29 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,9 @@ int		render2(t_vars *vars, t_camera *camera, t_list *lights, t_list *objects)
 	size_t i_iter = ceilf(WID / (float)RENDER_WID);
 	size_t j_iter = ceilf(HEI / (float)RENDER_HEI);
 
+	t_iterator		objectIterator = iterator_new(objects);
+	t_iterator		lightIterator = iterator_new(lights);
+
 	for (size_t j = 0; j < j_iter; j++)
 	{
 		size_t start_y = (RENDER_HEI) * j;
@@ -72,11 +75,10 @@ int		render2(t_vars *vars, t_camera *camera, t_list *lights, t_list *objects)
 
 					t_ray			ray = compute_ray(camera, x + start_x, y + start_y);
 					t_object		*object = NULL;
-					t_iterator		*objectIterator = ft_iterator_new(objects);
 
-					while (ft_iterator_has_next(objectIterator))
+					while (iterator_has_next(&objectIterator))
 					{
-						t_object *object_test = ft_iterator_next(objectIterator);
+						t_object *object_test = iterator_next(&objectIterator);
 						t_ray obj_ray = ray;
 
 						if (collision(object_test, &obj_ray))
@@ -88,17 +90,15 @@ int		render2(t_vars *vars, t_camera *camera, t_list *lights, t_list *objects)
 							}
 						}
 					}
-					free(objectIterator);
+					iterator_reset(&objectIterator);
 
 					if (!object)
 						continue;
 					ray.color = color_mulf(object->color, 0.2);
 
-					t_iterator		*lightIterator = ft_iterator_new(lights);
-
-					while (ft_iterator_has_next(lightIterator))
+					while (iterator_has_next(&lightIterator))
 					{
-						t_light *light = ft_iterator_next(lightIterator);
+						t_light *light = iterator_next(&lightIterator);
 
 						t_vector3 lightDir = vec3_subv(light->position, ray.phit);
 						float lightDistance2 = vec3_length_squared(lightDir); 
@@ -107,16 +107,16 @@ int		render2(t_vars *vars, t_camera *camera, t_list *lights, t_list *objects)
 						float tNearShadow = INFINITY; 
 						short inShadow = FALSE;
 
-						objectIterator = ft_iterator_new(objects);
+						objectIterator = iterator_new(objects);
 
 						t_ray light_ray;
 						light_ray.origin = ray.phit;
 						light_ray.direction = lightDir;
 						light_ray.length = INFINITY;
-						while (ft_iterator_has_next(objectIterator))
+						while (iterator_has_next(&objectIterator))
 						{
 							t_vector3 point;
-							t_object *obj_test = ft_iterator_next(objectIterator);
+							t_object *obj_test = iterator_next(&objectIterator);
 							if (obj_test == object)
 								continue;
 							if ((inShadow = collision(obj_test, &light_ray)))
@@ -127,12 +127,12 @@ int		render2(t_vars *vars, t_camera *camera, t_list *lights, t_list *objects)
 									break;
 							}
 						}
-						free(objectIterator);
+						iterator_reset(&objectIterator);
 						float atm = (1 - inShadow) * light->brightness * LdotN;
 						ray.color = color_add(ray.color, color_mul(object->color, color_mulf(color_mulf(light->color, light->brightness), atm)));
 					}
+					iterator_reset(&lightIterator);
 					set_pixel(&img, x + start_x, y + start_y, color_to_hex(ray.color));
-					free(lightIterator);
 				}
 			}
 			mlx_sync(MLX_SYNC_WIN_FLUSH_CMD, vars->win);
@@ -152,28 +152,80 @@ t_scene	*get_scene(char *file)
 			return (NULL);
 
 t_list		*cameras = ft_lst_new(NULL);
-ft_lst_push(cameras, new_camera(vec3_new(0, 10, -30), vec3_new(0, 0, 1), FOV));
+ft_lst_push(cameras, new_camera(vec3_new(0, 0, 0), vec3_new(0, 0, 1), FOV));
+ft_lst_push(cameras, new_camera(vec3_new(40, 30, 0), vec3_new(-1, -1, 1), FOV));
+ft_lst_push(cameras, new_camera(vec3_new(12, 20, 90), vec3_new(-0.5, -0.6, -1), FOV));
 
 t_list		*lights = ft_lst_new(&free);
-ft_lst_push(lights, new_light(1, vec3_new(-8.66, 5, -15), color_new(255, 0, 0)));
-ft_lst_push(lights, new_light(1, vec3_new(0, 20, -15), color_new(0, 255, 0)));
-ft_lst_push(lights, new_light(1, vec3_new(8.66, 5, -15), color_new(0, 0, 255)));
+ft_lst_push(lights, new_light(0.5, vec3_new(0, 2, -10), color_new(255, 255, 255)));
+ft_lst_push(lights, new_light(0.5, vec3_new(0, 2, 15), color_new(255, 255, 255)));
+ft_lst_push(lights, new_light(0.5, vec3_new(0, 2, 40), color_new(255, 255, 255)));
+ft_lst_push(lights, new_light(0.5, vec3_new(0, 2, 65), color_new(255, 255, 255)));
 
 t_list		*objects = ft_lst_new(&free);
-ft_lst_push(objects, new_sphere(10, vec3_new(0, 10, 0), color_new(255, 255, 255)));
-ft_lst_push(objects, new_triangle(vec3_new(-12.99, 2.5, 0), vec3_new(0, 25, 0), vec3_new(12.99, 2.5, 0), color_new(150, 150, 150)));
+
+ft_lst_push(objects, new_plan(vec3_new(0, -5, 25), vec3_new(0, 1, 0), color_new(0, 0, 255)));
+
+ft_lst_push(objects, new_triangle(vec3_new(-8, -5, 70), vec3_new(8, -5, 70), vec3_new(0, 8, 70), color_new(255, 255, 255)));
+
+ft_lst_push(objects, new_sphere(6, vec3_new(-12, 10, 10), color_new(120, 36, 237)));
+ft_lst_push(objects, new_sphere(6, vec3_new(-12, 10, 20), color_new(120, 36, 237)));
+ft_lst_push(objects, new_sphere(6, vec3_new(-12, 10, 30), color_new(120, 36, 237)));
+ft_lst_push(objects, new_sphere(6, vec3_new(-12, 10, 40), color_new(120, 36, 237)));
+ft_lst_push(objects, new_sphere(6, vec3_new(-12, 10, 50), color_new(120, 36, 237)));
+ft_lst_push(objects, new_sphere(6, vec3_new(-12, 10, 60), color_new(120, 36, 237)));
+ft_lst_push(objects, new_sphere(6, vec3_new(-12, 10, 70), color_new(120, 36, 237)));
+
+ft_lst_push(objects, new_sphere(6, vec3_new(12, 10, 10), color_new(120, 36, 237)));
+ft_lst_push(objects, new_sphere(6, vec3_new(12, 10, 20), color_new(120, 36, 237)));
+ft_lst_push(objects, new_sphere(6, vec3_new(12, 10, 30), color_new(120, 36, 237)));
+ft_lst_push(objects, new_sphere(6, vec3_new(12, 10, 40), color_new(120, 36, 237)));
+ft_lst_push(objects, new_sphere(6, vec3_new(12, 10, 50), color_new(120, 36, 237)));
+ft_lst_push(objects, new_sphere(6, vec3_new(12, 10, 60), color_new(120, 36, 237)));
+ft_lst_push(objects, new_sphere(6, vec3_new(12, 10, 70), color_new(120, 36, 237)));
+
+ft_lst_push(objects, new_cylinder(4, 14, vec3_new(-12, 2, 10), vec3_new(0, 1, 0), color_new(0, 150, 150)));
+ft_lst_push(objects, new_cylinder(4, 14, vec3_new(-12, 2, 20), vec3_new(0, 1, 0), color_new(0, 150, 150)));
+ft_lst_push(objects, new_cylinder(4, 14, vec3_new(-12, 2, 30), vec3_new(0, 1, 0), color_new(0, 150, 150)));
+ft_lst_push(objects, new_cylinder(4, 14, vec3_new(-12, 2, 40), vec3_new(0, 1, 0), color_new(0, 150, 150)));
+ft_lst_push(objects, new_cylinder(4, 14, vec3_new(-12, 2, 50), vec3_new(0, 1, 0), color_new(0, 150, 150)));
+ft_lst_push(objects, new_cylinder(4, 14, vec3_new(-12, 2, 60), vec3_new(0, 1, 0), color_new(0, 150, 150)));
+ft_lst_push(objects, new_cylinder(4, 14, vec3_new(-12, 2, 70), vec3_new(0, 1, 0), color_new(0, 150, 150)));
+
+ft_lst_push(objects, new_cylinder(4, 14, vec3_new(12, 2, 10), vec3_new(0, 1, 0), color_new(0, 150, 150)));
+ft_lst_push(objects, new_cylinder(4, 14, vec3_new(12, 2, 20), vec3_new(0, 1, 0), color_new(0, 150, 150)));
+ft_lst_push(objects, new_cylinder(4, 14, vec3_new(12, 2, 30), vec3_new(0, 1, 0), color_new(0, 150, 150)));
+ft_lst_push(objects, new_cylinder(4, 14, vec3_new(12, 2, 40), vec3_new(0, 1, 0), color_new(0, 150, 150)));
+ft_lst_push(objects, new_cylinder(4, 14, vec3_new(12, 2, 50), vec3_new(0, 1, 0), color_new(0, 150, 150)));
+ft_lst_push(objects, new_cylinder(4, 14, vec3_new(12, 2, 60), vec3_new(0, 1, 0), color_new(0, 150, 150)));
+ft_lst_push(objects, new_cylinder(4, 14, vec3_new(12, 2, 70), vec3_new(0, 1, 0), color_new(0, 150, 150)));
+
+ft_lst_push(objects, new_square(70, vec3_new(8.5, -39, 35), vec3_new(1, 0, 0), color_new(36, 163, 237)));
+ft_lst_push(objects, new_square(70, vec3_new(-8.5, -39, 35), vec3_new(1, 0, 0), color_new(36, 163, 237)));
+ft_lst_push(objects, new_square(17.5, vec3_new(0, -12.5, 71), vec3_new(0, 0, 1), color_new(36, 163, 237)));
 
 		*scene = (t_scene) { cameras, lights, objects, 0 };
 	}
 	return (scene);
 }
 
+#include <time.h>
+
 int		render(t_vars *vars, char *file)
 {
 	t_scene *scene;
 
 	scene = get_scene(file);
-	return (render2(vars, ft_lst_get(scene->cameras, scene->index), scene->lights, scene->objects));
+
+	// TODO remove ^^
+	clock_t begin = clock();
+
+	int tmp = render2(vars, ft_lst_get(scene->cameras, scene->index), scene->lights, scene->objects);
+
+	// TODO remove ^^
+	clock_t end = clock();
+	printf("%lf\n", (double)(end - begin) / CLOCKS_PER_SEC);
+	return (tmp);
 }
 
 int		on_key_pressed(int i, t_vars *vars)
