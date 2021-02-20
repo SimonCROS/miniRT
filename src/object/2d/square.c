@@ -14,19 +14,19 @@
 
 // TODO set all functions not in .h static
 
-int			orient(t_vector3 a, t_vector3 b, t_vector3 c, t_vector3 n)
+int	orient(t_vector3 a, t_vector3 b, t_vector3 c, t_vector3 n)
 {
-	int result;
+	int	result;
 
 	result = vec3_dotv(vec3_crossv(vec3_subv(b, a), vec3_subv(c, a)), n);
 	if (result > 0)
-		return 1;
+		return (1);
 	if (result < 0)
-		return -1;
-	return 0;
+		return (-1);
+	return (0);
 }
 
-int			collides_square(void *arg1, void *arg2)
+int	collides_square(void *arg1, void *arg2)
 {
 	t_ray		*ray;
 	t_object	*plan;
@@ -52,17 +52,19 @@ t_object	*new_square(float width, t_vector3 position, t_vector3 rotation,
 	float		mid;
 	t_vector3	diagonal;
 
-	if (!(plan = new_default_plan(position, rotation, color, &collides_square)))
+	plan = new_default_plan(position, rotation, color, &collides_square);
+	if (!plan)
 		return (NULL);
 	mid = (width * sqrtf(2)) / 2;
 	diagonal = vec3_crossv(rotation, vec3_new(1, 0, 0));
 	if (vec3_length(diagonal) == 0)
 		diagonal = vec3_new(0, 1, 0);
-	diagonal = vec3_muld(vec3_normalize(diagonal), mid);
 	diagonal = vec3_rotate_axis(diagonal, rotation, M_PI_4);
+	diagonal = vec3_muld(vec3_normalize(diagonal), mid);
 	plan->data.square.p1 = vec3_addv(diagonal, position);
 	plan->data.square.p3 = vec3_addv(vec3_negate(diagonal), position);
-	diagonal = vec3_muld(vec3_normalize(vec3_rotate_axis(diagonal, rotation, M_PI_2)), mid);
+	diagonal = vec3_rotate_axis(diagonal, rotation, M_PI_2);
+	diagonal = vec3_muld(vec3_normalize(diagonal), mid);
 	plan->data.square.p2 = vec3_addv(diagonal, position);
 	plan->data.square.p4 = vec3_addv(vec3_negate(diagonal), position);
 	plan->data.square.width = width;

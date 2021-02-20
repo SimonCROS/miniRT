@@ -12,7 +12,7 @@
 
 #include "minirt.h"
 
-int			collides_circle(void *a1, void *a2)
+int	collides_circle(void *a1, void *a2)
 {
 	t_ray		*ray;
 	t_object	*plan;
@@ -31,7 +31,8 @@ t_object	*new_circle(float diametre, t_vector3 position, t_vector3 rotation,
 {
 	t_object	*plan;
 
-	if (!(plan = new_default_plan(position, rotation, color, &collides_circle)))
+	plan = new_default_plan(position, rotation, color, &collides_circle);
+	if (!plan)
 		return (NULL);
 	plan->data.circle.radius = diametre / 2;
 	return (plan);

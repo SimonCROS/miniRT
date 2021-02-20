@@ -125,7 +125,7 @@ void	render_chunk(t_data image, t_camera *camera, t_scene *scene, size_t chunk_x
 	}
 }
 
-void	force_mlx_put_image_to_window(t_vars *vars, t_data *image)
+void	force_put_image(t_vars *vars, t_data *image)
 {
 #if defined __APPLE__
 	mlx_sync(MLX_SYNC_WIN_FLUSH_CMD, vars->win);
@@ -158,7 +158,7 @@ void	*render_thread(void *data)
 			render_chunk(thread_data->image, thread_data->camera, thread_data->scene, start_x, start_y, thread_data->width, thread_data->height, thread_data->chunk_width, thread_data->chunk_height);
 
 			pthread_mutex_lock(&mutex_flush);
-			force_mlx_put_image_to_window(thread_data->vars, &(thread_data->image));
+			force_put_image(thread_data->vars, &(thread_data->image));
 			pthread_mutex_unlock(&mutex_flush);
 		}
 	}
