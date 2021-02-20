@@ -14,9 +14,9 @@
 #include "matrix.h"
 #include <pthread.h>
 
-static int alive_threads;
-static pthread_mutex_t mutex_flush			= PTHREAD_MUTEX_INITIALIZER;
-static pthread_mutex_t mutex_alive_threads	= PTHREAD_MUTEX_INITIALIZER;
+static int running;
+static pthread_mutex_t mutex_flush		= PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t mutex_running	= PTHREAD_MUTEX_INITIALIZER;
 
 void	set_pixel(t_data *data, int x, int y, int color)
 {
@@ -125,7 +125,15 @@ void	render_chunk(t_data image, t_camera *camera, t_scene *scene, size_t chunk_x
 	}
 }
 
-#include "mlx_int.h"
+void	force_mlx_put_image_to_window(t_vars *vars, t_data *image)
+{
+#if defined __APPLE__
+	mlx_sync(MLX_SYNC_WIN_FLUSH_CMD, vars->win);
+#elif defined __linux__
+	*(int*)(vars->mlx + 80) = 1;
+#endif
+	mlx_put_image_to_window(vars->mlx, vars->win, image->img, 0, 0);
+}
 
 void	*render_thread(void *data)
 {
@@ -133,6 +141,9 @@ void	*render_thread(void *data)
 	size_t i_iter;
 	size_t j_iter;
 
+	pthread_mutex_lock(&mutex_running);
+	running++;
+	pthread_mutex_unlock(&mutex_running);
 	thread_data = (t_thread_data*)data;
 	i_iter = ceilf(thread_data->width / (float)thread_data->chunk_width);
 	j_iter = ceilf(thread_data->height / (float)thread_data->chunk_height);
@@ -147,15 +158,13 @@ void	*render_thread(void *data)
 			render_chunk(thread_data->image, thread_data->camera, thread_data->scene, start_x, start_y, thread_data->width, thread_data->height, thread_data->chunk_width, thread_data->chunk_height);
 
 			pthread_mutex_lock(&mutex_flush);
-			// mlx_sync(MLX_SYNC_WIN_FLUSH_CMD, thread_data->vars->win);
-			((t_xvar*)thread_data->vars->mlx)->do_flush = 1;
-			mlx_put_image_to_window(thread_data->vars->mlx, thread_data->vars->win, thread_data->image.img, 0, 0);
+			force_mlx_put_image_to_window(thread_data->vars, &(thread_data->image));
 			pthread_mutex_unlock(&mutex_flush);
 		}
 	}
-	pthread_mutex_lock(&mutex_alive_threads);
-	alive_threads--;
-	pthread_mutex_unlock(&mutex_alive_threads);
+	pthread_mutex_lock(&mutex_running);
+	running--;
+	pthread_mutex_unlock(&mutex_running);
 	free(data);
 	pthread_exit(NULL);
 }
@@ -172,8 +181,6 @@ int		render2(t_vars *vars, t_camera *camera, t_scene *scene)
 	size_t					thread_height;
 	int						thread_id;
 
-	if (alive_threads)
-		return (0);
 	if (camera->render)
 	{
 		mlx_put_image_to_window(vars->mlx, vars->win, camera->render, 0, 0);
@@ -181,7 +188,6 @@ int		render2(t_vars *vars, t_camera *camera, t_scene *scene)
 	}
 	img.img = mlx_new_image(vars->mlx, WID, HEI);
 	img.addr = mlx_get_data_addr(img.img, &img.bits_per_pixel, &img.line_length, &img.endian);
-	// mlx_sync(MLX_SYNC_IMAGE_WRITABLE, img.img);
 
 	thread_id = 0;
 	thread_line = 4;
@@ -207,14 +213,19 @@ int		render2(t_vars *vars, t_camera *camera, t_scene *scene)
 			if (!(malloced_data = malloc(sizeof(t_thread_data))))
 				return (1);
 			*malloced_data = thread_data;
-			alive_threads++;
-			pthread_create(&threads[thread_id], NULL, render_thread, malloced_data);
+			if (pthread_create(&threads[thread_id], NULL, render_thread, malloced_data))
+			{
+				printf("\33[31mUnable to create a thread.");
+				free(malloced_data);
+			}
 			thread_id++;
 		}
 	}
 
+	while (running);
+	mlx_put_image_to_window(vars->mlx, vars->win, img.img, 0, 0);
+	
 	camera->render = img.img;
-	// mlx_sync(MLX_SYNC_WIN_CMD_COMPLETED, vars->win);
 	return (0);
 }
 
