@@ -29,8 +29,8 @@
 
 # define FOV 60
 
-# define CHUNK_WID 200
-# define CHUNK_HEI 200
+# define CHUNK_WID 50
+# define CHUNK_HEI 50
 
 # include <math.h>
 # include "libft.h"

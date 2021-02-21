@@ -1,4 +1,4 @@
-t_list		*cameras = ft_lst_new(NULL);
+t_list		*cameras = ft_lst_new(&free);
 ft_lst_push(cameras, new_camera(vec3_new(0, 0, 0), vec3_new(0, 0, 1), FOV));
 ft_lst_push(cameras, new_camera(vec3_new(40, 30, 0), vec3_new(-1, -1, 1), FOV));
 ft_lst_push(cameras, new_camera(vec3_new(12, 20, 90), vec3_new(-0.5, -0.6, -1), FOV));
