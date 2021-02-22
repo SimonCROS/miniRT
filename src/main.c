@@ -13,10 +13,41 @@
 #include "minirt.h"
 #include "matrix.h"
 #include <pthread.h>
+#include <X11/Xlib.h>
 
-static int running;
 static pthread_mutex_t mutex_flush		= PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t mutex_running	= PTHREAD_MUTEX_INITIALIZER;
+
+/*
+** If request == 0, reset the current thread id, set the chunk_count, and
+**  returns -1
+** If request == 1, returns the id of the next chunk, or reset to default values
+**  there is no other chunk
+** Else, returns the id of the current chunk
+*/
+int		next_chunk(int request, int chunk_count)
+{
+	static int	id = -1;
+	static int	count = -1;
+
+	if (request == 0)
+	{
+		id = -1;
+		count = chunk_count;
+	}
+	// TODO Dangerous stopping, the end is reached, a thread is rendering and a key is pressed
+	else if (request == 1)
+		if (++id < count)
+			return (id);
+		else
+		{
+			id = -1;
+			count = -1;
+		}
+	else if (request == 2)
+		return (id);
+	return (id);
+}
 
 void	set_pixel(t_data *data, int x, int y, int color)
 {
@@ -40,7 +71,7 @@ t_ray	compute_ray(t_camera *camera, float x, float y)
 	static float hypo_len;
 
 	if (!hypo_len)
-		hypo_len = tan(FOV / 2 * M_PI / 180);
+		hypo_len = tan(camera->fov / 2 * M_PI / 180);
 	t_ray ray;
 	float px = (2 * ((x + 0.5) / WID) - 1) * hypo_len * ratio;
 	float py = (1 - 2 * ((y + 0.5) / HEI)) * hypo_len;
@@ -53,19 +84,19 @@ t_ray	compute_ray(t_camera *camera, float x, float y)
 	return (ray);
 }
 
-void	render_chunk(t_thread_data *data, size_t chunk_x, size_t chunk_y)
+void	render_chunk(t_thread_data *data, int start_x, int start_y)
 {
 	t_data			*image = &(data->image);
 	t_iterator		objectIterator = iterator_new(data->scene->objects);
 	t_iterator		lightIterator = iterator_new(data->scene->lights);
 
-	for (size_t x = chunk_x; x < chunk_x + data->chunk_width; x++)
+	for (size_t x = start_x; x < start_x + data->chunk_width; x++)
 	{
-		if (x >= WID)
+		if (x >= data->width)
 			break;
-		for (size_t y = chunk_y; y < chunk_y + data->chunk_height; y++)
+		for (size_t y = start_y; y < start_y + data->chunk_height; y++)
 		{
-			if (y >= HEI)
+			if (y >= data->height)
 				break;
 
 			t_ray			ray = compute_ray(data->camera, x, y);
@@ -143,39 +174,29 @@ void	force_put_image(t_vars *vars, t_data *image)
 	mlx_put_image_to_window(vars->mlx, vars->win, image->img, 0, 0);
 }
 
-void	*render_thread(void *data)
+void	*render_thread(void *thread_data)
 {
-	t_thread_data	*thread_data;
-	size_t			i_iter;
-	size_t			j_iter;
+	t_thread_data	*data;
+	int				chunk_id;
+	int				chunk_x;
+	int				chunk_y;
 
-	pthread_mutex_lock(&mutex_running);
-	running++;
-	pthread_mutex_unlock(&mutex_running);
-	thread_data = (t_thread_data*)data;
-	i_iter = ceilf(thread_data->width / (float)thread_data->chunk_width);
-	j_iter = ceilf(thread_data->height / (float)thread_data->chunk_height);
-
-	for (size_t j = 0; j < j_iter; j++)
+	data = thread_data;
+	while (1)
 	{
-		size_t start_y = thread_data->chunk_height * j + thread_data->y;
-
-		for (size_t i = 0; i < i_iter; i++)
-		{
-			size_t start_x = thread_data->chunk_width * i + thread_data->x;
-			render_chunk(thread_data, start_x, start_y);
-
-			pthread_mutex_lock(&mutex_flush);
-			force_put_image(thread_data->vars, &(thread_data->image));
-			pthread_mutex_unlock(&mutex_flush);
-		}
+		pthread_mutex_lock(&mutex_running);
+		chunk_id = next_chunk(1, 0);
+		pthread_mutex_unlock(&mutex_running);
+		if (chunk_id == -1)
+			break ;
+		chunk_x = chunk_id % (int)ceilf(WID / (float)CHUNK_WID) * data->chunk_width;
+		chunk_y = chunk_id / (int)ceilf(WID / (float)CHUNK_WID) * data->chunk_height;
+		render_chunk((t_thread_data*)data, chunk_x, chunk_y);
+		pthread_mutex_lock(&mutex_flush);
+		force_put_image(data->vars, &(data->image));
+		pthread_mutex_unlock(&mutex_flush);
 	}
-
-	pthread_mutex_lock(&mutex_running);
-	running--;
-	pthread_mutex_unlock(&mutex_running);
-	free(data);
-
+	free(thread_data);
 	pthread_exit(NULL);
 }
 
@@ -184,12 +205,8 @@ int		render2(t_vars *vars, t_camera *camera, t_scene *scene)
 
 	static pthread_t		threads[NUM_THREADS];
 	t_data					img;
-	t_thread_data			thread_data;
+	t_thread_data			data;
 	t_thread_data			*malloced_data;
-	size_t					thread_line;
-	size_t					thread_column;
-	size_t					thread_width;
-	size_t					thread_height;
 	int						thread_id;
 
 	if (camera->render)
@@ -201,39 +218,31 @@ int		render2(t_vars *vars, t_camera *camera, t_scene *scene)
 	img.addr = mlx_get_data_addr(img.img, &img.bits_per_pixel, &img.line_length, &img.endian);
 
 	thread_id = 0;
-	thread_line = 4;
-	thread_column = 2;
-	thread_width = ceilf(WID / thread_line);
-	thread_height = ceilf(HEI / thread_column);
-
-	thread_data.vars = vars;
-	thread_data.image = img;
-	thread_data.width = thread_width;
-	thread_data.height = thread_height;
-	thread_data.camera = camera;
-	thread_data.scene = scene;
-	thread_data.chunk_width = fminf(CHUNK_WID, thread_width);
-	thread_data.chunk_height = fminf(CHUNK_HEI, thread_height);
-	for (size_t i = 0; i < thread_line; i++)
-	{
-		for (size_t j = 0; j < thread_column; j++)
-		{
-			thread_data.id = thread_id;
-			thread_data.x = thread_width * i;
-			thread_data.y = thread_height * j;
-			if (!(malloced_data = malloc(sizeof(t_thread_data))))
-				return (1);
-			*malloced_data = thread_data;
-			if (pthread_create(&threads[thread_id], NULL, render_thread, malloced_data))
-			{
-				printf("\33[31mUnable to create a thread.");
-				free(malloced_data);
-			}
-			thread_id++;
-		}
-	}
-	// while (1);
+	data.vars = vars;
+	data.image = img;
+	data.width = WID;
+	data.height = HEI;
+	data.camera = camera;
+	data.scene = scene;
+	data.chunk_width = CHUNK_WID;
+	data.chunk_height = CHUNK_HEI;
+	data.chunks = ceilf(WID / (float)CHUNK_WID) * ceilf(HEI / (float)CHUNK_HEI);
+	next_chunk(0, data.chunks);
 	
+	while (thread_id < NUM_THREADS)
+	{
+		if (!(malloced_data = malloc(sizeof(t_thread_data))))
+			return (1);
+		*malloced_data = data;
+		data.id = thread_id;
+		if (pthread_create(&threads[thread_id], NULL, render_thread, malloced_data))
+		{
+			printf("\33[31mUnable to create a thread.");
+			free(malloced_data);
+			break ;
+		}
+		thread_id++;
+	}
 	camera->render = img.img;
 	return (0);
 }
@@ -256,50 +265,57 @@ t_scene	*get_scene(char *file)
 			return (NULL);
 
 		t_list		*cameras = ft_lst_new(&free);
-		ft_lst_push(cameras, new_camera(vec3_new(-30, 0, 25), vec3_new(0.9, 0, -1), FOV));
-		ft_lst_push(cameras, new_camera(vec3_new(0, 0, 35), vec3_new(0, 0, -1), FOV));
+		ft_lst_push(cameras, new_camera(vec3_new(0, 0, 0), vec3_new(0, 0, 1), FOV));
+		ft_lst_push(cameras, new_camera(vec3_new(40, 30, 0), vec3_new(-1, -1, 1), FOV));
+		ft_lst_push(cameras, new_camera(vec3_new(12, 20, 90), vec3_new(-0.5, -0.6, -1), FOV));
 
 		t_list		*lights = ft_lst_new(&free);
-		ft_lst_push(lights, new_light(1, vec3_new(-40, 20, 50), color_new(255, 255, 255)));
-		ft_lst_push(lights, new_light(0.5, vec3_new(0, 0, 30), color_new(255, 255, 255)));
+		ft_lst_push(lights, new_light(0.5, vec3_new(0, 2, -10), color_new(255, 255, 255)));
+		ft_lst_push(lights, new_light(0.5, vec3_new(0, 2, 15), color_new(255, 255, 255)));
+		ft_lst_push(lights, new_light(0.5, vec3_new(0, 2, 40), color_new(255, 255, 255)));
+		ft_lst_push(lights, new_light(0.5, vec3_new(0, 2, 65), color_new(255, 255, 255)));
 
 		t_list		*objects = ft_lst_new(&free);
-		ft_lst_push(objects, new_plan(vec3_new(0, 0, 0), vec3_new(0, 0, 1), O_1));
 
-		float h = 4.33;
-		float w = 5;
-		float x = 0;
-		float y = 0;
-		for (x = -20; x < 20; x+=w)
-		{
-			for (y = -10; y < 10; y+=h)
-			{
-				float height = newHeight();
+		ft_lst_push(objects, new_plan(vec3_new(0, -5, 25), vec3_new(0, 1, 0), color_new(0, 0, 255)));
 
-				ft_lst_push(objects, new_triangle(vec3_new(x - w / 2, y, height), vec3_new(x + w / 2, y, height), vec3_new(x, y - h, height), O_1));
+		ft_lst_push(objects, new_triangle(vec3_new(-8, -5, 70), vec3_new(8, -5, 70), vec3_new(0, 8, 70), color_new(255, 255, 255)));
 
-				ft_lst_push(objects, new_triangle(vec3_new(x, y - h, height), vec3_new(x, y - h, 0), vec3_new(x + w / 2, y, 0), O_1));
-				ft_lst_push(objects, new_triangle(vec3_new(x, y - h, height), vec3_new(x + w / 2, y, 0), vec3_new(x + w / 2, y, height), O_1));
+		ft_lst_push(objects, new_sphere(6, vec3_new(-12, 10, 10), color_new(120, 36, 237)));
+		ft_lst_push(objects, new_sphere(6, vec3_new(-12, 10, 20), color_new(120, 36, 237)));
+		ft_lst_push(objects, new_sphere(6, vec3_new(-12, 10, 30), color_new(120, 36, 237)));
+		ft_lst_push(objects, new_sphere(6, vec3_new(-12, 10, 40), color_new(120, 36, 237)));
+		ft_lst_push(objects, new_sphere(6, vec3_new(-12, 10, 50), color_new(120, 36, 237)));
+		ft_lst_push(objects, new_sphere(6, vec3_new(-12, 10, 60), color_new(120, 36, 237)));
+		ft_lst_push(objects, new_sphere(6, vec3_new(-12, 10, 70), color_new(120, 36, 237)));
 
-				ft_lst_push(objects, new_triangle(vec3_new(x - w / 2, y, height), vec3_new(x - w / 2, y, 0), vec3_new(x + w / 2, y, 0), O_1));
-				ft_lst_push(objects, new_triangle(vec3_new(x - w / 2, y, height), vec3_new(x + w / 2, y, 0), vec3_new(x + w / 2, y, height), O_1));
+		ft_lst_push(objects, new_sphere(6, vec3_new(12, 10, 10), color_new(120, 36, 237)));
+		ft_lst_push(objects, new_sphere(6, vec3_new(12, 10, 20), color_new(120, 36, 237)));
+		ft_lst_push(objects, new_sphere(6, vec3_new(12, 10, 30), color_new(120, 36, 237)));
+		ft_lst_push(objects, new_sphere(6, vec3_new(12, 10, 40), color_new(120, 36, 237)));
+		ft_lst_push(objects, new_sphere(6, vec3_new(12, 10, 50), color_new(120, 36, 237)));
+		ft_lst_push(objects, new_sphere(6, vec3_new(12, 10, 60), color_new(120, 36, 237)));
+		ft_lst_push(objects, new_sphere(6, vec3_new(12, 10, 70), color_new(120, 36, 237)));
 
-				ft_lst_push(objects, new_triangle(vec3_new(x - w / 2, y, height), vec3_new(x - w / 2, y, 0), vec3_new(x, y - h, 0), O_1));
-				ft_lst_push(objects, new_triangle(vec3_new(x - w / 2, y, height), vec3_new(x, y - h, 0), vec3_new(x, y - h, height), O_1));
+		ft_lst_push(objects, new_cylinder(4, 14, vec3_new(-12, 2, 10), vec3_new(0, 1, 0), color_new(0, 150, 150)));
+		ft_lst_push(objects, new_cylinder(4, 14, vec3_new(-12, 2, 20), vec3_new(0, 1, 0), color_new(0, 150, 150)));
+		ft_lst_push(objects, new_cylinder(4, 14, vec3_new(-12, 2, 30), vec3_new(0, 1, 0), color_new(0, 150, 150)));
+		ft_lst_push(objects, new_cylinder(4, 14, vec3_new(-12, 2, 40), vec3_new(0, 1, 0), color_new(0, 150, 150)));
+		ft_lst_push(objects, new_cylinder(4, 14, vec3_new(-12, 2, 50), vec3_new(0, 1, 0), color_new(0, 150, 150)));
+		ft_lst_push(objects, new_cylinder(4, 14, vec3_new(-12, 2, 60), vec3_new(0, 1, 0), color_new(0, 150, 150)));
+		ft_lst_push(objects, new_cylinder(4, 14, vec3_new(-12, 2, 70), vec3_new(0, 1, 0), color_new(0, 150, 150)));
 
-				height = newHeight();
-				ft_lst_push(objects, new_triangle(vec3_new(x + w / 2, y, height), vec3_new(x, y - h, height), vec3_new(x + w, y - h, height), O_1));
+		ft_lst_push(objects, new_cylinder(4, 14, vec3_new(12, 2, 10), vec3_new(0, 1, 0), color_new(0, 150, 150)));
+		ft_lst_push(objects, new_cylinder(4, 14, vec3_new(12, 2, 20), vec3_new(0, 1, 0), color_new(0, 150, 150)));
+		ft_lst_push(objects, new_cylinder(4, 14, vec3_new(12, 2, 30), vec3_new(0, 1, 0), color_new(0, 150, 150)));
+		ft_lst_push(objects, new_cylinder(4, 14, vec3_new(12, 2, 40), vec3_new(0, 1, 0), color_new(0, 150, 150)));
+		ft_lst_push(objects, new_cylinder(4, 14, vec3_new(12, 2, 50), vec3_new(0, 1, 0), color_new(0, 150, 150)));
+		ft_lst_push(objects, new_cylinder(4, 14, vec3_new(12, 2, 60), vec3_new(0, 1, 0), color_new(0, 150, 150)));
+		ft_lst_push(objects, new_cylinder(4, 14, vec3_new(12, 2, 70), vec3_new(0, 1, 0), color_new(0, 150, 150)));
 
-				ft_lst_push(objects, new_triangle(vec3_new(x, y - h, height), vec3_new(x, y - h, 0), vec3_new(x + w / 2, y, 0), O_1));
-				ft_lst_push(objects, new_triangle(vec3_new(x, y - h, height), vec3_new(x + w / 2, y, 0), vec3_new(x + w / 2, y, height), O_1));
-
-				ft_lst_push(objects, new_triangle(vec3_new(x + w, y - h, height), vec3_new(x + w, y - h, 0), vec3_new(x + w / 2, y, 0), O_1));
-				ft_lst_push(objects, new_triangle(vec3_new(x + w, y - h, height), vec3_new(x + w / 2, y, 0), vec3_new(x + w / 2, y, height), O_1));
-
-				ft_lst_push(objects, new_triangle(vec3_new(x + w, y - h, height), vec3_new(x + w, y - h, 0), vec3_new(x, y - h, 0), O_1));
-				ft_lst_push(objects, new_triangle(vec3_new(x + w, y - h, height), vec3_new(x, y - h, 0), vec3_new(x, y - h, height), O_1));
-			}
-		}
+		ft_lst_push(objects, new_square(70, vec3_new(8.5, -39, 35), vec3_new(1, 0, 0), color_new(36, 163, 237)));
+		ft_lst_push(objects, new_square(70, vec3_new(-8.5, -39, 35), vec3_new(1, 0, 0), color_new(36, 163, 237)));
+		ft_lst_push(objects, new_square(17.5, vec3_new(0, -12.5, 71), vec3_new(0, 0, 1), color_new(36, 163, 237)));
 
 		*scene = (t_scene) { cameras, lights, objects, 0 };
 	}
@@ -321,11 +337,11 @@ int		on_key_pressed(int i, t_vars *vars)
 	static int	started;
 	t_scene		*scene;
 
-	if (running)
+	if (next_chunk(2, 0) != -1)
 		return (0);
 	if (i == 53 || i == 65307)
 		return (on_close(vars));
-	if (!started && (i == 36 || i == 65293))
+	if (!started)
 	{
 		started = 1;
 		return (render(vars, "file.rt"));
@@ -338,9 +354,9 @@ int		on_key_pressed(int i, t_vars *vars)
 		{
 			if (scene->cameras->size == 1)
 				return (0);
-			if (i == 123 || i == 125 || i == 65361 || i == 65363)
+			if (i == 123 || i == 125 || i == 65361 || i == 65364)
 				scene->index--;
-			if (i == 124 || i == 126 || i == 65362 || i == 65364)
+			if (i == 124 || i == 126 || i == 65362 || i == 65363)
 				scene->index++;
 			scene->index %= scene->cameras->size;
 			if (scene->index < 0)
@@ -355,6 +371,8 @@ int		main(void)
 {
 	t_vars	vars;
 
+	XInitThreads();
+
 	if (!(vars.mlx = mlx_init())) {
 		printf("Error, can't generate the frame\n");
 		exit(1);
@@ -366,7 +384,7 @@ int		main(void)
 
 	mlx_hook(vars.win, 17, 0L, &on_close, &vars);
 	mlx_key_hook(vars.win, &on_key_pressed, &vars);
-	mlx_string_put(vars.mlx, vars.win, 0, 50, ~0, "Press enter to start");
+	mlx_string_put(vars.mlx, vars.win, 0, 50, ~0, "Press any key to start");
 
 	mlx_loop(vars.mlx);
 	pthread_exit(NULL);

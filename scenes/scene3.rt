@@ -1,0 +1,45 @@
+t_list		*cameras = ft_lst_new(&free);
+ft_lst_push(cameras, new_camera(vec3_new(-30, 0, 25), vec3_new(0.9, 0, -1), FOV));
+ft_lst_push(cameras, new_camera(vec3_new(0, 0, 35), vec3_new(0, 0, -1), FOV));
+
+t_list		*lights = ft_lst_new(&free);
+ft_lst_push(lights, new_light(1, vec3_new(-40, 20, 50), color_new(255, 255, 255)));
+ft_lst_push(lights, new_light(0.5, vec3_new(0, 0, 30), color_new(255, 255, 255)));
+
+t_list		*objects = ft_lst_new(&free);
+ft_lst_push(objects, new_plan(vec3_new(0, 0, 0), vec3_new(0, 0, 1), O_1));
+
+float h = 4.33;
+float w = 5;
+float x = 0;
+float y = 0;
+for (x = -20; x < 20; x+=w)
+{
+	for (y = -10; y < 10; y+=h)
+	{
+		float height = newHeight();
+
+		ft_lst_push(objects, new_triangle(vec3_new(x - w / 2, y, height), vec3_new(x + w / 2, y, height), vec3_new(x, y - h, height), O_1));
+
+		ft_lst_push(objects, new_triangle(vec3_new(x, y - h, height), vec3_new(x, y - h, 0), vec3_new(x + w / 2, y, 0), O_1));
+		ft_lst_push(objects, new_triangle(vec3_new(x, y - h, height), vec3_new(x + w / 2, y, 0), vec3_new(x + w / 2, y, height), O_1));
+
+		ft_lst_push(objects, new_triangle(vec3_new(x - w / 2, y, height), vec3_new(x - w / 2, y, 0), vec3_new(x + w / 2, y, 0), O_1));
+		ft_lst_push(objects, new_triangle(vec3_new(x - w / 2, y, height), vec3_new(x + w / 2, y, 0), vec3_new(x + w / 2, y, height), O_1));
+
+		ft_lst_push(objects, new_triangle(vec3_new(x - w / 2, y, height), vec3_new(x - w / 2, y, 0), vec3_new(x, y - h, 0), O_1));
+		ft_lst_push(objects, new_triangle(vec3_new(x - w / 2, y, height), vec3_new(x, y - h, 0), vec3_new(x, y - h, height), O_1));
+
+		height = newHeight();
+		ft_lst_push(objects, new_triangle(vec3_new(x + w / 2, y, height), vec3_new(x, y - h, height), vec3_new(x + w, y - h, height), O_1));
+
+		ft_lst_push(objects, new_triangle(vec3_new(x, y - h, height), vec3_new(x, y - h, 0), vec3_new(x + w / 2, y, 0), O_1));
+		ft_lst_push(objects, new_triangle(vec3_new(x, y - h, height), vec3_new(x + w / 2, y, 0), vec3_new(x + w / 2, y, height), O_1));
+
+		ft_lst_push(objects, new_triangle(vec3_new(x + w, y - h, height), vec3_new(x + w, y - h, 0), vec3_new(x + w / 2, y, 0), O_1));
+		ft_lst_push(objects, new_triangle(vec3_new(x + w, y - h, height), vec3_new(x + w / 2, y, 0), vec3_new(x + w / 2, y, height), O_1));
+
+		ft_lst_push(objects, new_triangle(vec3_new(x + w, y - h, height), vec3_new(x + w, y - h, 0), vec3_new(x, y - h, 0), O_1));
+		ft_lst_push(objects, new_triangle(vec3_new(x + w, y - h, height), vec3_new(x, y - h, 0), vec3_new(x, y - h, height), O_1));
+	}
+}

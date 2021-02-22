@@ -77,10 +77,9 @@ typedef struct		s_thread_data
 	t_camera		*camera;
 	t_scene			*scene;
 	int				id;
-	size_t			x;
-	size_t			y;
 	size_t			chunk_width;
 	size_t			chunk_height;
+	size_t			chunks;
 }					t_thread_data;
 
 void				set_pixel(t_data *data, int x, int y, int color);
