@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/12 15:44:13 by scros             #+#    #+#             */
-/*   Updated: 2021/02/19 13:35:39 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/22 11:18:11 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ t_camera	*new_camera(t_vector3 position, t_vector3 direction, float fov)
 	camera->position = position;
 	camera->direction = vec3_normalize(direction);
 	camera->fov = fov;
-	camera->c2w = look_at(vec3_new(0, 0, 0), vec3_negate(camera->direction));
+	camera->c2w = look_at(vec3_new(0, 0, 0), camera->direction);
 	camera->render = NULL;
 	return (camera);
 }

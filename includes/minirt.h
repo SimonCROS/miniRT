@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/12 12:31:12 by scros             #+#    #+#             */
-/*   Updated: 2021/02/19 16:07:58 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/22 15:19:23 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,8 @@
 // # define WID (960 / 4)
 // # define HEI (540 / 4)
 
-// # define WID 200
-// # define HEI 150
+// # define WID 1
+// # define HEI 1
 
 # define FOV 60
 

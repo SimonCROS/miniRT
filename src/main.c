@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 13:03:09 by scros             #+#    #+#             */
-/*   Updated: 2021/02/19 16:07:29 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/22 15:31:21 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,10 +36,14 @@ int		on_close(t_vars *vars)
 
 t_ray	compute_ray(t_camera *camera, float x, float y)
 {
+	static float ratio = WID / (float) HEI;
+	static float hypo_len;
+
+	if (!hypo_len)
+		hypo_len = tan(FOV / 2 * M_PI / 180);
 	t_ray ray;
-	float ratio = WID / (float) HEI;
-	float px = (2 * ((x + 0.5) / WID) - 1) * tan(FOV / 2 * M_PI / 180) * ratio;
-	float py = (1 - 2 * ((y + 0.5) / HEI)) * tan(FOV / 2 * M_PI / 180);
+	float px = (2 * ((x + 0.5) / WID) - 1) * hypo_len * ratio;
+	float py = (1 - 2 * ((y + 0.5) / HEI)) * hypo_len;
 	ray.direction = vec3_normalize(vec3_new(px, py, -1));
 	ray.direction = vec3_normalize(mat44_mul_vec(camera->c2w, ray.direction));
 	ray.color = color_new(0, 0, 0);
@@ -49,27 +53,30 @@ t_ray	compute_ray(t_camera *camera, float x, float y)
 	return (ray);
 }
 
-void	render_chunk(t_data image, t_camera *camera, t_scene *scene, size_t chunk_x, size_t chunk_y, size_t thread_width, size_t thread_height, size_t chunk_width, size_t chunk_height)
+void	render_chunk(t_thread_data *data, size_t chunk_x, size_t chunk_y)
 {
-	t_iterator		objectIterator = iterator_new(scene->objects);
-	t_iterator		lightIterator = iterator_new(scene->lights);
+	t_data			*image = &(data->image);
+	t_iterator		objectIterator = iterator_new(data->scene->objects);
+	t_iterator		lightIterator = iterator_new(data->scene->lights);
 
-	for (size_t x = chunk_x; x < chunk_x + chunk_width; x++)
+	for (size_t x = chunk_x; x < chunk_x + data->chunk_width; x++)
 	{
 		if (x >= WID)
 			break;
-		for (size_t y = chunk_y; y < chunk_y + chunk_height; y++)
+		for (size_t y = chunk_y; y < chunk_y + data->chunk_height; y++)
 		{
 			if (y >= HEI)
 				break;
 
-			t_ray			ray = compute_ray(camera, x, y);
+			t_ray			ray = compute_ray(data->camera, x, y);
 			t_object		*object = NULL;
+			t_object		*object_test;
+			t_ray			obj_ray;
 
 			while (iterator_has_next(&objectIterator))
 			{
-				t_object *object_test = iterator_next(&objectIterator);
-				t_ray obj_ray = ray;
+				object_test = iterator_next(&objectIterator);
+				obj_ray = ray;
 
 				if (collision(object_test, &obj_ray))
 				{
@@ -80,6 +87,7 @@ void	render_chunk(t_data image, t_camera *camera, t_scene *scene, size_t chunk_x
 					}
 				}
 			}
+
 			iterator_reset(&objectIterator);
 
 			if (!object)
@@ -120,7 +128,7 @@ void	render_chunk(t_data image, t_camera *camera, t_scene *scene, size_t chunk_x
 				ray.color = color_add(ray.color, color_mul(object->color, color_mulf(color_mulf(light->color, light->brightness), atm)));
 			}
 			iterator_reset(&lightIterator);
-			set_pixel(&image, x, y, color_to_hex(ray.color));
+			set_pixel(image, x, y, color_to_hex(ray.color));
 		}
 	}
 }
@@ -138,8 +146,8 @@ void	force_put_image(t_vars *vars, t_data *image)
 void	*render_thread(void *data)
 {
 	t_thread_data	*thread_data;
-	size_t i_iter;
-	size_t j_iter;
+	size_t			i_iter;
+	size_t			j_iter;
 
 	pthread_mutex_lock(&mutex_running);
 	running++;
@@ -155,22 +163,25 @@ void	*render_thread(void *data)
 		for (size_t i = 0; i < i_iter; i++)
 		{
 			size_t start_x = thread_data->chunk_width * i + thread_data->x;
-			render_chunk(thread_data->image, thread_data->camera, thread_data->scene, start_x, start_y, thread_data->width, thread_data->height, thread_data->chunk_width, thread_data->chunk_height);
+			render_chunk(thread_data, start_x, start_y);
 
 			pthread_mutex_lock(&mutex_flush);
 			force_put_image(thread_data->vars, &(thread_data->image));
 			pthread_mutex_unlock(&mutex_flush);
 		}
 	}
+
 	pthread_mutex_lock(&mutex_running);
 	running--;
 	pthread_mutex_unlock(&mutex_running);
 	free(data);
+
 	pthread_exit(NULL);
 }
 
 int		render2(t_vars *vars, t_camera *camera, t_scene *scene)
 {
+
 	static pthread_t		threads[NUM_THREADS];
 	t_data					img;
 	t_thread_data			thread_data;
@@ -221,9 +232,7 @@ int		render2(t_vars *vars, t_camera *camera, t_scene *scene)
 			thread_id++;
 		}
 	}
-
-	while (running);
-	mlx_put_image_to_window(vars->mlx, vars->win, img.img, 0, 0);
+	// while (1);
 	
 	camera->render = img.img;
 	return (0);
@@ -232,7 +241,7 @@ int		render2(t_vars *vars, t_camera *camera, t_scene *scene)
 # define O_1 color_new(123, 123, 125)
 
 float newHeight() {
-	static max = 3;
+	static int max = 3;
 
 	return (rand() / (float)RAND_MAX * (max - 1));
 }
@@ -247,8 +256,8 @@ t_scene	*get_scene(char *file)
 			return (NULL);
 
 		t_list		*cameras = ft_lst_new(&free);
-		ft_lst_push(cameras, new_camera(vec3_new(-30, 0, 25), vec3_new(-1, 0, 1), FOV));
-		ft_lst_push(cameras, new_camera(vec3_new(0, 0, 35), vec3_new(0, 0, 1), FOV));
+		ft_lst_push(cameras, new_camera(vec3_new(-30, 0, 25), vec3_new(0.9, 0, -1), FOV));
+		ft_lst_push(cameras, new_camera(vec3_new(0, 0, 35), vec3_new(0, 0, -1), FOV));
 
 		t_list		*lights = ft_lst_new(&free);
 		ft_lst_push(lights, new_light(1, vec3_new(-40, 20, 50), color_new(255, 255, 255)));
@@ -261,9 +270,9 @@ t_scene	*get_scene(char *file)
 		float w = 5;
 		float x = 0;
 		float y = 0;
-		for (x = -40; x < 40; x+=w)
+		for (x = -20; x < 20; x+=w)
 		{
-			for (y = -30; y < 30; y+=h)
+			for (y = -10; y < 10; y+=h)
 			{
 				float height = newHeight();
 
@@ -312,6 +321,8 @@ int		on_key_pressed(int i, t_vars *vars)
 	static int	started;
 	t_scene		*scene;
 
+	if (running)
+		return (0);
 	if (i == 53 || i == 65307)
 		return (on_close(vars));
 	if (!started && (i == 36 || i == 65293))
@@ -340,8 +351,6 @@ int		on_key_pressed(int i, t_vars *vars)
 	return (0);
 }
 
-#include <sys/time.h>
-
 int		main(void)
 {
 	t_vars	vars;
@@ -352,6 +361,7 @@ int		main(void)
 	}
 
 	printf("Launching\n");
+
 	vars.win = mlx_new_window(vars.mlx, WID, HEI, "MiniRT - file.rt");
 
 	mlx_hook(vars.win, 17, 0L, &on_close, &vars);
