@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/12 12:31:12 by scros             #+#    #+#             */
-/*   Updated: 2021/02/22 15:19:23 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/25 15:41:28 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,8 @@
 
 # define CHUNK_WID 50
 # define CHUNK_HEI 50
+
+# define BUFFER_SIZE 50
 
 # include <math.h>
 # include "libft.h"

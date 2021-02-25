@@ -6,14 +6,16 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 13:03:09 by scros             #+#    #+#             */
-/*   Updated: 2021/02/22 15:31:21 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/25 15:33:37 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
 #include "matrix.h"
 #include <pthread.h>
-#include <X11/Xlib.h>
+#if defined __linux__
+# include <X11/Xlib.h>
+#endif
 
 static pthread_mutex_t mutex_flush		= PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t mutex_running	= PTHREAD_MUTEX_INITIALIZER;
@@ -314,8 +316,6 @@ ft_lst_push(objects, new_square(17.5, vec3_new(0, -12.5, 71), vec3_new(0, 0, 1),
 	return (scene);
 }
 
-#include <time.h>
-
 int		render(t_vars *vars, char *file)
 {
 	t_scene *scene;
@@ -363,7 +363,9 @@ int		main(void)
 {
 	t_vars	vars;
 
+#if defined __linux__
 	XInitThreads();
+#endif
 
 	if (!(vars.mlx = mlx_init())) {
 		printf("Error, can't generate the frame\n");

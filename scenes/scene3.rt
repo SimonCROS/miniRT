@@ -1,3 +1,4 @@
+#include <time.h>
 # define O_1 color_new(123, 123, 125)
 
 float newHeight() {
