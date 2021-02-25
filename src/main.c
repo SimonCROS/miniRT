@@ -359,7 +359,7 @@ int		on_key_pressed(int i, t_vars *vars)
 	return (0);
 }
 
-int main(int argc, const char **argv)
+int main(int argc, char **argv)
 {
 	t_vars	vars;
 

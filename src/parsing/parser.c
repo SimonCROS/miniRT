@@ -3,7 +3,7 @@
 #include <fcntl.h>
 #include <stdio.h>
 
-float stof(const char* s)
+float	ft_atof(const char **str)
 {
 	int point;
 	float ret;
@@ -11,20 +11,20 @@ float stof(const char* s)
 
 	ret = 0;
 	mul = 1;
-	if (*(s++) == '-')
+	point = 0;
+	if (*((*str)++) == '-')
 		mul = -1;
-	while ((*s >= '0' && *s <= '9') || (*s == '.' && !point))
+	while ((**str >= '0' && **str <= '9') || (**str == '.' && !point))
 	{
-		point = 0;
-		if (*s == '.')
+		if (**str == '.')
+			point = 1;
+		else
 		{
-			point = 1; 
-			continue;
+			if (point)
+				mul /= 10.0f;
+			ret = ret * 10.0f + (float)(**str - '0');
 		}
-		if (point)
-			mul /= 10.0f;
-		ret = ret * 10.0f + (float)(*s - '0');
-		s++;
+		(*str)++;
 	}
 	return (ret * mul);
 }
