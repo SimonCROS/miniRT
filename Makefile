@@ -30,6 +30,9 @@ endif
 FT			= libft.a
 
 SRCS		=	main.c				\
+				parsing/parser.c	\
+				parsing/gnl/get_next_line.c	\
+				parsing/gnl/get_next_line_utils.c	\
 				entity/camera.c		\
 				object/light.c		\
 				object/2d/square.c	\

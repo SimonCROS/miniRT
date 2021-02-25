@@ -3,98 +3,125 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
+/*   By: praclet <praclet@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/11/26 13:45:01 by scros             #+#    #+#             */
-/*   Updated: 2021/02/25 16:14:49 by scros            ###   ########lyon.fr   */
+/*   Created: 2020/12/01 09:14:07 by praclet           #+#    #+#             */
+/*   Updated: 2020/12/13 09:58:31 by praclet          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minirt.h"
+// TODO replace by my gnl
+
+#include <stdlib.h>
+#include <unistd.h>
+#include "libft.h"
 #include "get_next_line.h"
 
-char	**ft_split_first(char *s, char c)
+static char	*gnl_new_line(t_file *file, char *s1)
 {
-	char	**parts;
-	size_t	i;
-	size_t	len;
+	if (file->start > file->end || (file->state == 0 && file->start == -1))
+		return (gnl_concat(s1, "", 0));
+	return (gnl_concat(s1, file->buffer + file->start,
+			file->pos < 0 ? file->end - file->start + 1 : file->pos));
+}
 
-	if (!(parts = malloc(sizeof(parts) * 2)))
-		return (NULL);
-	len = 0;
-	i = 0;
-	parts[1] = NULL;
-	while (s[i] && s[i++] != c)
-		;
-	if (i == 0)
-		i++;
-	if (s[i - 1] == c)
-		parts[1] = s + i;
-	if (!parts[1])
-		len = -1;
+static void	ft_next_stop(t_file *file)
+{
+	char	*cur;
+	char	*min;
+	char	*max;
+
+	if (file->start < 0 || file->end < 0
+		|| file->start >= BUFFER_SIZE || file->end >= BUFFER_SIZE)
+	{
+		file->pos = -1;
+		return ;
+	}
+	cur = file->buffer + file->start;
+	min = cur;
+	max = file->buffer + file->end;
+	while (cur <= max)
+	{
+		if (*cur == '\n')
+		{
+			file->pos = cur - min;
+			return ;
+		}
+		cur++;
+	}
+	file->pos = -1;
+}
+
+static int	gnl_fill_buffer(t_file *file)
+{
+	if (file->state < 0)
+		return (-1);
+	if (file->state == 0
+		|| (file->start >= 0 && file->start <= file->end))
+	{
+		ft_next_stop(file);
+		return (file->state);
+	}
+	file->state = read(file->fd, file->buffer, BUFFER_SIZE);
+	if (file->state < 0)
+	{
+		file->start = -1;
+		file->end = -1;
+		file->pos = -1;
+		return (file->state);
+	}
+	if (file->state)
+	{
+		file->start = 0;
+		file->end = file->state - 1;
+	}
+	file->state = !!file->state;
+	ft_next_stop(file);
+	return (file->state);
+}
+
+static int	gnl_update_file(t_gnllist **dir, t_file **file, int rc)
+{
+	if (rc < 0 || (*file)->state < 0
+		|| ((*file)->state == 0 && (*file)->pos == -1))
+		gnllst_remove(dir, file);
 	else
-		len += parts[1] - s - 1;
-	if (!(parts[0] = ft_substr(s, 0, len)))
-		return (NULL);
-	if (parts[1] && !(parts[1] = ft_substr(parts[1], 0, -1)))
-		return (NULL);
-	free(s);
-	return (parts);
-}
-
-int		load_remain(t_list *remain, char **line, char ***current)
-{
-	if (remain->content)
 	{
-		if (!(*current = ft_split_first(remain->content, '\n')))
-			return (-1);
-		free(*line);
-		*line = (*current)[0];
+		if ((*file)->pos < 0)
+		{
+			(*file)->start = -1;
+			(*file)->end = -1;
+			(*file)->pos = -1;
+		}
+		else
+			(*file)->start += (*file)->pos + 1;
 	}
-	return (1);
+	return (rc);
 }
 
-void	free_reader(void *reader)
+int			get_next_line(int fd, char **line)
 {
-	free(((t_file_reader*) reader)->buffer);
-	free(reader);
-}
+	static t_gnllist	*dir;
+	t_file			*file;
+	int				tmp;
 
-void	*new_reader(void *fd)
-{
-	t_file_reader	*reader;
-
-	reader = malloc(sizeof(t_file_reader));
-	if (!reader)
-		return (NULL);
-	reader->fd = *(int*)fd;
-	return (reader);
-}
-
-void	is_fd(void *reader, void *fd)
-{
-	return (((t_file_reader*)reader)->fd == *(int*)fd);
-}
-
-int		get_next_line(int fd, char **line)
-{
-	static t_list	*remain_lst;
-	void			*optional_current;
-	t_file_reader	*current;
-	ssize_t			result;
-
-	if (BUFFER_SIZE < 1 || read(fd, NULL, 0))
+	if (BUFFER_SIZE <= 0 || !(file = gnllst_get(&dir, fd)))
 		return (-1);
-	if (!remain_lst)
-		remain_lst = ft_lst_new(free);
-	if (!remain_lst)
-		return (-1);
-	optional_current = lst_first(lst_filter(is_fd, &fd));
-	current = (t_file_reader*)o_or_else_get(optional_current, new_reader, &fd);
-	while (1)
+	if ((tmp = gnl_fill_buffer(file)) < 0)
+		return (gnl_update_file(&dir, &file, tmp));
+	*line = gnl_new_line(file, NULL);
+	if (!*line)
+		return (gnl_update_file(&dir, &file, -1));
+	(void)gnl_update_file(&dir, &file, 1);
+	while (file && file->pos < 0 && file->state > 0)
 	{
-		current = malloc(BUFFER_SIZE + 1);
-		result = read(fd, current, BUFFER_SIZE);
-		
+		if ((tmp = gnl_fill_buffer(file)) < 0)
+			return (gnl_update_file(&dir, &file, -1));
+		if (tmp)
+			*line = gnl_new_line(file, *line);
+		if (!*line)
+			return (gnl_update_file(&dir, &file, -1));
+		(void)gnl_update_file(&dir, &file, 1);
 	}
+	return (file ? 1 : 0);
 }

@@ -1,52 +1,53 @@
-t_list		*cameras = lst_new(&free);
-lst_push(cameras, new_camera(vec3_new(0, 0, 0), vec3_new(0, 0, 1), FOV));
-lst_push(cameras, new_camera(vec3_new(40, 30, 0), vec3_new(-1, -1, 1), FOV));
-lst_push(cameras, new_camera(vec3_new(12, 20, 90), vec3_new(-0.5, -0.6, -1), FOV));
+RT      00.00,00.00,00.00 00.00,00.00,00.00 00.00,00.00,00.00 255,255,255
 
-t_list		*lights = lst_new(&free);
-lst_push(lights, new_light(0.5, vec3_new(0, 2, -10), color_new(255, 255, 255)));
-lst_push(lights, new_light(0.5, vec3_new(0, 2, 15), color_new(255, 255, 255)));
-lst_push(lights, new_light(0.5, vec3_new(0, 2, 40), color_new(255, 255, 255)));
-lst_push(lights, new_light(0.5, vec3_new(0, 2, 65), color_new(255, 255, 255)));
+R       960 540
+A       0.2                                                   255,255,255
 
-t_list		*objects = lst_new(&free);
+c       0,0,0             0,0,1
+c       40,30,0           -1,-1,1
+c       12,20,90          -0.5,-0.6,-1
 
-lst_push(objects, new_plan(vec3_new(0, -5, 25), vec3_new(0, 1, 0), color_new(0, 0, 255)));
+l       0,2,-10                             0.5               255,255,255
+l       0,2,15                              0.5               255,255,255
+l       0,2,40                              0.5               255,255,255
+l       0,2,65                              0.5               255,255,255
 
-lst_push(objects, new_triangle(vec3_new(-8, -5, 70), vec3_new(8, -5, 70), vec3_new(0, 8, 70), color_new(255, 255, 255)));
+tr      -8,-5,70          8,-5,70           0,8,70            255,255,255
 
-lst_push(objects, new_sphere(6, vec3_new(-12, 10, 10), color_new(120, 36, 237)));
-lst_push(objects, new_sphere(6, vec3_new(-12, 10, 20), color_new(120, 36, 237)));
-lst_push(objects, new_sphere(6, vec3_new(-12, 10, 30), color_new(120, 36, 237)));
-lst_push(objects, new_sphere(6, vec3_new(-12, 10, 40), color_new(120, 36, 237)));
-lst_push(objects, new_sphere(6, vec3_new(-12, 10, 50), color_new(120, 36, 237)));
-lst_push(objects, new_sphere(6, vec3_new(-12, 10, 60), color_new(120, 36, 237)));
-lst_push(objects, new_sphere(6, vec3_new(-12, 10, 70), color_new(120, 36, 237)));
+sp      -12,10,10                           6                 120,36,237
+sp      -12,10,20                           6                 120,36,237
+sp      -12,10,30                           6                 120,36,237
+sp      -12,10,40                           6                 120,36,237
+sp      -12,10,50                           6                 120,36,237
+sp      -12,10,60                           6                 120,36,237
+sp      -12,10,70                           6                 120,36,237
 
-lst_push(objects, new_sphere(6, vec3_new(12, 10, 10), color_new(120, 36, 237)));
-lst_push(objects, new_sphere(6, vec3_new(12, 10, 20), color_new(120, 36, 237)));
-lst_push(objects, new_sphere(6, vec3_new(12, 10, 30), color_new(120, 36, 237)));
-lst_push(objects, new_sphere(6, vec3_new(12, 10, 40), color_new(120, 36, 237)));
-lst_push(objects, new_sphere(6, vec3_new(12, 10, 50), color_new(120, 36, 237)));
-lst_push(objects, new_sphere(6, vec3_new(12, 10, 60), color_new(120, 36, 237)));
-lst_push(objects, new_sphere(6, vec3_new(12, 10, 70), color_new(120, 36, 237)));
+sp      12,10,10                            6                 120,36,237
+sp      12,10,20                            6                 120,36,237
+sp      12,10,30                            6                 120,36,237
+sp      12,10,40                            6                 120,36,237
+sp      12,10,50                            6                 120,36,237
+sp      12,10,60                            6                 120,36,237
+sp      12,10,70                            6                 120,36,237
 
-lst_push(objects, new_cylinder(4, 14, vec3_new(-12, 2, 10), vec3_new(0, 1, 0), color_new(0, 150, 150)));
-lst_push(objects, new_cylinder(4, 14, vec3_new(-12, 2, 20), vec3_new(0, 1, 0), color_new(0, 150, 150)));
-lst_push(objects, new_cylinder(4, 14, vec3_new(-12, 2, 30), vec3_new(0, 1, 0), color_new(0, 150, 150)));
-lst_push(objects, new_cylinder(4, 14, vec3_new(-12, 2, 40), vec3_new(0, 1, 0), color_new(0, 150, 150)));
-lst_push(objects, new_cylinder(4, 14, vec3_new(-12, 2, 50), vec3_new(0, 1, 0), color_new(0, 150, 150)));
-lst_push(objects, new_cylinder(4, 14, vec3_new(-12, 2, 60), vec3_new(0, 1, 0), color_new(0, 150, 150)));
-lst_push(objects, new_cylinder(4, 14, vec3_new(-12, 2, 70), vec3_new(0, 1, 0), color_new(0, 150, 150)));
+pl      0,-5,25           0,1,0                               0,0,255
 
-lst_push(objects, new_cylinder(4, 14, vec3_new(12, 2, 10), vec3_new(0, 1, 0), color_new(0, 150, 150)));
-lst_push(objects, new_cylinder(4, 14, vec3_new(12, 2, 20), vec3_new(0, 1, 0), color_new(0, 150, 150)));
-lst_push(objects, new_cylinder(4, 14, vec3_new(12, 2, 30), vec3_new(0, 1, 0), color_new(0, 150, 150)));
-lst_push(objects, new_cylinder(4, 14, vec3_new(12, 2, 40), vec3_new(0, 1, 0), color_new(0, 150, 150)));
-lst_push(objects, new_cylinder(4, 14, vec3_new(12, 2, 50), vec3_new(0, 1, 0), color_new(0, 150, 150)));
-lst_push(objects, new_cylinder(4, 14, vec3_new(12, 2, 60), vec3_new(0, 1, 0), color_new(0, 150, 150)));
-lst_push(objects, new_cylinder(4, 14, vec3_new(12, 2, 70), vec3_new(0, 1, 0), color_new(0, 150, 150)));
+cy		-12,2,10          0,1,0             4     14          0,150,150
+cy		-12,2,20          0,1,0             4     14          0,150,150
+cy		-12,2,30          0,1,0             4     14          0,150,150
+cy		-12,2,40          0,1,0             4     14          0,150,150
+cy		-12,2,50          0,1,0             4     14          0,150,150
+cy		-12,2,60          0,1,0             4     14          0,150,150
+cy		-12,2,70          0,1,0             4     14          0,150,150
 
-lst_push(objects, new_square(70, vec3_new(8.5, -39, 35), vec3_new(1, 0, 0), color_new(36, 163, 237)));
-lst_push(objects, new_square(70, vec3_new(-8.5, -39, 35), vec3_new(1, 0, 0), color_new(36, 163, 237)));
-lst_push(objects, new_square(17.5, vec3_new(0, -12.5, 71), vec3_new(0, 0, 1), color_new(36, 163, 237)));
+cy		12,2,10           0,1,0             4     14          0,150,150
+cy		12,2,20           0,1,0             4     14          0,150,150
+cy		12,2,30           0,1,0             4     14          0,150,150
+cy		12,2,40           0,1,0             4     14          0,150,150
+cy		12,2,50           0,1,0             4     14          0,150,150
+cy		12,2,60           0,1,0             4     14          0,150,150
+cy		12,2,70           0,1,0             4     14          0,150,150
+
+sq      8.5,-39,35        1,0,0             70                36,163,237
+sq      -8.5,-39,35       1,0,0             70                36,163,237
+sq      0,-12.5,71        0,0,1             17.5              36,163,237

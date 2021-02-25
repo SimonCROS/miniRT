@@ -359,27 +359,32 @@ int		on_key_pressed(int i, t_vars *vars)
 	return (0);
 }
 
-int		main(void)
+int main(int argc, const char **argv)
 {
 	t_vars	vars;
 
-#if defined __linux__
-	XInitThreads();
-#endif
+	if (argc != 2)
+		return (0);
 
-	if (!(vars.mlx = mlx_init())) {
-		printf("Error, can't generate the frame\n");
-		exit(1);
-	}
+	parse(argv[1]);
 
-	printf("Launching\n");
+// #if defined __linux__
+// 	XInitThreads();
+// #endif
 
-	vars.win = mlx_new_window(vars.mlx, WID, HEI, "MiniRT - file.rt");
+// 	if (!(vars.mlx = mlx_init())) {
+// 		printf("Error, can't generate the frame\n");
+// 		exit(1);
+// 	}
 
-	mlx_hook(vars.win, 17, 0L, &on_close, &vars);
-	mlx_key_hook(vars.win, &on_key_pressed, &vars);
-	mlx_string_put(vars.mlx, vars.win, 0, 50, ~0, "Press any key to start");
+// 	printf("Launching\n");
 
-	mlx_loop(vars.mlx);
-	pthread_exit(NULL);
+// 	vars.win = mlx_new_window(vars.mlx, WID, HEI, "MiniRT - file.rt");
+
+// 	mlx_hook(vars.win, 17, 0L, &on_close, &vars);
+// 	mlx_key_hook(vars.win, &on_key_pressed, &vars);
+// 	mlx_string_put(vars.mlx, vars.win, 0, 50, ~0, "Press any key to start");
+
+// 	mlx_loop(vars.mlx);
+// 	pthread_exit(NULL);
 }
