@@ -1,13 +1,13 @@
-t_list		*cameras = ft_lst_new(&free);
-ft_lst_push(cameras, new_camera(vec3_new(0, 40, 100), vec3_new(0, 0, -1), FOV));
-ft_lst_push(cameras, new_camera(vec3_new(0, 50, 100), vec3_new(0, 0, -1), FOV));
+t_list		*cameras = lst_new(&free);
+lst_push(cameras, new_camera(vec3_new(0, 40, 100), vec3_new(0, 0, -1), FOV));
+lst_push(cameras, new_camera(vec3_new(0, 50, 100), vec3_new(0, 0, -1), FOV));
 
-t_list		*lights = ft_lst_new(&free);
-ft_lst_push(lights, new_light(1, vec3_new(0, 40, 80), color_new(255, 255, 255)));
+t_list		*lights = lst_new(&free);
+lst_push(lights, new_light(1, vec3_new(0, 40, 80), color_new(255, 255, 255)));
 
-t_list		*objects = ft_lst_new(&free);
-ft_lst_push(objects, new_plan(vec3_new(0, 0, -30), vec3_new(0, 0, -1), color_new(55, 55, 55)));
-ft_lst_push(objects, new_triangle(vec3_new(-65, 20, 0), vec3_new(-45, 30, -10), vec3_new(-45, 20, 0), color_new(200, 200, 200)));
-ft_lst_push(objects, new_triangle(vec3_new(-10, 0, 0), vec3_new(-10, 30, 0), vec3_new(70, 0, 0), color_new(200, 0, 0)));
-ft_lst_push(objects, new_triangle(vec3_new(60, 70, 0), vec3_new(20, 70, 0), vec3_new(70, 0, 0), color_new(200, 0, 0)));
-ft_lst_push(objects, new_triangle(vec3_new(20, 70, 0), vec3_new(-10, 30, 0), vec3_new(70, 0, 0), color_new(200, 0, 0)));
+t_list		*objects = lst_new(&free);
+lst_push(objects, new_plan(vec3_new(0, 0, -30), vec3_new(0, 0, -1), color_new(55, 55, 55)));
+lst_push(objects, new_triangle(vec3_new(-65, 20, 0), vec3_new(-45, 30, -10), vec3_new(-45, 20, 0), color_new(200, 200, 200)));
+lst_push(objects, new_triangle(vec3_new(-10, 0, 0), vec3_new(-10, 30, 0), vec3_new(70, 0, 0), color_new(200, 0, 0)));
+lst_push(objects, new_triangle(vec3_new(60, 70, 0), vec3_new(20, 70, 0), vec3_new(70, 0, 0), color_new(200, 0, 0)));
+lst_push(objects, new_triangle(vec3_new(20, 70, 0), vec3_new(-10, 30, 0), vec3_new(70, 0, 0), color_new(200, 0, 0)));
