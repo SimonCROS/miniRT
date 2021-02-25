@@ -1,3 +1,11 @@
+# define O_1 color_new(123, 123, 125)
+
+float newHeight() {
+	static int max = 3;
+
+	return (rand() / (float)RAND_MAX * (max - 1));
+}
+
 t_list		*cameras = ft_lst_new(&free);
 ft_lst_push(cameras, new_camera(vec3_new(-30, 0, 25), vec3_new(0.9, 0, -1), FOV));
 ft_lst_push(cameras, new_camera(vec3_new(0, 0, 35), vec3_new(0, 0, -1), FOV));
