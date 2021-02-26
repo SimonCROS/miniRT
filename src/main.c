@@ -71,12 +71,14 @@ t_ray	compute_ray(t_camera *camera, float x, float y)
 {
 	static float ratio = WID / (float) HEI;
 	static float hypo_len;
+	t_ray ray;
+	float px;
+	float py;
 
 	if (!hypo_len)
 		hypo_len = tan(camera->fov / 2 * M_PI / 180);
-	t_ray ray;
-	float px = (2 * ((x + 0.5) / WID) - 1) * hypo_len * ratio;
-	float py = (1 - 2 * ((y + 0.5) / HEI)) * hypo_len;
+	px = (2 * ((x + 0.5) / WID) - 1) * hypo_len * ratio;
+	py = (1 - 2 * ((y + 0.5) / HEI)) * hypo_len;
 	ray.direction = vec3_normalize(vec3_new(px, py, -1));
 	ray.direction = vec3_normalize(mat44_mul_vec(camera->c2w, ray.direction));
 	ray.color = color_new(0, 0, 0);
