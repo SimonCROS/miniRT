@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 13:03:09 by scros             #+#    #+#             */
-/*   Updated: 2021/02/25 15:33:37 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/26 15:20:13 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -366,7 +366,9 @@ int main(int argc, char **argv)
 	if (argc != 2)
 		return (0);
 
-	parse(argv[1]);
+	parse_file(argv[1]);
+	while (1);
+	
 
 // #if defined __linux__
 // 	XInitThreads();

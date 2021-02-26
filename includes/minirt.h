@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/12 12:31:12 by scros             #+#    #+#             */
-/*   Updated: 2021/02/25 15:41:28 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/26 15:20:21 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,11 @@
 
 # define NUM_THREADS 8
 
-// # define WID 2560
-// # define HEI 1440
+# define WID 2560
+# define HEI 1440
 
-# define WID 960
-# define HEI 540
+// # define WID 960
+// # define HEI 540
 
 // # define WID (960 / 4)
 // # define HEI (540 / 4)
@@ -84,7 +84,7 @@ typedef struct		s_thread_data
 	size_t			chunks;
 }					t_thread_data;
 
-t_scene				*parse(char *file);
+t_scene				*parse_file(char *file);
 void				set_pixel(t_data *data, int x, int y, int color);
 
 #endif

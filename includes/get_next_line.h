@@ -3,41 +3,34 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.h                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: praclet <praclet@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/11/26 22:21:11 by praclet           #+#    #+#             */
-/*   Updated: 2020/12/13 10:01:25 by praclet          ###   ########lyon.fr   */
+/*   Created: 2020/11/26 13:45:04 by scros             #+#    #+#             */
+/*   Updated: 2021/02/26 11:04:53 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
-
-// TODO replace by my gnl
 
 #ifndef GET_NEXT_LINE_H
 # define GET_NEXT_LINE_H
 
+# include <unistd.h>
 # include <stdlib.h>
 
 # define BUFFER_SIZE 50
 
-typedef struct		s_file
+typedef struct			s_gnllist
 {
-	int				fd;
-	int				state;
-	int				start;
-	int				end;
-	int				pos;
-	char			buffer[BUFFER_SIZE];
-}					t_file;
-
-typedef struct		s_gnllist
-{
-	void			*data;
+	int					fd;
+	char				*content;
 	struct s_gnllist	*next;
-}					t_gnllist;
+}						t_gnllist;
 
-int					get_next_line(int fd, char **line);
-t_file				*gnllst_get(t_gnllist **list, int fd);
-char				*gnl_concat(char *s1, char *s2, size_t len2);
-void				gnllst_remove(t_gnllist **list, t_file **file);
+size_t					ft_strlen(const char *s);
+void					*ft_memcpy(void *dst, const void *src, size_t n);
+char					**ft_split_first(char *s, char c);
+char					*ft_substr(const char *s, unsigned int start, size_t len);
+char					*ft_strjoin(const char *s1, const char *s2);
+char					*ft_strchr(const char *s, int c);
+int						get_next_line(int fd, char **line);
 
 #endif

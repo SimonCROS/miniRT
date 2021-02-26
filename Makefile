@@ -6,7 +6,7 @@
 #    By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/11/23 11:39:11 by scros             #+#    #+#              #
-#    Updated: 2021/02/25 14:36:20 by scros            ###   ########lyon.fr    #
+#    Updated: 2021/02/26 10:54:46 by scros            ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,7 @@ SRC			= src
 INC			= includes
 LIBFT		= libft
 
-LINUX			= 1
+LINUX			= 0
 
 MINILIBX_OS_X	= minilibx
 MINILIBX_LINUX	= minilibx-linux

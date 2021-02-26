@@ -3,125 +3,128 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: praclet <praclet@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/12/01 09:14:07 by praclet           #+#    #+#             */
-/*   Updated: 2020/12/13 09:58:31 by praclet          ###   ########lyon.fr   */
+/*   Created: 2020/11/26 13:45:01 by scros             #+#    #+#             */
+/*   Updated: 2021/02/26 13:50:31 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-// TODO replace by my gnl
-
-#include <stdlib.h>
-#include <unistd.h>
-#include "libft.h"
 #include "get_next_line.h"
 
-static char	*gnl_new_line(t_file *file, char *s1)
+int		delete(int ret, t_gnllist **remain, t_gnllist *element, void *p)
 {
-	if (file->start > file->end || (file->state == 0 && file->start == -1))
-		return (gnl_concat(s1, "", 0));
-	return (gnl_concat(s1, file->buffer + file->start,
-			file->pos < 0 ? file->end - file->start + 1 : file->pos));
+	t_gnllist *elem;
+
+	if (remain && *remain && element)
+	{
+		if (element == *remain)
+			*remain = element->next;
+		else if ((elem = *remain))
+			while (elem)
+			{
+				if (elem->next == element)
+				{
+					elem->next = element->next;
+					break ;
+				}
+				elem = elem->next;
+			}
+		if (element->content)
+			free(element->content);
+		free(element);
+	}
+	if (p)
+		free(p);
+	return (ret);
 }
 
-static void	ft_next_stop(t_file *file)
+t_gnllist	*get_or_create_remain(t_gnllist **remain, int fd)
 {
-	char	*cur;
-	char	*min;
-	char	*max;
+	t_gnllist *new_element;
+	t_gnllist *elem;
 
-	if (file->start < 0 || file->end < 0
-		|| file->start >= BUFFER_SIZE || file->end >= BUFFER_SIZE)
+	elem = *remain;
+	while (elem)
 	{
-		file->pos = -1;
-		return ;
+		if (elem->fd == fd)
+			return (elem);
+		elem = elem->next;
 	}
-	cur = file->buffer + file->start;
-	min = cur;
-	max = file->buffer + file->end;
-	while (cur <= max)
-	{
-		if (*cur == '\n')
-		{
-			file->pos = cur - min;
-			return ;
-		}
-		cur++;
-	}
-	file->pos = -1;
+	if (!(new_element = malloc(sizeof(*new_element))))
+		return (NULL);
+	new_element->content = NULL;
+	new_element->fd = fd;
+	new_element->next = *remain;
+	*remain = new_element;
+	return (new_element);
 }
 
-static int	gnl_fill_buffer(t_file *file)
+ssize_t	read_line(int fd, char **line, char ***current, t_gnllist *remain)
 {
-	if (file->state < 0)
+	char	*tmp;
+	ssize_t	result;
+
+	if (!(remain->content = malloc(BUFFER_SIZE + 1)))
 		return (-1);
-	if (file->state == 0
-		|| (file->start >= 0 && file->start <= file->end))
-	{
-		ft_next_stop(file);
-		return (file->state);
-	}
-	file->state = read(file->fd, file->buffer, BUFFER_SIZE);
-	if (file->state < 0)
-	{
-		file->start = -1;
-		file->end = -1;
-		file->pos = -1;
-		return (file->state);
-	}
-	if (file->state)
-	{
-		file->start = 0;
-		file->end = file->state - 1;
-	}
-	file->state = !!file->state;
-	ft_next_stop(file);
-	return (file->state);
-}
-
-static int	gnl_update_file(t_gnllist **dir, t_file **file, int rc)
-{
-	if (rc < 0 || (*file)->state < 0
-		|| ((*file)->state == 0 && (*file)->pos == -1))
-		gnllst_remove(dir, file);
-	else
-	{
-		if ((*file)->pos < 0)
-		{
-			(*file)->start = -1;
-			(*file)->end = -1;
-			(*file)->pos = -1;
-		}
-		else
-			(*file)->start += (*file)->pos + 1;
-	}
-	return (rc);
-}
-
-int			get_next_line(int fd, char **line)
-{
-	static t_gnllist	*dir;
-	t_file			*file;
-	int				tmp;
-
-	if (BUFFER_SIZE <= 0 || !(file = gnllst_get(&dir, fd)))
+	result = read(fd, remain->content, BUFFER_SIZE);
+	if (result < 0)
 		return (-1);
-	if ((tmp = gnl_fill_buffer(file)) < 0)
-		return (gnl_update_file(&dir, &file, tmp));
-	*line = gnl_new_line(file, NULL);
-	if (!*line)
-		return (gnl_update_file(&dir, &file, -1));
-	(void)gnl_update_file(&dir, &file, 1);
-	while (file && file->pos < 0 && file->state > 0)
+	if (*current)
+		free(*current);
+	if (result >= 0)
 	{
-		if ((tmp = gnl_fill_buffer(file)) < 0)
-			return (gnl_update_file(&dir, &file, -1));
-		if (tmp)
-			*line = gnl_new_line(file, *line);
-		if (!*line)
-			return (gnl_update_file(&dir, &file, -1));
-		(void)gnl_update_file(&dir, &file, 1);
+		remain->content[result] = 0;
+		if (!(*current = ft_split_first(remain->content, '\n')))
+			return (-1);
+		if (result > 0)
+		{
+			tmp = *line;
+			if (!(*line = ft_strjoin(tmp, (*current)[0])))
+				return (-1);
+			free(tmp);
+		}
+		free((*current)[0]);
 	}
-	return (file ? 1 : 0);
+	return (result);
+}
+
+int		load_remain(t_gnllist *remain, char **line, char ***current)
+{
+	if (remain->content)
+	{
+		if (!(*current = ft_split_first(remain->content, '\n')))
+			return (-1);
+		free(*line);
+		*line = (*current)[0];
+	}
+	return (1);
+}
+
+int		get_next_line(int fd, char **line)
+{
+	static t_gnllist	*remain_lst;
+	char				**current;
+	char				*tmp_line;
+	t_gnllist			*remain;
+	ssize_t				result;
+
+	if (BUFFER_SIZE < 1 || !(tmp_line = malloc(0)))
+		return (-1);
+	*tmp_line = 0;
+	if (!(remain = get_or_create_remain(&remain_lst, fd)))
+		return (delete(-1, NULL, NULL, tmp_line));
+	current = NULL;
+	if (load_remain(remain, &tmp_line, &current) == -1)
+		return (delete(-1, &remain_lst, remain, tmp_line));
+	result = BUFFER_SIZE;
+	while (result == BUFFER_SIZE && (!current || !current[1]))
+		if ((result = read_line(fd, &tmp_line, &current, remain)) == -1)
+			return (delete(-1, &remain_lst, remain, tmp_line));
+	remain->content = current[1];
+	free(current);
+	*line = tmp_line;
+	if (result == BUFFER_SIZE || (result && remain->content))
+		return (1);
+	return (delete(0, &remain_lst, remain, NULL));
 }

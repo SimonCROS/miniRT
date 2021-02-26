@@ -6,11 +6,25 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/12 15:44:13 by scros             #+#    #+#             */
-/*   Updated: 2021/02/10 12:48:28 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/26 15:44:52 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
+
+int	parse_circle(t_list *data)
+{
+	t_ray		*ray;
+	t_object	*plan;
+	t_vector3	v;
+	float		d2;
+
+	plan = a1;
+	ray = a2;
+	v = vec3_subv(ray->phit, plan->position);
+	d2 = vec3_length_squared(v);
+	return (d2 <= plan->data.circle.radius * plan->data.circle.radius);
+}
 
 int	collides_circle(void *a1, void *a2)
 {

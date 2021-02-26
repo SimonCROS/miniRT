@@ -3,44 +3,44 @@
 #include <fcntl.h>
 #include <stdio.h>
 
-float	ft_atof(const char **str)
+void	print_part(void *str)
 {
-	int point;
-	float ret;
-	float mul;
-
-	ret = 0;
-	mul = 1;
-	point = 0;
-	if (*((*str)++) == '-')
-		mul = -1;
-	while ((**str >= '0' && **str <= '9') || (**str == '.' && !point))
-	{
-		if (**str == '.')
-			point = 1;
-		else
-		{
-			if (point)
-				mul /= 10.0f;
-			ret = ret * 10.0f + (float)(**str - '0');
-		}
-		(*str)++;
-	}
-	return (ret * mul);
+	printf("%s ", (char *)str);
 }
 
-t_scene	*parse(char *file)
+void	*parse(t_list *line)
+{
+	lst_foreach(line, print_part);
+	printf("\n");
+	lst_destroy(line);
+	return (NULL);
+}
+
+int		lst_not_empty(t_list *list)
+{
+	return (!lst_is_empty(list));
+}
+
+t_scene	*parse_file(char *file)
 {
 	int		fd;
-	char	*line;
+	char	*buffer;
+	t_list	*nodes;
+	int		result; 
 
 	fd = open(file, O_RDONLY);
-	line = NULL;
-	while (get_next_line(fd, &line) > 0)
+	buffer = NULL;
+	result = 1;
+	nodes = lst_new((t_consumer)lst_destroy);
+	while (result > 0)
 	{
-		printf("%s\n", line);
+		result = get_next_line(fd, &buffer);
+		if (result < 0)
+			break;
+		lst_push(nodes, as_listf((void **)ft_splitf(buffer, ' '), free));
 	}
-	if (line)
-		printf("%s\n", line);
+	lst_filter_in(nodes, (t_pre)lst_not_empty);
+	lst_map_in(nodes, (t_fun)parse, free);
+	lst_destroy(nodes);
 	return (NULL);
 }
