@@ -1,13 +1,6 @@
-t_list		*cameras = lst_new(&free);
-lst_push(cameras, new_camera(vec3_new(0, 40, 100), vec3_new(0, 0, -1), FOV));
-lst_push(cameras, new_camera(vec3_new(0, 50, 100), vec3_new(0, 0, -1), FOV));
+pl      0,0,-10            0,0,1                              0,0,255
 
-t_list		*lights = lst_new(&free);
-lst_push(lights, new_light(1, vec3_new(0, 40, 80), color_new(255, 255, 255)));
+cy      0.5,0,-5           0,1,0             1     6          0,150,150
+cy      0,0,-2             0,1,0             1     10         0,150,150
 
-t_list		*objects = lst_new(&free);
-lst_push(objects, new_plan(vec3_new(0, 0, -30), vec3_new(0, 0, -1), color_new(55, 55, 55)));
-lst_push(objects, new_triangle(vec3_new(-65, 20, 0), vec3_new(-45, 30, -10), vec3_new(-45, 20, 0), color_new(200, 200, 200)));
-lst_push(objects, new_triangle(vec3_new(-10, 0, 0), vec3_new(-10, 30, 0), vec3_new(70, 0, 0), color_new(200, 0, 0)));
-lst_push(objects, new_triangle(vec3_new(60, 70, 0), vec3_new(20, 70, 0), vec3_new(70, 0, 0), color_new(200, 0, 0)));
-lst_push(objects, new_triangle(vec3_new(20, 70, 0), vec3_new(-10, 30, 0), vec3_new(70, 0, 0), color_new(200, 0, 0)));
+# sq      0.8,0,2            0,0,1             3                255,0,0

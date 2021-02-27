@@ -39,20 +39,8 @@ t_object	*parse_cylinder(t_list *data)
 
 int test_intersect(float t[2], float *current_z)
 {
-	int retvalue;
-
-	retvalue = 0;
-	if ((t[0] > 0) && (t[0] < *(current_z) || *(current_z) == t[0]))
-	{
-		*(current_z) = t[0];
-		retvalue = 1;
-	}
-	if (!(t[0] == t[1]) && (t[1] > 0) && (t[1] < *(current_z) || *(current_z) == t[1]))
-	{
-		*(current_z) = t[1];
-		retvalue = 1;
-	}
-	return (retvalue);
+	*(current_z) = fminf(t[0], t[1]);
+	return (*current_z > 0);
 }
 
 int intersect_cylinder(t_object *cp, t_ray *r, float *current_z)
@@ -73,13 +61,14 @@ int intersect_cylinder(t_object *cp, t_ray *r, float *current_z)
 
 int			intersect_side(t_object *object, t_ray *ray)
 {
+	t_ray	to_bot;
+
 	ray->phit = vec3_addv(vec3_muld(ray->direction, ray->length), ray->origin);
-	t_ray to_bot;
 	to_bot.direction = object->rotation;
 	to_bot.origin = ray->phit;
 	if (!intersect_plane(object->data.cylinder.position2, object->rotation, &to_bot))
 		return 0;
-	to_bot.direction = vec3_negate(object->rotation);
+	to_bot.direction = vec3_negate(to_bot.direction);
 	if (!intersect_plane(object->position, object->rotation, &to_bot))
 		return 0;
 	t_vector3 point = vec3_addv(vec3_muld(object->rotation, to_bot.length), object->position);

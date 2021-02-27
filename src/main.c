@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 13:03:09 by scros             #+#    #+#             */
-/*   Updated: 2021/02/26 15:20:13 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/27 15:21:47 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,7 +138,6 @@ void	render_chunk(t_thread_data *data, int start_x, int start_y)
 				float lightDistance2 = vec3_length_squared(lightDir); 
 				lightDir = vec3_normalize(lightDir);
 				float LdotN = fmaxf(0, vec3_dotv(lightDir, ray.nhit));
-				float tNearShadow = INFINITY; 
 				short inShadow = FALSE;
 
 				t_ray light_ray;
@@ -261,16 +260,15 @@ t_scene	*get_scene(char *file)
 			return (NULL);
 
 		t_list		*cameras = lst_new(&free);
-lst_push(cameras, new_camera(vec3_new(0, 0, 0), vec3_new(0, 0, -1), FOV));
-lst_push(cameras, new_camera(vec3_new(0, 2, 10), vec3_new(0, 0, -1), FOV));
+lst_push(cameras, new_camera(vec3_new(0, 2, 0), vec3_new(0, 0, -1), FOV));
 lst_push(cameras, new_camera(vec3_new(40, 30, 0), vec3_new(-1, -1, -1), FOV));
 lst_push(cameras, new_camera(vec3_new(12, 20, -90), vec3_new(-0.5, -0.6, 1), FOV));
 
 t_list		*lights = lst_new(&free);
-lst_push(lights, new_light(0.7, vec3_new(0, 2, 10), color_new(255, 255, 255)));
-// lst_push(lights, new_light(0.7, vec3_new(0, 2, -15), color_new(255, 255, 255)));
-// lst_push(lights, new_light(0.7, vec3_new(0, 2, -40), color_new(255, 255, 255)));
-// lst_push(lights, new_light(0.7, vec3_new(0, 2, -65), color_new(255, 255, 255)));
+lst_push(lights, new_light(0.7, vec3_new(0, 2, 20), color_new(255, 255, 255)));
+lst_push(lights, new_light(0.7, vec3_new(0, 2, -15), color_new(255, 255, 255)));
+lst_push(lights, new_light(0.7, vec3_new(0, 2, -40), color_new(255, 255, 255)));
+lst_push(lights, new_light(0.7, vec3_new(0, 2, -65), color_new(255, 255, 255)));
 
 t_list		*objects = parse_file(file);
 
@@ -342,7 +340,7 @@ int main(int argc, char **argv)
 		exit(1);
 	}
 
-	vars.win = mlx_new_window(vars.mlx, WID, HEI, "MiniRT - file.rt");
+	vars.win = mlx_new_window(vars.mlx, 960, 540, "MiniRT - file.rt");
 
 	mlx_hook(vars.win, 17, 0L, &on_close, &vars);
 	mlx_key_hook(vars.win, &on_key_pressed, &vars);

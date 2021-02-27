@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/12 12:31:12 by scros             #+#    #+#             */
-/*   Updated: 2021/02/26 15:20:21 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/27 15:22:43 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,13 +21,10 @@
 # define WID 960
 # define HEI 540
 
-// # define WID (960 / 4)
-// # define HEI (540 / 4)
-
-// # define WID 1
-// # define HEI 1
-
 # define FOV 60
+
+// # define CHUNK_WID 240
+// # define CHUNK_HEI 270
 
 # define CHUNK_WID 50
 # define CHUNK_HEI 50
