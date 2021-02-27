@@ -65,20 +65,25 @@ typedef struct		s_object
 	t_bipredicate	collides;
 	t_vector3		position;
 	t_vector3		rotation;
-	int				is_plan;
+	int				is_plane;
 	t_color			color;
 	t_type			data;
 }					t_object;
 
 t_object			*new_sphere(float diametre, t_vector3 position, t_color color);
-t_object			*new_plan(t_vector3 position, t_vector3 rotation, t_color color);
+t_object			*new_plane(t_vector3 position, t_vector3 rotation, t_color color);
 t_object			*new_triangle(t_vector3 p1, t_vector3 p2, t_vector3 p3, t_color color);
 t_object			*new_square(float width, t_vector3 position, t_vector3 rotation, t_color color);
 t_object			*new_circle(float diametre, t_vector3 position, t_vector3 rotation, t_color color);
-t_object			*new_default_plan(t_vector3 position, t_vector3 rotation, t_color color, t_bipredicate collides);
+t_object			*new_cylinder(float *attrs, t_vector3 position, t_vector3 rotation, t_color color);
+t_object			*new_default_plane(t_vector3 position, t_vector3 rotation, t_color color, t_bipredicate collides);
 t_object			*new_default_object(t_vector3 position, t_vector3 rotation, t_color color, t_bipredicate collides);
-t_object			*new_cylinder(float diametre, float height, t_vector3 position, t_vector3 rotation, t_color color);
-int					intersect_plan(t_vector3 position, t_vector3 rotation, t_ray *ray);
+int					intersect_plane(t_vector3 position, t_vector3 rotation, t_ray *ray);
 int					collision(t_object *object, t_ray *ray);
+t_object			*parse_triangle(t_list *data);
+t_object			*parse_plane(t_list *data);
+t_object			*parse_square(t_list *data);
+t_object			*parse_sphere(t_list *data);
+t_object			*parse_cylinder(t_list *data);
 
 #endif

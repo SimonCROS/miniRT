@@ -12,6 +12,25 @@
 
 #include "minirt.h"
 
+t_object	*parse_sphere(t_list *data)
+{
+	t_vector3	pos;
+	float		diametre;
+	t_color		color;
+	int			e;
+
+	if (data->size != 4)
+		return (NULL);
+	e = 1;
+	e = e && vec3_deserialize((char *)lst_get(data, 1), &pos);
+	e = e && is_float((char *)lst_get(data, 2));
+	e = e && color_deserialize((char *)lst_get(data, 3), &color);
+	if (!e)
+		return (NULL);
+	diametre = fabsf(ft_atof((char *)lst_get(data, 2)));
+	return (new_sphere(diametre, pos, color));
+}
+
 int			collides_sphere(void *arg1, void *arg2)
 {
 	t_ray		*ray;

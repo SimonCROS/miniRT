@@ -12,14 +12,46 @@
 
 #include "minirt.h"
 
-t_object	*new_plan(t_vector3 pos, t_vector3 rot, t_color col)
+static int	rot_deserialize(const char *str, t_vector3 *vector)
+{
+	t_vector3	rot;
+
+	if (!vec3_deserialize(str, &rot))
+		return (0);
+	if (rot.x < -1 || rot.x > 1 ||
+		rot.y < -1 || rot.y > 1 ||
+		rot.z < -1 || rot.z > 1)
+		return (0);
+	*vector = rot;
+	return (1);
+}
+
+t_object	*parse_plane(t_list *data)
+{
+	t_vector3	pos;
+	t_vector3	rot;
+	t_color		color;
+	int			e;
+
+	if (data->size != 4)
+		return (NULL);
+	e = 1;
+	e = e && vec3_deserialize((char *)lst_get(data, 1), &pos);
+	e = e && rot_deserialize((char *)lst_get(data, 2), &rot);
+	e = e && color_deserialize((char *)lst_get(data, 3), &color);
+	if (!e)
+		return (NULL);
+	return (new_plane(pos, rot, color));
+}
+
+t_object	*new_plane(t_vector3 pos, t_vector3 rot, t_color col)
 {
 	t_object	*plan;
 
-	return (new_default_plan(pos, rot, col, NULL));
+	return (new_default_plane(pos, rot, col, NULL));
 }
 
-t_object	*new_default_plan(t_vector3 pos, t_vector3 rot, t_color col,
+t_object	*new_default_plane(t_vector3 pos, t_vector3 rot, t_color col,
 	t_bipredicate collides)
 {
 	t_object	*plan;
@@ -27,7 +59,7 @@ t_object	*new_default_plan(t_vector3 pos, t_vector3 rot, t_color col,
 	plan = new_default_object(pos, rot, col, collides);
 	if (!plan)
 		return (NULL);
-	plan->is_plan = 1;
+	plan->is_plane = 1;
 	return (plan);
 }
 
@@ -43,11 +75,11 @@ t_object	*new_default_object(t_vector3 pos, t_vector3 rot, t_color col,
 	object->rotation = vec3_normalize(rot);
 	object->collides = collides;
 	object->color = col;
-	object->is_plan = 0;
+	object->is_plane = 0;
 	return (object);
 }
 
-int	intersect_plan(t_vector3 pos, t_vector3 rot, t_ray *ray)
+int	intersect_plane(t_vector3 pos, t_vector3 rot, t_ray *ray)
 {
 	float		dot;
 	t_vector3	p0l0;
@@ -66,9 +98,9 @@ int	collision(t_object *object, t_ray *ray)
 {
 	t_vector3	p;
 
-	if (!object->is_plan)
+	if (!object->is_plane)
 		return (object->collides(object, ray));
-	else if (intersect_plan(object->position, object->rotation, ray))
+	else if (intersect_plane(object->position, object->rotation, ray))
 	{
 		p = vec3_muld(ray->direction, ray->length);
 		p = vec3_addv(p, ray->origin);

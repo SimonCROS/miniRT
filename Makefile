@@ -15,7 +15,7 @@ SRC			= src
 INC			= includes
 LIBFT		= libft
 
-LINUX			= 0
+LINUX			= 1
 
 MINILIBX_OS_X	= minilibx
 MINILIBX_LINUX	= minilibx-linux
@@ -38,7 +38,7 @@ SRCS		=	main.c				\
 				object/2d/square.c	\
 				object/2d/circle.c	\
 				object/2d/triangle.c\
-				object/2d/plan.c	\
+				object/2d/plane.c	\
 				object/3d/sphere.c	\
 				object/3d/cylinder.c	\
 

@@ -13,6 +13,7 @@
 #include "minirt.h"
 #include "matrix.h"
 #include <pthread.h>
+#include <stdio.h>
 #if defined __linux__
 # include <X11/Xlib.h>
 #endif
@@ -206,7 +207,6 @@ void	*render_thread(void *thread_data)
 
 int		render2(t_vars *vars, t_camera *camera, t_scene *scene)
 {
-
 	static pthread_t		threads[NUM_THREADS];
 	t_data					img;
 	t_thread_data			data;
@@ -261,68 +261,29 @@ t_scene	*get_scene(char *file)
 			return (NULL);
 
 		t_list		*cameras = lst_new(&free);
-lst_push(cameras, new_camera(vec3_new(0, 0, 0), vec3_new(0, 0, 1), FOV));
-lst_push(cameras, new_camera(vec3_new(40, 30, 0), vec3_new(-1, -1, 1), FOV));
-lst_push(cameras, new_camera(vec3_new(12, 20, 90), vec3_new(-0.5, -0.6, -1), FOV));
+lst_push(cameras, new_camera(vec3_new(0, 0, 0), vec3_new(0, 0, -1), FOV));
+lst_push(cameras, new_camera(vec3_new(0, 2, 10), vec3_new(0, 0, -1), FOV));
+lst_push(cameras, new_camera(vec3_new(40, 30, 0), vec3_new(-1, -1, -1), FOV));
+lst_push(cameras, new_camera(vec3_new(12, 20, -90), vec3_new(-0.5, -0.6, 1), FOV));
 
 t_list		*lights = lst_new(&free);
-lst_push(lights, new_light(0.5, vec3_new(0, 2, -10), color_new(255, 255, 255)));
-lst_push(lights, new_light(0.5, vec3_new(0, 2, 15), color_new(255, 255, 255)));
-lst_push(lights, new_light(0.5, vec3_new(0, 2, 40), color_new(255, 255, 255)));
-lst_push(lights, new_light(0.5, vec3_new(0, 2, 65), color_new(255, 255, 255)));
+lst_push(lights, new_light(0.7, vec3_new(0, 2, 10), color_new(255, 255, 255)));
+// lst_push(lights, new_light(0.7, vec3_new(0, 2, -15), color_new(255, 255, 255)));
+// lst_push(lights, new_light(0.7, vec3_new(0, 2, -40), color_new(255, 255, 255)));
+// lst_push(lights, new_light(0.7, vec3_new(0, 2, -65), color_new(255, 255, 255)));
 
-t_list		*objects = lst_new(&free);
-
-lst_push(objects, new_plan(vec3_new(0, -5, 25), vec3_new(0, 1, 0), color_new(0, 0, 255)));
-
-lst_push(objects, new_triangle(vec3_new(-8, -5, 70), vec3_new(8, -5, 70), vec3_new(0, 8, 70), color_new(255, 255, 255)));
-
-lst_push(objects, new_sphere(6, vec3_new(-12, 10, 10), color_new(120, 36, 237)));
-lst_push(objects, new_sphere(6, vec3_new(-12, 10, 20), color_new(120, 36, 237)));
-lst_push(objects, new_sphere(6, vec3_new(-12, 10, 30), color_new(120, 36, 237)));
-lst_push(objects, new_sphere(6, vec3_new(-12, 10, 40), color_new(120, 36, 237)));
-lst_push(objects, new_sphere(6, vec3_new(-12, 10, 50), color_new(120, 36, 237)));
-lst_push(objects, new_sphere(6, vec3_new(-12, 10, 60), color_new(120, 36, 237)));
-lst_push(objects, new_sphere(6, vec3_new(-12, 10, 70), color_new(120, 36, 237)));
-
-lst_push(objects, new_sphere(6, vec3_new(12, 10, 10), color_new(120, 36, 237)));
-lst_push(objects, new_sphere(6, vec3_new(12, 10, 20), color_new(120, 36, 237)));
-lst_push(objects, new_sphere(6, vec3_new(12, 10, 30), color_new(120, 36, 237)));
-lst_push(objects, new_sphere(6, vec3_new(12, 10, 40), color_new(120, 36, 237)));
-lst_push(objects, new_sphere(6, vec3_new(12, 10, 50), color_new(120, 36, 237)));
-lst_push(objects, new_sphere(6, vec3_new(12, 10, 60), color_new(120, 36, 237)));
-lst_push(objects, new_sphere(6, vec3_new(12, 10, 70), color_new(120, 36, 237)));
-
-lst_push(objects, new_cylinder(4, 14, vec3_new(-12, 2, 10), vec3_new(0, 1, 0), color_new(0, 150, 150)));
-lst_push(objects, new_cylinder(4, 14, vec3_new(-12, 2, 20), vec3_new(0, 1, 0), color_new(0, 150, 150)));
-lst_push(objects, new_cylinder(4, 14, vec3_new(-12, 2, 30), vec3_new(0, 1, 0), color_new(0, 150, 150)));
-lst_push(objects, new_cylinder(4, 14, vec3_new(-12, 2, 40), vec3_new(0, 1, 0), color_new(0, 150, 150)));
-lst_push(objects, new_cylinder(4, 14, vec3_new(-12, 2, 50), vec3_new(0, 1, 0), color_new(0, 150, 150)));
-lst_push(objects, new_cylinder(4, 14, vec3_new(-12, 2, 60), vec3_new(0, 1, 0), color_new(0, 150, 150)));
-lst_push(objects, new_cylinder(4, 14, vec3_new(-12, 2, 70), vec3_new(0, 1, 0), color_new(0, 150, 150)));
-
-lst_push(objects, new_cylinder(4, 14, vec3_new(12, 2, 10), vec3_new(0, 1, 0), color_new(0, 150, 150)));
-lst_push(objects, new_cylinder(4, 14, vec3_new(12, 2, 20), vec3_new(0, 1, 0), color_new(0, 150, 150)));
-lst_push(objects, new_cylinder(4, 14, vec3_new(12, 2, 30), vec3_new(0, 1, 0), color_new(0, 150, 150)));
-lst_push(objects, new_cylinder(4, 14, vec3_new(12, 2, 40), vec3_new(0, 1, 0), color_new(0, 150, 150)));
-lst_push(objects, new_cylinder(4, 14, vec3_new(12, 2, 50), vec3_new(0, 1, 0), color_new(0, 150, 150)));
-lst_push(objects, new_cylinder(4, 14, vec3_new(12, 2, 60), vec3_new(0, 1, 0), color_new(0, 150, 150)));
-lst_push(objects, new_cylinder(4, 14, vec3_new(12, 2, 70), vec3_new(0, 1, 0), color_new(0, 150, 150)));
-
-lst_push(objects, new_square(70, vec3_new(8.5, -39, 35), vec3_new(1, 0, 0), color_new(36, 163, 237)));
-lst_push(objects, new_square(70, vec3_new(-8.5, -39, 35), vec3_new(1, 0, 0), color_new(36, 163, 237)));
-lst_push(objects, new_square(17.5, vec3_new(0, -12.5, 71), vec3_new(0, 0, 1), color_new(36, 163, 237)));
+t_list		*objects = parse_file(file);
 
 		*scene = (t_scene) { cameras, lights, objects, 0 };
 	}
 	return (scene);
 }
 
-int		render(t_vars *vars, char *file)
+int		render(t_vars *vars)
 {
 	t_scene *scene;
 
-	scene = get_scene(file);
+	scene = get_scene(NULL);
 	return (render2(vars, lst_get(scene->cameras, scene->index), scene));
 }
 
@@ -338,7 +299,7 @@ int		on_key_pressed(int i, t_vars *vars)
 	if (!started)
 	{
 		started = 1;
-		return (render(vars, "file.rt"));
+		return (render(vars));
 	}
 	if (started)
 	{
@@ -355,7 +316,7 @@ int		on_key_pressed(int i, t_vars *vars)
 			scene->index %= scene->cameras->size;
 			if (scene->index < 0)
 				scene->index = scene->cameras->size + scene->index;
-			return (render(vars, "file.rt"));
+			return (render(vars));
 		}
 	}
 	return (0);
@@ -365,30 +326,28 @@ int main(int argc, char **argv)
 {
 	t_vars	vars;
 
+	printf("Launching\n");
+
 	if (argc != 2)
 		return (0);
 
-	parse_file(argv[1]);
-	while (1);
-	
+	get_scene(argv[1]);
 
-// #if defined __linux__
-// 	XInitThreads();
-// #endif
+#if defined __linux__
+	XInitThreads();
+#endif
 
-// 	if (!(vars.mlx = mlx_init())) {
-// 		printf("Error, can't generate the frame\n");
-// 		exit(1);
-// 	}
+	if (!(vars.mlx = mlx_init())) {
+		printf("Error, can't generate the frame\n");
+		exit(1);
+	}
 
-// 	printf("Launching\n");
+	vars.win = mlx_new_window(vars.mlx, WID, HEI, "MiniRT - file.rt");
 
-// 	vars.win = mlx_new_window(vars.mlx, WID, HEI, "MiniRT - file.rt");
+	mlx_hook(vars.win, 17, 0L, &on_close, &vars);
+	mlx_key_hook(vars.win, &on_key_pressed, &vars);
+	mlx_string_put(vars.mlx, vars.win, 0, 50, ~0, "Press any key to start");
 
-// 	mlx_hook(vars.win, 17, 0L, &on_close, &vars);
-// 	mlx_key_hook(vars.win, &on_key_pressed, &vars);
-// 	mlx_string_put(vars.mlx, vars.win, 0, 50, ~0, "Press any key to start");
-
-// 	mlx_loop(vars.mlx);
-// 	pthread_exit(NULL);
+	mlx_loop(vars.mlx);
+	pthread_exit(NULL);
 }

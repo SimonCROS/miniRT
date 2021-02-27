@@ -12,6 +12,26 @@
 
 #include "minirt.h"
 
+t_object	*parse_triangle(t_list *data)
+{
+	t_vector3	p1;
+	t_vector3	p2;
+	t_vector3	p3;
+	t_color		color;
+	int			e;
+
+	if (data->size != 5)
+		return (NULL);
+	e = 1;
+	e = e && vec3_deserialize((char *)lst_get(data, 1), &p1);
+	e = e && vec3_deserialize((char *)lst_get(data, 2), &p2);
+	e = e && vec3_deserialize((char *)lst_get(data, 3), &p3);
+	e = e && color_deserialize((char *)lst_get(data, 4), &color);
+	if (!e)
+		return (NULL);
+	return (new_triangle(p1, p2, p3, color));
+}
+
 int	collides_triangle(void *arg1, void *arg2)
 {
 	t_ray		*ray;
@@ -48,7 +68,7 @@ t_object	*new_triangle(t_vector3 p1, t_vector3 p2, t_vector3 p3, t_color col)
 	cen = vec3_divd(vec3_addv(p1, vec3_addv(p2, p3)), 3);
 	d1 = vec3_subv(p2, p1);
 	d2 = vec3_subv(p3, p2);
-	plan = new_default_plan(cen, vec3_crossv(d1, d2), col, &collides_triangle);
+	plan = new_default_plane(cen, vec3_crossv(d1, d2), col, &collides_triangle);
 	if (!plan)
 		return (NULL);
 	plan->data.triangle.p1 = p1;

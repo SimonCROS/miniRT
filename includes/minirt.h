@@ -15,11 +15,11 @@
 
 # define NUM_THREADS 8
 
-# define WID 2560
-# define HEI 1440
+// # define WID 2560
+// # define HEI 1440
 
-// # define WID 960
-// # define HEI 540
+# define WID 960
+# define HEI 540
 
 // # define WID (960 / 4)
 // # define HEI (540 / 4)
@@ -84,7 +84,7 @@ typedef struct		s_thread_data
 	size_t			chunks;
 }					t_thread_data;
 
-t_scene				*parse_file(char *file);
+t_list				*parse_file(char *file);
 void				set_pixel(t_data *data, int x, int y, int color);
 
 #endif

@@ -1,16 +1,41 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   cylinder.c                                           :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/01/17 14:12:21 by scros             #+#    #+#             */
-/*   Updated: 2021/02/09 15:14:29 by scros            ###   ########lyon.fr   */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "minirt.h"
+
+static int	rot_deserialize(const char *str, t_vector3 *vector)
+{
+	t_vector3	rot;
+
+	if (!vec3_deserialize(str, &rot))
+		return (0);
+	if (rot.x < -1 || rot.x > 1 ||
+		rot.y < -1 || rot.y > 1 ||
+		rot.z < -1 || rot.z > 1)
+		return (0);
+	*vector = rot;
+	return (1);
+}
+
+t_object	*parse_cylinder(t_list *data)
+{
+	t_vector3	pos;
+	t_vector3	rot;
+	float		attr[2];
+	t_color		color;
+	int			e;
+
+	if (data->size != 6)
+		return (NULL);
+	e = 1;
+	e = e && vec3_deserialize((char *)lst_get(data, 1), &pos);
+	e = e && rot_deserialize((char *)lst_get(data, 2), &rot);
+	e = e && is_float((char *)lst_get(data, 3));
+	e = e && is_float((char *)lst_get(data, 4));
+	e = e && color_deserialize((char *)lst_get(data, 5), &color);
+	if (!e)
+		return (NULL);
+	attr[0] = fabsf(ft_atof((char *)lst_get(data, 3)));
+	attr[1] = fabsf(ft_atof((char *)lst_get(data, 4)));
+	return (new_cylinder(attr, pos, rot, color));
+}
 
 int test_intersect(float t[2], float *current_z)
 {
@@ -52,10 +77,10 @@ int			intersect_side(t_object *object, t_ray *ray)
 	t_ray to_bot;
 	to_bot.direction = object->rotation;
 	to_bot.origin = ray->phit;
-	if (!intersect_plan(object->data.cylinder.position2, object->rotation, &to_bot))
+	if (!intersect_plane(object->data.cylinder.position2, object->rotation, &to_bot))
 		return 0;
 	to_bot.direction = vec3_negate(object->rotation);
-	if (!intersect_plan(object->position, object->rotation, &to_bot))
+	if (!intersect_plane(object->position, object->rotation, &to_bot))
 		return 0;
 	t_vector3 point = vec3_addv(vec3_muld(object->rotation, to_bot.length), object->position);
 	ray->nhit = vec3_normalize(vec3_subv(ray->phit, point));
@@ -68,7 +93,7 @@ int			intersect_base(t_vector3 position, t_vector3 rotation, t_ray *ray, float r
 	float		d2;
 	t_vector3	p;
 
-	if (intersect_plan(position, rotation, ray))
+	if (intersect_plane(position, rotation, ray))
 	{
 		p = vec3_muld(ray->direction, ray->length);
 		p = vec3_addv(p, ray->origin);
@@ -119,14 +144,14 @@ int			collides_cylinder(void *arg1, void *arg2)
 	return collides;
 }
 
-t_object		*new_cylinder(float diametre, float height, t_vector3 position, t_vector3 rotation, t_color color)
+t_object		*new_cylinder(float *attrs, t_vector3 position, t_vector3 rotation, t_color color)
 {
 	t_object	*object;
 
-	if (!(object = new_default_object(vec3_subv(position, vec3_muld(rotation, height / 2)), rotation, color, &collides_cylinder)))
+	if (!(object = new_default_object(vec3_subv(position, vec3_muld(rotation, attrs[1] / 2)), rotation, color, &collides_cylinder)))
 		return (NULL);
-	object->data.cylinder.radius = diametre / 2;
-	object->data.cylinder.height = height;
-	object->data.cylinder.position2 = vec3_addv(position, vec3_muld(rotation, height / 2));
+	object->data.cylinder.radius = attrs[0] / 2;
+	object->data.cylinder.height = attrs[1];
+	object->data.cylinder.position2 = vec3_addv(position, vec3_muld(rotation, attrs[1] / 2));
 	return (object);
 }
