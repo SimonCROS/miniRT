@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 13:03:09 by scros             #+#    #+#             */
-/*   Updated: 2021/02/27 15:21:47 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/02/27 15:27:25 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -265,7 +265,7 @@ lst_push(cameras, new_camera(vec3_new(40, 30, 0), vec3_new(-1, -1, -1), FOV));
 lst_push(cameras, new_camera(vec3_new(12, 20, -90), vec3_new(-0.5, -0.6, 1), FOV));
 
 t_list		*lights = lst_new(&free);
-lst_push(lights, new_light(0.7, vec3_new(0, 2, 20), color_new(255, 255, 255)));
+lst_push(lights, new_light(0.7, vec3_new(0, 2, 10), color_new(255, 255, 255)));
 lst_push(lights, new_light(0.7, vec3_new(0, 2, -15), color_new(255, 255, 255)));
 lst_push(lights, new_light(0.7, vec3_new(0, 2, -40), color_new(255, 255, 255)));
 lst_push(lights, new_light(0.7, vec3_new(0, 2, -65), color_new(255, 255, 255)));
