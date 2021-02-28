@@ -30,21 +30,18 @@ t_camera	*parse_camera(t_list *data)
 {
 	t_vector3	pos;
 	t_vector3	rot;
-	float		width;
-	t_color		color;
+	int			fov;
 	int			e;
 
-	if (data->size != 5)
+	if (data->size != 4)
 		return (NULL);
 	e = 1;
 	e = e && vec3_deserialize((char *)lst_get(data, 1), &pos);
 	e = e && rot_deserialize((char *)lst_get(data, 2), &rot);
-	e = e && is_int((char *)lst_get(data, 3));
-	e = e && color_deserialize((char *)lst_get(data, 4), &color);
-	if (!e)
+	e = e && ft_atoi_full((char *)lst_get(data, 3), &fov);
+	if (!e || fov < 0 || fov > 180)
 		return (NULL);
-	width = fabsf(ft_atof((char *)lst_get(data, 3)));
-	return (new_square(width, pos, rot, color));
+	return (new_camera(pos, rot, fov));
 }
 
 t_matrix44	look_at(t_vector3 from, t_vector3 to)

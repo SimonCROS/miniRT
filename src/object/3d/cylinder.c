@@ -27,13 +27,13 @@ t_object	*parse_cylinder(t_list *data)
 	e = 1;
 	e = e && vec3_deserialize((char *)lst_get(data, 1), &pos);
 	e = e && rot_deserialize((char *)lst_get(data, 2), &rot);
-	e = e && is_float((char *)lst_get(data, 3));
-	e = e && is_float((char *)lst_get(data, 4));
+	e = e && ft_atof_full((char *)lst_get(data, 3), &(attr[0]));
+	e = e && ft_atof_full((char *)lst_get(data, 4), &(attr[1]));
 	e = e && color_deserialize((char *)lst_get(data, 5), &color);
 	if (!e)
 		return (NULL);
-	attr[0] = fabsf(ft_atof((char *)lst_get(data, 3)));
-	attr[1] = fabsf(ft_atof((char *)lst_get(data, 4)));
+	attr[0] = fabsf(attr[0]);
+	attr[1] = fabsf(attr[1]);
 	return (new_cylinder(attr, pos, rot, color));
 }
 

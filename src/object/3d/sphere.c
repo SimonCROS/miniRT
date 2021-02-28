@@ -23,11 +23,11 @@ t_object	*parse_sphere(t_list *data)
 		return (NULL);
 	e = 1;
 	e = e && vec3_deserialize((char *)lst_get(data, 1), &pos);
-	e = e && is_float((char *)lst_get(data, 2));
+	e = e && ft_atof_full((char *)lst_get(data, 2), &diametre);
 	e = e && color_deserialize((char *)lst_get(data, 3), &color);
 	if (!e)
 		return (NULL);
-	diametre = fabsf(ft_atof((char *)lst_get(data, 2)));
+	diametre = fabsf(diametre);
 	return (new_sphere(diametre, pos, color));
 }
 

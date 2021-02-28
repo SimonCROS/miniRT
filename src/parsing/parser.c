@@ -9,10 +9,10 @@ void	parse(t_list *line, t_scene *scene)
 	// 	parse_resolution(scene);
 	// else if (ft_strcmp(lst_first(line), "A") == 0)
 	// 	parse_ambiant(scene);
-	// else if (ft_strcmp(lst_first(line), "c") == 0)
-	// 	lst_push(scene->cameras, parse_camera(line));
-	// else 
-	if (ft_strcmp(lst_first(line), "l") == 0)
+	// else
+	if (ft_strcmp(lst_first(line), "c") == 0)
+		lst_push(scene->cameras, parse_camera(line));
+	else if (ft_strcmp(lst_first(line), "l") == 0)
 		lst_push(scene->lights, parse_light(line));
 	else if (ft_strcmp(lst_first(line), "tr") == 0)
 		lst_push(scene->objects, parse_triangle(line));
@@ -37,7 +37,7 @@ t_scene	*parse_file(char *file)
 	if (!(scene = malloc(sizeof(t_scene))))
 		return (NULL);
 	scene->index = 0;
-	// scene->cameras = lst_new(&free);
+	scene->cameras = lst_new(&free);
 	scene->lights = lst_new(&free);
 	scene->objects = lst_new(&free);
 

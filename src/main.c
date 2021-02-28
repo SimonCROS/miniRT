@@ -256,15 +256,9 @@ t_scene	*get_scene(char *file)
 
 	if (!scene)
 	{
-		if (!(scene = parse_file(file)))
+		scene = parse_file(file);
+		if (!scene)
 			return (NULL);
-
-		t_list		*cameras = lst_new(&free);
-lst_push(cameras, new_camera(vec3_new(0, 2, 0), vec3_new(0, 0, -1), FOV));
-lst_push(cameras, new_camera(vec3_new(40, 30, 0), vec3_new(-1, -1, -1), FOV));
-lst_push(cameras, new_camera(vec3_new(12, 20, -90), vec3_new(-0.5, -0.6, 1), FOV));
-
-		scene->cameras = cameras;
 	}
 	return (scene);
 }
