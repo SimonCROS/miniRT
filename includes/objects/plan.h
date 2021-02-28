@@ -51,14 +51,14 @@ typedef struct		s_triangle
 	t_vector3		p3;
 }					t_triangle;
 
-typedef union		u_type
+typedef union		u_object_data
 {
 	t_square		square;
 	t_sphere		sphere;
 	t_circle		circle;
 	t_cylinder		cylinder;
 	t_triangle		triangle;
-}					t_type;
+}					t_object_data;
 
 typedef struct		s_object
 {
@@ -67,7 +67,7 @@ typedef struct		s_object
 	t_vector3		rotation;
 	int				is_plane;
 	t_color			color;
-	t_type			data;
+	t_object_data	data;
 }					t_object;
 
 t_object			*new_sphere(float diametre, t_vector3 position, t_color color);

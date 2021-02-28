@@ -18,8 +18,8 @@
 # include <X11/Xlib.h>
 #endif
 
-static pthread_mutex_t mutex_flush		= PTHREAD_MUTEX_INITIALIZER;
-static pthread_mutex_t mutex_running	= PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t g_mutex_flush	= PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t g_mutex_running	= PTHREAD_MUTEX_INITIALIZER;
 
 /*
 ** If request == 0, reset the current thread id, set the chunk_count, and
@@ -188,17 +188,17 @@ void	*render_thread(void *thread_data)
 	data = thread_data;
 	while (1)
 	{
-		pthread_mutex_lock(&mutex_running);
+		pthread_mutex_lock(&g_mutex_running);
 		chunk_id = next_chunk(1, 0);
-		pthread_mutex_unlock(&mutex_running);
+		pthread_mutex_unlock(&g_mutex_running);
 		if (chunk_id == -1)
 			break ;
 		chunk_x = chunk_id % (int)ceilf(WID / (float)CHUNK_WID) * data->chunk_width;
 		chunk_y = chunk_id / (int)ceilf(WID / (float)CHUNK_WID) * data->chunk_height;
 		render_chunk((t_thread_data*)data, chunk_x, chunk_y);
-		pthread_mutex_lock(&mutex_flush);
+		pthread_mutex_lock(&g_mutex_flush);
 		force_put_image(data->vars, &(data->image));
-		pthread_mutex_unlock(&mutex_flush);
+		pthread_mutex_unlock(&g_mutex_flush);
 	}
 	free(thread_data);
 	pthread_exit(NULL);
@@ -256,7 +256,7 @@ t_scene	*get_scene(char *file)
 
 	if (!scene)
 	{
-		if (!(scene = malloc(sizeof(t_scene))))
+		if (!(scene = parse_file(file)))
 			return (NULL);
 
 		t_list		*cameras = lst_new(&free);
@@ -264,15 +264,7 @@ lst_push(cameras, new_camera(vec3_new(0, 2, 0), vec3_new(0, 0, -1), FOV));
 lst_push(cameras, new_camera(vec3_new(40, 30, 0), vec3_new(-1, -1, -1), FOV));
 lst_push(cameras, new_camera(vec3_new(12, 20, -90), vec3_new(-0.5, -0.6, 1), FOV));
 
-t_list		*lights = lst_new(&free);
-lst_push(lights, new_light(0.7, vec3_new(0, 2, 10), color_new(255, 255, 255)));
-lst_push(lights, new_light(0.7, vec3_new(0, 2, -15), color_new(255, 255, 255)));
-lst_push(lights, new_light(0.7, vec3_new(0, 2, -40), color_new(255, 255, 255)));
-lst_push(lights, new_light(0.7, vec3_new(0, 2, -65), color_new(255, 255, 255)));
-
-t_list		*objects = parse_file(file);
-
-		*scene = (t_scene) { cameras, lights, objects, 0 };
+		scene->cameras = cameras;
 	}
 	return (scene);
 }

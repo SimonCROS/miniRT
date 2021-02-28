@@ -81,7 +81,7 @@ typedef struct		s_thread_data
 	size_t			chunks;
 }					t_thread_data;
 
-t_list				*parse_file(char *file);
+t_scene				*parse_file(char *file);
 void				set_pixel(t_data *data, int x, int y, int color);
 
 #endif
