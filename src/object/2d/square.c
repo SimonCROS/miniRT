@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/12 15:44:13 by scros             #+#    #+#             */
-/*   Updated: 2021/02/10 14:18:57 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/03/01 11:02:41 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ t_object	*parse_square(t_list *data)
 	e = e && color_deserialize((char *)lst_get(data, 4), &color);
 	if (!e)
 		return (NULL);
-	fabsf(width);
+	width = fabsf(width);
 	return (new_square(width, pos, rot, color));
 }
 

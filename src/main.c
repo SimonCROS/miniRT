@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 13:03:09 by scros             #+#    #+#             */
-/*   Updated: 2021/02/27 16:23:23 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/03/01 15:32:26 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,7 +128,7 @@ void	render_chunk(t_thread_data *data, int start_x, int start_y)
 
 			if (!object)
 				continue;
-			ray.color = color_mulf(object->color, 0.2);
+			ray.color = color_mul(object->color, *(data->scene->ambiant));
 
 			while (iterator_has_next(&lightIterator))
 			{
@@ -178,14 +178,16 @@ void	force_put_image(t_vars *vars, t_data *image)
 	mlx_put_image_to_window(vars->mlx, vars->win, image->img, 0, 0);
 }
 
-void	*render_thread(void *thread_data)
+void	*render_thread(t_thread_data *data)
 {
-	t_thread_data	*data;
+	t_render_params	*params;
 	int				chunk_id;
 	int				chunk_x;
 	int				chunk_y;
+	int				ratio;
 
-	data = thread_data;
+	params = data->scene->render;
+	ratio = (int)ceilf(params->width / (float)params->chunk_width);
 	while (1)
 	{
 		pthread_mutex_lock(&g_mutex_running);
@@ -193,52 +195,52 @@ void	*render_thread(void *thread_data)
 		pthread_mutex_unlock(&g_mutex_running);
 		if (chunk_id == -1)
 			break ;
-		chunk_x = chunk_id % (int)ceilf(WID / (float)CHUNK_WID) * data->chunk_width;
-		chunk_y = chunk_id / (int)ceilf(WID / (float)CHUNK_WID) * data->chunk_height;
+		chunk_x = chunk_id % ratio * data->chunk_width;
+		chunk_y = chunk_id / ratio * data->chunk_height;
 		render_chunk((t_thread_data*)data, chunk_x, chunk_y);
 		pthread_mutex_lock(&g_mutex_flush);
 		force_put_image(data->vars, &(data->image));
 		pthread_mutex_unlock(&g_mutex_flush);
 	}
-	free(thread_data);
+	free(data);
 	pthread_exit(NULL);
 }
 
 int		render2(t_vars *vars, t_camera *camera, t_scene *scene)
 {
-	static pthread_t		threads[NUM_THREADS];
+	static pthread_t		threads[MAX_THREADS];
 	t_data					img;
 	t_thread_data			data;
 	t_thread_data			*malloced_data;
+	t_render_params			*params;
 	int						thread_id;
 
+	params = scene->render;
 	if (camera->render)
 	{
 		mlx_put_image_to_window(vars->mlx, vars->win, camera->render, 0, 0);
 		return (0);
 	}
-	img.img = mlx_new_image(vars->mlx, WID, HEI);
+	img.img = mlx_new_image(vars->mlx, params->width, params->height);
 	img.addr = mlx_get_data_addr(img.img, &img.bits_per_pixel, &img.line_length, &img.endian);
 
 	thread_id = 0;
 	data.vars = vars;
 	data.image = img;
-	data.width = WID;
-	data.height = HEI;
+	data.width = params->width;
+	data.height = params->height;
 	data.camera = camera;
 	data.scene = scene;
-	data.chunk_width = CHUNK_WID;
-	data.chunk_height = CHUNK_HEI;
-	data.chunks = ceilf(WID / (float)CHUNK_WID) * ceilf(HEI / (float)CHUNK_HEI);
+	data.chunks = ceilf(params->width / (float)params->chunk_width) * ceilf(params->height / (float)params->chunk_height);
 	next_chunk(0, data.chunks);
 	
-	while (thread_id < NUM_THREADS)
+	while (thread_id < params->threads)
 	{
 		if (!(malloced_data = malloc(sizeof(t_thread_data))))
 			return (1);
 		*malloced_data = data;
 		data.id = thread_id;
-		if (pthread_create(&threads[thread_id], NULL, render_thread, malloced_data))
+		if (pthread_create(&threads[thread_id], NULL, (t_fun)render_thread, malloced_data))
 		{
 			printf("\33[31mUnable to create a thread.");
 			free(malloced_data);

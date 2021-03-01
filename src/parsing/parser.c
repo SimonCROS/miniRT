@@ -3,14 +3,30 @@
 #include <fcntl.h>
 #include <stdio.h>
 
+t_color	*parse_ambiant(t_list *data)
+{
+	float		brightness;
+	t_color		color;
+	int			e;
+
+	if (data->size != 3)
+		return (NULL);
+	e = 1;
+	e = e && ft_atof_full((char *)lst_get(data, 1), &brightness);
+	e = e && color_deserialize((char *)lst_get(data, 2), &color);
+	if (!e || brightness < 0 || brightness > 1)
+		return (NULL);
+	return (color_clone(color_mulf(color, brightness)));
+}
+
 void	parse(t_list *line, t_scene *scene)
 {
 	// if (ft_strcmp(lst_first(line), "R") == 0)
 	// 	parse_resolution(scene);
-	// else if (ft_strcmp(lst_first(line), "A") == 0)
-	// 	parse_ambiant(scene);
-	// else
-	if (ft_strcmp(lst_first(line), "c") == 0)
+	// else 
+	if (ft_strcmp(lst_first(line), "A") == 0 && !(scene->ambiant))
+		scene->ambiant = parse_ambiant(line);
+	else if (ft_strcmp(lst_first(line), "c") == 0)
 		lst_push(scene->cameras, parse_camera(line));
 	else if (ft_strcmp(lst_first(line), "l") == 0)
 		lst_push(scene->lights, parse_light(line));
@@ -24,6 +40,7 @@ void	parse(t_list *line, t_scene *scene)
 		lst_push(scene->objects, parse_sphere(line));
 	else if (ft_strcmp(lst_first(line), "cy") == 0)
 		lst_push(scene->objects, parse_cylinder(line));
+	// TODO errno
 }
 
 t_scene	*parse_file(char *file)
@@ -37,6 +54,7 @@ t_scene	*parse_file(char *file)
 	if (!(scene = malloc(sizeof(t_scene))))
 		return (NULL);
 	scene->index = 0;
+	scene->ambiant = NULL;
 	scene->cameras = lst_new(&free);
 	scene->lights = lst_new(&free);
 	scene->objects = lst_new(&free);

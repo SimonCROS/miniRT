@@ -6,28 +6,14 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/12 12:31:12 by scros             #+#    #+#             */
-/*   Updated: 2021/02/27 15:22:43 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/03/01 15:29:53 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINIRT_H
 # define MINIRT_H
 
-# define NUM_THREADS 8
-
-// # define WID 2560
-// # define HEI 1440
-
-# define WID 960
-# define HEI 540
-
-# define FOV 60
-
-// # define CHUNK_WID 240
-// # define CHUNK_HEI 270
-
-# define CHUNK_WID 50
-# define CHUNK_HEI 50
+# define MAX_THREADS 16
 
 # define BUFFER_SIZE 50
 
@@ -58,10 +44,20 @@ typedef struct		s_vars {
 	void			*win;
 }					t_vars;
 
+typedef struct		s_render_params {
+	int				width;
+	int				height;
+	int				threads;
+	int				chunk_width;
+	int				chunk_height;
+}					t_render_params;
+
 typedef struct		s_scene {
+	t_render_params	*render;
 	t_list			*cameras;
 	t_list			*lights;
 	t_list			*objects;
+	t_color			*ambiant;
 	int				index;
 }					t_scene;
 
