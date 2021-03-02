@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/12 12:31:12 by scros             #+#    #+#             */
-/*   Updated: 2021/03/01 15:29:53 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/03/02 10:41:27 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,8 +72,6 @@ typedef struct		s_thread_data
 	t_camera		*camera;
 	t_scene			*scene;
 	int				id;
-	size_t			chunk_width;
-	size_t			chunk_height;
 	size_t			chunks;
 }					t_thread_data;
 

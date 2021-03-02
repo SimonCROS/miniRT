@@ -3,6 +3,31 @@
 #include <fcntl.h>
 #include <stdio.h>
 
+t_render_params	*parse_render(t_list *data)
+{
+	t_render_params	params;
+	t_render_params	*render_data;
+	t_color		color;
+	int			e;
+
+	if (data->size != 6)
+		return (NULL);
+	e = 1;
+	e = e && ft_atoi_full((char *)lst_get(data, 1), &params.width);
+	e = e && ft_atoi_full((char *)lst_get(data, 2), &params.height);
+	e = e && ft_atoi_full((char *)lst_get(data, 3), &params.threads);
+	e = e && ft_atoi_full((char *)lst_get(data, 4), &params.chunk_width);
+	e = e && ft_atoi_full((char *)lst_get(data, 5), &params.chunk_height);
+	if (!e || params.width < 1 || params.height < 1 || params.chunk_width < 1
+		|| params.chunk_height < 1 || params.threads < 1
+		|| params.threads > MAX_THREADS)
+		return (NULL);
+	render_data = malloc(sizeof(t_render_params));
+	if (render_data)
+		*render_data = params;
+	return (render_data);
+}
+
 t_color	*parse_ambiant(t_list *data)
 {
 	float		brightness;
@@ -21,10 +46,9 @@ t_color	*parse_ambiant(t_list *data)
 
 void	parse(t_list *line, t_scene *scene)
 {
-	// if (ft_strcmp(lst_first(line), "R") == 0)
-	// 	parse_resolution(scene);
-	// else 
-	if (ft_strcmp(lst_first(line), "A") == 0 && !(scene->ambiant))
+	if (ft_strcmp(lst_first(line), "R") == 0)
+		scene->render = parse_render(line);
+	else if (ft_strcmp(lst_first(line), "A") == 0 && !(scene->ambiant))
 		scene->ambiant = parse_ambiant(line);
 	else if (ft_strcmp(lst_first(line), "c") == 0)
 		lst_push(scene->cameras, parse_camera(line));

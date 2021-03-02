@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 13:03:09 by scros             #+#    #+#             */
-/*   Updated: 2021/03/01 15:32:26 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/03/02 10:42:24 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,18 +68,20 @@ int		on_close(t_vars *vars)
 	return (0);
 }
 
-t_ray	compute_ray(t_camera *camera, float x, float y)
+t_ray	compute_ray(t_render_params *render, t_camera *camera, float x, float y)
 {
-	static float ratio = WID / (float) HEI;
+	static float ratio;
 	static float hypo_len;
 	t_ray ray;
 	float px;
 	float py;
 
+	if (!ratio)
+		ratio = render->width / (float) render->height;
 	if (!hypo_len)
 		hypo_len = tan(camera->fov / 2 * M_PI / 180);
-	px = (2 * ((x + 0.5) / WID) - 1) * hypo_len * ratio;
-	py = (1 - 2 * ((y + 0.5) / HEI)) * hypo_len;
+	px = (2 * ((x + 0.5) / render->width) - 1) * hypo_len * ratio;
+	py = (1 - 2 * ((y + 0.5) / render->height)) * hypo_len;
 	ray.direction = vec3_normalize(vec3_new(px, py, -1));
 	ray.direction = vec3_normalize(mat44_mul_vec(camera->c2w, ray.direction));
 	ray.color = color_new(0, 0, 0);
@@ -95,19 +97,19 @@ void	render_chunk(t_thread_data *data, int start_x, int start_y)
 	t_iterator		objectIterator = iterator_new(data->scene->objects);
 	t_iterator		lightIterator = iterator_new(data->scene->lights);
 
-	for (size_t x = start_x; x < start_x + data->chunk_width; x++)
+	for (size_t x = start_x; x < start_x + data->scene->render->chunk_width; x++)
 	{
 		if (x >= data->width)
 			break;
-		for (size_t y = start_y; y < start_y + data->chunk_height; y++)
+		for (size_t y = start_y; y < start_y + data->scene->render->chunk_height; y++)
 		{
 			if (y >= data->height)
 				break;
 
-			t_ray			ray = compute_ray(data->camera, x, y);
-			t_object		*object = NULL;
-			t_object		*object_test;
-			t_ray			obj_ray;
+			t_ray	ray = compute_ray(data->scene->render, data->camera, x, y);
+			t_object	*object = NULL;
+			t_object	*object_test;
+			t_ray	obj_ray;
 
 			while (iterator_has_next(&objectIterator))
 			{
@@ -195,8 +197,8 @@ void	*render_thread(t_thread_data *data)
 		pthread_mutex_unlock(&g_mutex_running);
 		if (chunk_id == -1)
 			break ;
-		chunk_x = chunk_id % ratio * data->chunk_width;
-		chunk_y = chunk_id / ratio * data->chunk_height;
+		chunk_x = chunk_id % ratio * params->chunk_width;
+		chunk_y = chunk_id / ratio * params->chunk_height;
 		render_chunk((t_thread_data*)data, chunk_x, chunk_y);
 		pthread_mutex_lock(&g_mutex_flush);
 		force_put_image(data->vars, &(data->image));
@@ -311,13 +313,16 @@ int		on_key_pressed(int i, t_vars *vars)
 int main(int argc, char **argv)
 {
 	t_vars	vars;
+	t_scene	*scene;
+	char	*name;
+	char	*truncated;
 
 	printf("Launching\n");
 
 	if (argc != 2)
 		return (0);
 
-	get_scene(argv[1]);
+	scene = get_scene(argv[1]);
 
 #if defined __linux__
 	XInitThreads();
@@ -327,8 +332,11 @@ int main(int argc, char **argv)
 		printf("Error, can't generate the frame\n");
 		exit(1);
 	}
-
-	vars.win = mlx_new_window(vars.mlx, 960, 540, "MiniRT - file.rt");
+	name = ft_strjoin("MiniRT - ", argv[1]);
+	if (!name)
+		return (0); // TODO
+	vars.win = mlx_new_window(vars.mlx, scene->render->width, scene->render->height, name);
+	free(name);
 
 	mlx_hook(vars.win, 17, 0L, &on_close, &vars);
 	mlx_key_hook(vars.win, &on_key_pressed, &vars);
