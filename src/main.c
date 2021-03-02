@@ -6,12 +6,13 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 13:03:09 by scros             #+#    #+#             */
-/*   Updated: 2021/03/02 10:42:24 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/03/02 16:04:09 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
 #include "matrix.h"
+#include "bitmap.h"
 #include <pthread.h>
 #include <stdio.h>
 #if defined __linux__
@@ -52,12 +53,12 @@ int		next_chunk(int request, int chunk_count)
 	return (id);
 }
 
-void	set_pixel(t_data *data, int x, int y, int color)
+void	mlx_set_pixel(t_data *data, int x, int y, t_color color)
 {
 	char	*dst;
 
 	dst = data->addr + (y * data->line_length + x * (data->bits_per_pixel / 8));
-	*(unsigned int*)dst = color;
+	*(unsigned int*)dst = color_to_hex(color);
 }
 
 int		on_close(t_vars *vars)
@@ -165,7 +166,7 @@ void	render_chunk(t_thread_data *data, int start_x, int start_y)
 				ray.color = color_add(ray.color, color_mul(object->color, color_mulf(color_mulf(light->color, light->brightness), atm)));
 			}
 			iterator_reset(&lightIterator);
-			set_pixel(image, x, y, color_to_hex(ray.color));
+			data->vars->put_pixel(image, x, y, ray.color);
 		}
 	}
 }
@@ -218,11 +219,6 @@ int		render2(t_vars *vars, t_camera *camera, t_scene *scene)
 	int						thread_id;
 
 	params = scene->render;
-	if (camera->render)
-	{
-		mlx_put_image_to_window(vars->mlx, vars->win, camera->render, 0, 0);
-		return (0);
-	}
 	img.img = mlx_new_image(vars->mlx, params->width, params->height);
 	img.addr = mlx_get_data_addr(img.img, &img.bits_per_pixel, &img.line_length, &img.endian);
 
@@ -269,10 +265,17 @@ t_scene	*get_scene(char *file)
 
 int		render(t_vars *vars)
 {
-	t_scene *scene;
+	t_scene		*scene;
+	t_camera	*camera;
 
 	scene = get_scene(NULL);
-	return (render2(vars, lst_get(scene->cameras, scene->index), scene));
+	camera = lst_get(scene->cameras, scene->index);
+	if (camera->render)
+	{
+		mlx_put_image_to_window(vars->mlx, vars->win, camera->render, 0, 0);
+		return (0);
+	}
+	return (render2(vars, camera, scene));
 }
 
 int		on_key_pressed(int i, t_vars *vars)
@@ -310,32 +313,23 @@ int		on_key_pressed(int i, t_vars *vars)
 	return (0);
 }
 
-int main(int argc, char **argv)
+void	load_frame(char *file, t_scene *scene)
 {
-	t_vars	vars;
-	t_scene	*scene;
 	char	*name;
-	char	*truncated;
+	t_vars	vars;
 
-	printf("Launching\n");
-
-	if (argc != 2)
-		return (0);
-
-	scene = get_scene(argv[1]);
-
-#if defined __linux__
-	XInitThreads();
-#endif
-
+	#if defined __linux__
+		XInitThreads();
+	#endif
 	if (!(vars.mlx = mlx_init())) {
 		printf("Error, can't generate the frame\n");
 		exit(1);
 	}
-	name = ft_strjoin("MiniRT - ", argv[1]);
+	name = ft_strjoin("MiniRT - ", file);
 	if (!name)
-		return (0); // TODO
+		return ; // TODO
 	vars.win = mlx_new_window(vars.mlx, scene->render->width, scene->render->height, name);
+	vars.put_pixel = (t_pixel_writer)mlx_set_pixel;
 	free(name);
 
 	mlx_hook(vars.win, 17, 0L, &on_close, &vars);
@@ -343,5 +337,37 @@ int main(int argc, char **argv)
 	mlx_string_put(vars.mlx, vars.win, 0, 50, ~0, "Press any key to start");
 
 	mlx_loop(vars.mlx);
+}
+
+void	load_image(char *file, t_scene *scene)
+{
+	t_bitmap	*image;
+
+	image = bmp_init(scene->render->width, scene->render->height, 3);
+	if (!image)
+		return ;
+}
+
+int main(int argc, char **argv)
+{
+	t_scene	*scene;
+	int		save;
+
+	printf("Launching\n");
+
+	save = 0;
+	if (argc != 2)
+	{
+		if (argc == 3 && !ft_strcmp(argv[2], "--save"))
+			save = 1;
+		else
+			return (0);
+	}
+
+	scene = get_scene(argv[1]);
+	if (save)
+		load_image(argv[1], scene);
+	else
+		load_frame(argv[1], scene);
 	pthread_exit(NULL);
 }

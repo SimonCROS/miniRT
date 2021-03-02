@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/12 12:31:12 by scros             #+#    #+#             */
-/*   Updated: 2021/03/02 10:41:27 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/03/02 15:59:27 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 
 # include <math.h>
 # include "libft.h"
+# include "bitmap.h"
 # include "mlx.h"
 
 typedef struct		s_data {
@@ -39,9 +40,15 @@ typedef struct		s_ray {
 	float			light;
 }					t_ray;
 
+typedef	void		(*t_pixel_writer)(void *, uint32_t, uint32_t, t_color);
+
 typedef struct		s_vars {
 	void			*mlx;
 	void			*win;
+	t_bitmap		*bmp;
+	t_pixel_writer	put_pixel;
+	t_biconsumer	on_refresh;
+	t_biconsumer	on_finish;
 }					t_vars;
 
 typedef struct		s_render_params {
