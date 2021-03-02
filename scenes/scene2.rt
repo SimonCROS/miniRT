@@ -1,11 +1,12 @@
-t_list		*cameras = lst_new(&free);
-lst_push(cameras, new_camera(vec3_new(0, 10, -30), vec3_new(0, 0, 1), FOV));
+R       960 540           4 200 200
+A       0.2                                                   255,255,255
 
-t_list		*lights = lst_new(&free);
-lst_push(lights, new_light(1, vec3_new(-8.66, 5, -15), color_new(255, 0, 0)));
-lst_push(lights, new_light(1, vec3_new(0, 20, -15), color_new(0, 255, 0)));
-lst_push(lights, new_light(1, vec3_new(8.66, 5, -15), color_new(0, 0, 255)));
+c       0,10,30           0,0,-1            60
 
-t_list		*objects = lst_new(&free);
-lst_push(objects, new_sphere(10, vec3_new(0, 10, 0), color_new(255, 255, 255)));
-lst_push(objects, new_triangle(vec3_new(-12.99, 2.5, 0), vec3_new(0, 25, 0), vec3_new(12.99, 2.5, 0), color_new(150, 150, 150)));
+l       -8.66,5,15                          1                 255,0,0
+l       0,20,15                             1                 0,255,0
+l       8.66,5,15                           1                 0,0,255
+
+tr      -12.99,2.5,0      0,25,0            12.99,2.5,0       150,150,150
+
+sp      0,10,0                              10                255,255,255
