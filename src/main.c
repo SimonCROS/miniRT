@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 13:03:09 by scros             #+#    #+#             */
-/*   Updated: 2021/03/02 16:04:09 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/03/03 16:07:27 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ int		next_chunk(int request, int chunk_count)
 	return (id);
 }
 
-void	mlx_set_pixel(t_data *data, int x, int y, t_color color)
+void	mlx_set_pixel(t_image *data, int x, int y, t_color color)
 {
 	char	*dst;
 
@@ -94,7 +94,6 @@ t_ray	compute_ray(t_render_params *render, t_camera *camera, float x, float y)
 
 void	render_chunk(t_thread_data *data, int start_x, int start_y)
 {
-	t_data			*image = &(data->image);
 	t_iterator		objectIterator = iterator_new(data->scene->objects);
 	t_iterator		lightIterator = iterator_new(data->scene->lights);
 
@@ -166,12 +165,12 @@ void	render_chunk(t_thread_data *data, int start_x, int start_y)
 				ray.color = color_add(ray.color, color_mul(object->color, color_mulf(color_mulf(light->color, light->brightness), atm)));
 			}
 			iterator_reset(&lightIterator);
-			data->vars->put_pixel(image, x, y, ray.color);
+			data->vars->set_pixel(data->image, x, y, ray.color);
 		}
 	}
 }
 
-void	force_put_image(t_vars *vars, t_data *image)
+void	force_put_image(t_vars *vars, t_image *image)
 {
 #if defined __APPLE__
 	mlx_sync(MLX_SYNC_WIN_FLUSH_CMD, vars->win);
@@ -200,31 +199,57 @@ void	*render_thread(t_thread_data *data)
 			break ;
 		chunk_x = chunk_id % ratio * params->chunk_width;
 		chunk_y = chunk_id / ratio * params->chunk_height;
-		render_chunk((t_thread_data*)data, chunk_x, chunk_y);
+		render_chunk(data, chunk_x, chunk_y);
 		pthread_mutex_lock(&g_mutex_flush);
-		force_put_image(data->vars, &(data->image));
+		if (data->vars->on_refresh)
+			data->vars->on_refresh(data->vars, data->image);
 		pthread_mutex_unlock(&g_mutex_flush);
 	}
 	free(data);
 	pthread_exit(NULL);
 }
 
+t_image	*mlx_init_image(t_vars *vars, t_render_params *params)
+{
+	t_image *img;
+
+	img = malloc(sizeof(t_image));
+	if (!img)
+		return (NULL);
+	img->img = mlx_new_image(vars->mlx, params->width, params->height);
+	img->addr = mlx_get_data_addr(img->img, &img->bits_per_pixel, &img->line_length, &img->endian);
+	return (img);
+}
+
+t_bitmap	*bmp_init_image(t_vars *vars, t_render_params *params)
+{
+	return (bmp_init(params->width, params->height));
+}
+
+void	mlx_finished(t_camera *camera, t_image *image)
+{
+	camera->render = image->img;
+	free(image);
+}
+
+void	bmp_finished(t_camera *camera, t_bitmap *image)
+{
+	bmp_save("render.bmp", image);
+	free(image);
+}
+
 int		render2(t_vars *vars, t_camera *camera, t_scene *scene)
 {
 	static pthread_t		threads[MAX_THREADS];
-	t_data					img;
 	t_thread_data			data;
 	t_thread_data			*malloced_data;
 	t_render_params			*params;
 	int						thread_id;
 
 	params = scene->render;
-	img.img = mlx_new_image(vars->mlx, params->width, params->height);
-	img.addr = mlx_get_data_addr(img.img, &img.bits_per_pixel, &img.line_length, &img.endian);
-
 	thread_id = 0;
 	data.vars = vars;
-	data.image = img;
+	data.image = vars->init_image(vars, params);
 	data.width = params->width;
 	data.height = params->height;
 	data.camera = camera;
@@ -246,7 +271,13 @@ int		render2(t_vars *vars, t_camera *camera, t_scene *scene)
 		}
 		thread_id++;
 	}
-	camera->render = img.img;
+	thread_id = 0;
+	while (thread_id < params->threads)
+	{
+		pthread_join(threads[thread_id], NULL);
+		thread_id++;
+	}
+	vars->on_finished(camera, data.image);
 	return (0);
 }
 
@@ -270,9 +301,9 @@ int		render(t_vars *vars)
 
 	scene = get_scene(NULL);
 	camera = lst_get(scene->cameras, scene->index);
-	if (camera->render)
+	if (camera->render && vars->on_refresh)
 	{
-		mlx_put_image_to_window(vars->mlx, vars->win, camera->render, 0, 0);
+		vars->on_refresh(vars, camera->render);
 		return (0);
 	}
 	return (render2(vars, camera, scene));
@@ -329,9 +360,11 @@ void	load_frame(char *file, t_scene *scene)
 	if (!name)
 		return ; // TODO
 	vars.win = mlx_new_window(vars.mlx, scene->render->width, scene->render->height, name);
-	vars.put_pixel = (t_pixel_writer)mlx_set_pixel;
+	vars.init_image = (t_bifun)mlx_init_image;
+	vars.set_pixel = (t_pixel_writer)mlx_set_pixel;
+	vars.on_refresh = (t_bicon)force_put_image;
+	vars.on_finished = (t_bicon)mlx_finished;
 	free(name);
-
 	mlx_hook(vars.win, 17, 0L, &on_close, &vars);
 	mlx_key_hook(vars.win, &on_key_pressed, &vars);
 	mlx_string_put(vars.mlx, vars.win, 0, 50, ~0, "Press any key to start");
@@ -342,10 +375,13 @@ void	load_frame(char *file, t_scene *scene)
 void	load_image(char *file, t_scene *scene)
 {
 	t_bitmap	*image;
+	t_vars		vars;
 
-	image = bmp_init(scene->render->width, scene->render->height, 3);
-	if (!image)
-		return ;
+	vars.init_image = (t_bifun)bmp_init_image;
+	vars.set_pixel = (t_pixel_writer)bmp_set_pixel;
+	vars.on_refresh = (NULL);
+	vars.on_finished = (t_bicon)bmp_finished;
+	render(&vars);
 }
 
 int main(int argc, char **argv)

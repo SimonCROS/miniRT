@@ -6,7 +6,7 @@
 /*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/12 12:31:12 by scros             #+#    #+#             */
-/*   Updated: 2021/03/02 15:59:27 by scros            ###   ########lyon.fr   */
+/*   Updated: 2021/03/03 13:08:33 by scros            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,13 +22,13 @@
 # include "bitmap.h"
 # include "mlx.h"
 
-typedef struct		s_data {
+typedef struct		s_image {
 	void			*img;
 	char			*addr;
 	int				bits_per_pixel;
 	int				line_length;
 	int				endian;
-}					t_data;
+}					t_image;
 
 typedef struct		s_ray {
 	t_vector3		direction;
@@ -45,10 +45,10 @@ typedef	void		(*t_pixel_writer)(void *, uint32_t, uint32_t, t_color);
 typedef struct		s_vars {
 	void			*mlx;
 	void			*win;
-	t_bitmap		*bmp;
-	t_pixel_writer	put_pixel;
+	t_bifunction	init_image;
+	t_pixel_writer	set_pixel;
 	t_biconsumer	on_refresh;
-	t_biconsumer	on_finish;
+	t_biconsumer	on_finished;
 }					t_vars;
 
 typedef struct		s_render_params {
@@ -73,7 +73,7 @@ typedef struct		s_scene {
 typedef struct		s_thread_data
 {
 	t_vars			*vars;
-	t_data			image;
+	void			*image;
 	size_t			width;
 	size_t			height;
 	t_camera		*camera;
@@ -83,6 +83,6 @@ typedef struct		s_thread_data
 }					t_thread_data;
 
 t_scene				*parse_file(char *file);
-void				set_pixel(t_data *data, int x, int y, int color);
+void				set_pixel(t_image *data, int x, int y, int color);
 
 #endif
