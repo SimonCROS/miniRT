@@ -1,18 +1,7 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/01/11 13:03:09 by scros             #+#    #+#             */
-/*   Updated: 2021/03/03 16:07:27 by scros            ###   ########lyon.fr   */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "minirt.h"
 #include "matrix.h"
 #include "bitmap.h"
+#include "tpool.h"
 #include <pthread.h>
 #include <stdio.h>
 #if defined __linux__
@@ -20,38 +9,6 @@
 #endif
 
 static pthread_mutex_t g_mutex_flush	= PTHREAD_MUTEX_INITIALIZER;
-static pthread_mutex_t g_mutex_running	= PTHREAD_MUTEX_INITIALIZER;
-
-/*
-** If request == 0, reset the current thread id, set the chunk_count, and
-**  returns -1
-** If request == 1, returns the id of the next chunk, or reset to default values
-**  there is no other chunk
-** Else, returns the id of the current chunk
-*/
-int		next_chunk(int request, int chunk_count)
-{
-	static int	id = -1;
-	static int	count = -1;
-
-	if (request == 0)
-	{
-		id = -1;
-		count = chunk_count;
-	}
-	// TODO Dangerous stopping, the end is reached, a thread is rendering and a key is pressed
-	else if (request == 1)
-		if (++id < count)
-			return (id);
-		else
-		{
-			id = -1;
-			count = -1;
-		}
-	else if (request == 2)
-		return (id);
-	return (id);
-}
 
 void	mlx_set_pixel(t_image *data, int x, int y, t_color color)
 {
@@ -180,33 +137,22 @@ void	force_put_image(t_vars *vars, t_image *image)
 	mlx_put_image_to_window(vars->mlx, vars->win, image->img, 0, 0);
 }
 
-void	*render_thread(t_thread_data *data)
+void	*render_thread(t_thread_data *data, int *chunk)
 {
 	t_render_params	*params;
-	int				chunk_id;
 	int				chunk_x;
 	int				chunk_y;
 	int				ratio;
 
 	params = data->scene->render;
 	ratio = (int)ceilf(params->width / (float)params->chunk_width);
-	while (1)
-	{
-		pthread_mutex_lock(&g_mutex_running);
-		chunk_id = next_chunk(1, 0);
-		pthread_mutex_unlock(&g_mutex_running);
-		if (chunk_id == -1)
-			break ;
-		chunk_x = chunk_id % ratio * params->chunk_width;
-		chunk_y = chunk_id / ratio * params->chunk_height;
-		render_chunk(data, chunk_x, chunk_y);
-		pthread_mutex_lock(&g_mutex_flush);
-		if (data->vars->on_refresh)
-			data->vars->on_refresh(data->vars, data->image);
-		pthread_mutex_unlock(&g_mutex_flush);
-	}
-	free(data);
-	pthread_exit(NULL);
+	chunk_x = *chunk % ratio * params->chunk_width;
+	chunk_y = *chunk / ratio * params->chunk_height;
+	render_chunk(data, chunk_x, chunk_y);
+	pthread_mutex_lock(&g_mutex_flush);
+	if (data->vars->on_refresh)
+		data->vars->on_refresh(data->vars, data->image);
+	pthread_mutex_unlock(&g_mutex_flush);
 }
 
 t_image	*mlx_init_image(t_vars *vars, t_render_params *params)
@@ -228,8 +174,7 @@ t_bitmap	*bmp_init_image(t_vars *vars, t_render_params *params)
 
 void	mlx_finished(t_camera *camera, t_image *image)
 {
-	camera->render = image->img;
-	free(image);
+	camera->render = image;
 }
 
 void	bmp_finished(t_camera *camera, t_bitmap *image)
@@ -240,14 +185,13 @@ void	bmp_finished(t_camera *camera, t_bitmap *image)
 
 int		render2(t_vars *vars, t_camera *camera, t_scene *scene)
 {
-	static pthread_t		threads[MAX_THREADS];
+	t_tpool					*pool;
 	t_thread_data			data;
-	t_thread_data			*malloced_data;
 	t_render_params			*params;
-	int						thread_id;
+	int						*chunks;
+	int						chunk;
 
 	params = scene->render;
-	thread_id = 0;
 	data.vars = vars;
 	data.image = vars->init_image(vars, params);
 	data.width = params->width;
@@ -255,30 +199,22 @@ int		render2(t_vars *vars, t_camera *camera, t_scene *scene)
 	data.camera = camera;
 	data.scene = scene;
 	data.chunks = ceilf(params->width / (float)params->chunk_width) * ceilf(params->height / (float)params->chunk_height);
-	next_chunk(0, data.chunks);
-	
-	while (thread_id < params->threads)
+	pool = tpool_new(params->threads);
+	chunks = malloc(data.chunks * sizeof(int));
+	if (!chunks)
+		return (FALSE);
+	while (chunk < data.chunks)
 	{
-		if (!(malloced_data = malloc(sizeof(t_thread_data))))
-			return (1);
-		*malloced_data = data;
-		data.id = thread_id;
-		if (pthread_create(&threads[thread_id], NULL, (t_fun)render_thread, malloced_data))
-		{
-			printf("\33[31mUnable to create a thread.");
-			free(malloced_data);
-			break ;
-		}
-		thread_id++;
+		chunks[chunk] = chunk;
+		tpool_add_work(pool, (t_bifun)render_thread, &data, chunks + chunk);
+		chunk++;
 	}
-	thread_id = 0;
-	while (thread_id < params->threads)
-	{
-		pthread_join(threads[thread_id], NULL);
-		thread_id++;
-	}
+	tpool_start(pool);
+	tpool_wait(pool);
+	tpool_destroy(pool);
+	free(chunks);
 	vars->on_finished(camera, data.image);
-	return (0);
+	return (TRUE);
 }
 
 t_scene	*get_scene(char *file)
@@ -314,8 +250,6 @@ int		on_key_pressed(int i, t_vars *vars)
 	static int	started;
 	t_scene		*scene;
 
-	if (next_chunk(2, 0) != -1)
-		return (0);
 	if (i == 53 || i == 65307)
 		return (on_close(vars));
 	if (!started)
@@ -338,7 +272,8 @@ int		on_key_pressed(int i, t_vars *vars)
 			scene->index %= scene->cameras->size;
 			if (scene->index < 0)
 				scene->index = scene->cameras->size + scene->index;
-			return (render(vars));
+			render(vars);
+			return (1);
 		}
 	}
 	return (0);
@@ -364,7 +299,7 @@ void	load_frame(char *file, t_scene *scene)
 	vars.set_pixel = (t_pixel_writer)mlx_set_pixel;
 	vars.on_refresh = (t_bicon)force_put_image;
 	vars.on_finished = (t_bicon)mlx_finished;
-	free(name);
+	// free(name);
 	mlx_hook(vars.win, 17, 0L, &on_close, &vars);
 	mlx_key_hook(vars.win, &on_key_pressed, &vars);
 	mlx_string_put(vars.mlx, vars.win, 0, 50, ~0, "Press any key to start");
