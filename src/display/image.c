@@ -1,0 +1,22 @@
+#include "display/image.h"
+
+void	mlx_set_pixel(t_image *data, int x, int y, t_color color)
+{
+	char	*dst;
+
+	dst = data->addr + (y * data->line_length + x * (data->bits_per_pixel / 8));
+	*(unsigned int *)dst = color_to_hex(color);
+}
+
+t_image	*mlx_init_image(t_vars *vars, t_options *params)
+{
+	t_image	*img;
+
+	img = malloc(sizeof(t_image));
+	if (!img)
+		return (NULL);
+	img->img = mlx_new_image(vars->mlx, params->width, params->height);
+	img->addr = mlx_get_data_addr(img->img, &img->bits_per_pixel,
+			&img->line_length, &img->endian);
+	return (img);
+}

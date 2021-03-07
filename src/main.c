@@ -1,59 +1,35 @@
-#include "minirt.h"
+#include <math.h>
+#include <pthread.h>
+#include <stdio.h>
+
+#include "mlx.h"
+
 #include "matrix.h"
 #include "bitmap.h"
 #include "tpool.h"
-#include <pthread.h>
-#include <stdio.h>
-#if defined __linux__
-# include <X11/Xlib.h>
-#endif
+#include "list.h"
+#include "iterator.h"
+#include "ftstring.h"
 
-static pthread_mutex_t g_mutex_flush	= PTHREAD_MUTEX_INITIALIZER;
+#include "minirt.h"
+#include "options.h"
+#include "element/camera.h"
+#include "element/light.h"
+#include "element/plan.h"
+#include "engine/ray.h"
+#include "engine/render_thread.h"
+#include "provider/scene_provider.h"
+#include "display/window.h"
 
-void	mlx_set_pixel(t_image *data, int x, int y, t_color color)
-{
-	char	*dst;
-
-	dst = data->addr + (y * data->line_length + x * (data->bits_per_pixel / 8));
-	*(unsigned int*)dst = color_to_hex(color);
-}
-
-int		on_close(t_vars *vars)
-{
-	mlx_destroy_window(vars->mlx, vars->win);
-	// TODO FREE ALL
-	exit(0);
-	return (0);
-}
-
-t_ray	compute_ray(t_render_params *render, t_camera *camera, float x, float y)
-{
-	static float ratio;
-	static float hypo_len;
-	t_ray ray;
-	float px;
-	float py;
-
-	if (!ratio)
-		ratio = render->width / (float) render->height;
-	if (!hypo_len)
-		hypo_len = tan(camera->fov / 2 * M_PI / 180);
-	px = (2 * ((x + 0.5) / render->width) - 1) * hypo_len * ratio;
-	py = (1 - 2 * ((y + 0.5) / render->height)) * hypo_len;
-	ray.direction = vec3_normalize(vec3_new(px, py, -1));
-	ray.direction = vec3_normalize(mat44_mul_vec(camera->c2w, ray.direction));
-	ray.color = color_new(0, 0, 0);
-	ray.light = 1;
-	ray.origin = camera->position;
-	ray.length = INFINITY;
-	return (ray);
-}
+static pthread_mutex_t	g_mutex_flush = PTHREAD_MUTEX_INITIALIZER;
 
 void	render_chunk(t_thread_data *data, int start_x, int start_y)
 {
-	t_iterator		objectIterator = iterator_new(data->scene->objects);
-	t_iterator		lightIterator = iterator_new(data->scene->lights);
+	t_iterator	objectIterator;
+	t_iterator	lightIterator;
 
+	objectIterator = iterator_new(data->scene->objects);
+	lightIterator = iterator_new(data->scene->lights);
 	for (size_t x = start_x; x < start_x + data->scene->render->chunk_width; x++)
 	{
 		if (x >= data->width)
@@ -127,22 +103,12 @@ void	render_chunk(t_thread_data *data, int start_x, int start_y)
 	}
 }
 
-void	force_put_image(t_vars *vars, t_image *image)
-{
-#if defined __APPLE__
-	mlx_sync(MLX_SYNC_WIN_FLUSH_CMD, vars->win);
-#elif defined __linux__
-	*(int*)(vars->mlx + 80) = 1;
-#endif
-	mlx_put_image_to_window(vars->mlx, vars->win, image->img, 0, 0);
-}
-
 void	*render_thread(t_thread_data *data, int *chunk)
 {
-	t_render_params	*params;
-	int				chunk_x;
-	int				chunk_y;
-	int				ratio;
+	t_options	*params;
+	int			chunk_x;
+	int			chunk_y;
+	int			ratio;
 
 	params = data->scene->render;
 	ratio = (int)ceilf(params->width / (float)params->chunk_width);
@@ -155,26 +121,9 @@ void	*render_thread(t_thread_data *data, int *chunk)
 	pthread_mutex_unlock(&g_mutex_flush);
 }
 
-t_image	*mlx_init_image(t_vars *vars, t_render_params *params)
-{
-	t_image *img;
-
-	img = malloc(sizeof(t_image));
-	if (!img)
-		return (NULL);
-	img->img = mlx_new_image(vars->mlx, params->width, params->height);
-	img->addr = mlx_get_data_addr(img->img, &img->bits_per_pixel, &img->line_length, &img->endian);
-	return (img);
-}
-
-t_bitmap	*bmp_init_image(t_vars *vars, t_render_params *params)
+t_bitmap	*bmp_init_image(t_vars *vars, t_options *params)
 {
 	return (bmp_init(params->width, params->height));
-}
-
-void	mlx_finished(t_camera *camera, t_image *image)
-{
-	camera->render = image;
 }
 
 void	bmp_finished(t_camera *camera, t_bitmap *image)
@@ -185,11 +134,11 @@ void	bmp_finished(t_camera *camera, t_bitmap *image)
 
 int		render2(t_vars *vars, t_camera *camera, t_scene *scene)
 {
-	t_tpool					*pool;
-	t_thread_data			data;
-	t_render_params			*params;
-	int						*chunks;
-	int						chunk;
+	t_tpool			*pool;
+	t_thread_data	data;
+	t_options		*params;
+	int				*chunks;
+	int				chunk;
 
 	params = scene->render;
 	data.vars = vars;
@@ -198,7 +147,8 @@ int		render2(t_vars *vars, t_camera *camera, t_scene *scene)
 	data.height = params->height;
 	data.camera = camera;
 	data.scene = scene;
-	data.chunks = ceilf(params->width / (float)params->chunk_width) * ceilf(params->height / (float)params->chunk_height);
+	data.chunks = ceilf(params->width / (float)params->chunk_width)
+		* ceilf(params->height / (float)params->chunk_height);
 	pool = tpool_new(params->threads);
 	chunks = malloc(data.chunks * sizeof(int));
 	if (!chunks)
@@ -217,25 +167,12 @@ int		render2(t_vars *vars, t_camera *camera, t_scene *scene)
 	return (TRUE);
 }
 
-t_scene	*get_scene(char *file)
-{
-	static t_scene *scene;
-
-	if (!scene)
-	{
-		scene = parse_file(file);
-		if (!scene)
-			return (NULL);
-	}
-	return (scene);
-}
-
 int		render(t_vars *vars)
 {
 	t_scene		*scene;
 	t_camera	*camera;
 
-	scene = get_scene(NULL);
+	scene = get_scene();
 	camera = lst_get(scene->cameras, scene->index);
 	if (camera->render && vars->on_refresh)
 	{
@@ -243,68 +180,6 @@ int		render(t_vars *vars)
 		return (0);
 	}
 	return (render2(vars, camera, scene));
-}
-
-int		on_key_pressed(int i, t_vars *vars)
-{
-	static int	started;
-	t_scene		*scene;
-
-	if (i == 53 || i == 65307)
-		return (on_close(vars));
-	if (!started)
-	{
-		started = 1;
-		return (render(vars));
-	}
-	if (started)
-	{
-		scene = get_scene(NULL);
-
-		if (i == 123 || i == 125 || i == 124 || i == 126 || i == 65361 || i == 65362 || i == 65363 || i == 65364)
-		{
-			if (scene->cameras->size == 1)
-				return (0);
-			if (i == 123 || i == 125 || i == 65361 || i == 65364)
-				scene->index--;
-			if (i == 124 || i == 126 || i == 65362 || i == 65363)
-				scene->index++;
-			scene->index %= scene->cameras->size;
-			if (scene->index < 0)
-				scene->index = scene->cameras->size + scene->index;
-			render(vars);
-			return (1);
-		}
-	}
-	return (0);
-}
-
-void	load_frame(char *file, t_scene *scene)
-{
-	char	*name;
-	t_vars	vars;
-
-	#if defined __linux__
-		XInitThreads();
-	#endif
-	if (!(vars.mlx = mlx_init())) {
-		printf("Error, can't generate the frame\n");
-		exit(1);
-	}
-	name = ft_strjoin("MiniRT - ", file);
-	if (!name)
-		return ; // TODO
-	vars.win = mlx_new_window(vars.mlx, scene->render->width, scene->render->height, name);
-	vars.init_image = (t_bifun)mlx_init_image;
-	vars.set_pixel = (t_pixel_writer)mlx_set_pixel;
-	vars.on_refresh = (t_bicon)force_put_image;
-	vars.on_finished = (t_bicon)mlx_finished;
-	// free(name);
-	mlx_hook(vars.win, 17, 0L, &on_close, &vars);
-	mlx_key_hook(vars.win, &on_key_pressed, &vars);
-	mlx_string_put(vars.mlx, vars.win, 0, 50, ~0, "Press any key to start");
-
-	mlx_loop(vars.mlx);
 }
 
 void	load_image(char *file, t_scene *scene)
@@ -335,10 +210,10 @@ int main(int argc, char **argv)
 			return (0);
 	}
 
-	scene = get_scene(argv[1]);
+	scene = set_scene(argv[1]);
 	if (save)
 		load_image(argv[1], scene);
 	else
-		load_frame(argv[1], scene);
+		init_window(argv[1], scene);
 	pthread_exit(NULL);
 }

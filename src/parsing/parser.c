@@ -1,12 +1,15 @@
+#include "options.h"
+#include "list.h"
+#include "color.h"
 #include "minirt.h"
+#include "util/scene.h"
 #include "get_next_line.h"
 #include <fcntl.h>
-#include <stdio.h>
 
-t_render_params	*parse_render(t_list *data)
+t_options	*parse_render(t_list *data)
 {
-	t_render_params	params;
-	t_render_params	*render_data;
+	t_options	params;
+	t_options	*render_data;
 	t_color		color;
 	int			e;
 
@@ -22,7 +25,7 @@ t_render_params	*parse_render(t_list *data)
 		|| params.chunk_height < 1 || params.threads < 1
 		|| params.threads > MAX_THREADS)
 		return (NULL);
-	render_data = malloc(sizeof(t_render_params));
+	render_data = malloc(sizeof(t_options));
 	if (render_data)
 		*render_data = params;
 	return (render_data);
@@ -46,7 +49,7 @@ t_color	*parse_ambiant(t_list *data)
 
 void	parse(t_list *line, t_scene *scene)
 {
-	if (ft_strcmp(lst_first(line), "R") == 0)
+	if (ft_strcmp(lst_first(line), "R") == 0 && !(scene->render))
 		scene->render = parse_render(line);
 	else if (ft_strcmp(lst_first(line), "A") == 0 && !(scene->ambiant))
 		scene->ambiant = parse_ambiant(line);
@@ -69,20 +72,20 @@ void	parse(t_list *line, t_scene *scene)
 
 t_scene	*parse_file(char *file)
 {
-	t_scene *scene;
+	t_scene	*scene;
 	int		fd;
 	char	*buffer;
 	t_list	*nodes;
 	int		result;
 
-	if (!(scene = malloc(sizeof(t_scene))))
+	scene = malloc(sizeof(t_scene));
+	if (!scene)
 		return (NULL);
 	scene->index = 0;
 	scene->ambiant = NULL;
 	scene->cameras = lst_new(&free);
 	scene->lights = lst_new(&free);
 	scene->objects = lst_new(&free);
-
 	fd = open(file, O_RDONLY);
 	buffer = NULL;
 	result = 1;
