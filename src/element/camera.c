@@ -1,16 +1,10 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   camera.c                                           :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/01/12 15:44:13 by scros             #+#    #+#             */
-/*   Updated: 2021/02/22 11:18:11 by scros            ###   ########lyon.fr   */
-/*                                                                            */
-/* ************************************************************************** */
+#include <stdlib.h>
 
-#include "minirt.h"
+#include "convert.h"
+#include "matrix.h"
+#include "vector3.h"
+
+#include "element/camera.h"
 
 static int	rot_deserialize(const char *str, t_vector3 *vector)
 {

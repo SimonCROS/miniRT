@@ -23,7 +23,7 @@
 
 static pthread_mutex_t	g_mutex_flush = PTHREAD_MUTEX_INITIALIZER;
 
-void	render_chunk(t_thread_data *data, int start_x, int start_y)
+void	render_chunk(t_thread_data *data, size_t start_x, size_t start_y)
 {
 	t_iterator	objectIterator;
 	t_iterator	lightIterator;
@@ -81,7 +81,6 @@ void	render_chunk(t_thread_data *data, int start_x, int start_y)
 				light_ray.length = INFINITY;
 				while (iterator_has_next(&objectIterator))
 				{
-					t_vector3 point;
 					t_object *obj_test = iterator_next(&objectIterator);
 					if (obj_test == object)
 						continue;
@@ -119,15 +118,18 @@ void	*render_thread(t_thread_data *data, int *chunk)
 	if (data->vars->on_refresh)
 		data->vars->on_refresh(data->vars, data->image);
 	pthread_mutex_unlock(&g_mutex_flush);
+	return (NULL);
 }
 
 t_bitmap	*bmp_init_image(t_vars *vars, t_options *params)
 {
+	(void)vars;
 	return (bmp_init(params->width, params->height));
 }
 
 void	bmp_finished(t_camera *camera, t_bitmap *image)
 {
+	(void)camera;
 	bmp_save("render.bmp", image);
 	free(image);
 }
@@ -137,8 +139,8 @@ int		render2(t_vars *vars, t_camera *camera, t_scene *scene)
 	t_tpool			*pool;
 	t_thread_data	data;
 	t_options		*params;
-	int				*chunks;
-	int				chunk;
+	size_t			*chunks;
+	size_t			chunk;
 
 	params = scene->render;
 	data.vars = vars;
@@ -153,6 +155,7 @@ int		render2(t_vars *vars, t_camera *camera, t_scene *scene)
 	chunks = malloc(data.chunks * sizeof(int));
 	if (!chunks)
 		return (FALSE);
+	chunk = 0;
 	while (chunk < data.chunks)
 	{
 		chunks[chunk] = chunk;
@@ -184,9 +187,10 @@ int		render(t_vars *vars)
 
 void	load_image(char *file, t_scene *scene)
 {
-	t_bitmap	*image;
 	t_vars		vars;
 
+	(void)file;
+	(void)scene;
 	vars.init_image = (t_bifun)bmp_init_image;
 	vars.set_pixel = (t_pixel_writer)bmp_set_pixel;
 	vars.on_refresh = (NULL);
@@ -196,7 +200,6 @@ void	load_image(char *file, t_scene *scene)
 
 int main(int argc, char **argv)
 {
-	t_scene	*scene;
 	int		save;
 
 	printf("Launching\n");
@@ -209,11 +212,11 @@ int main(int argc, char **argv)
 		else
 			return (0);
 	}
-
-	scene = set_scene(argv[1]);
+	if (!set_scene(argv[1]))
+		exit(1); // TODO
 	if (save)
-		load_image(argv[1], scene);
+		load_image(argv[1], get_scene());
 	else
-		init_window(argv[1], scene);
+		init_window(argv[1], get_scene());
 	pthread_exit(NULL);
 }

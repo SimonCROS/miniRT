@@ -1,6 +1,6 @@
 #include <math.h>
 
-#include "ray.h"
+#include "engine/ray.h"
 
 t_ray	compute_ray(t_options *render, t_camera *camera, float x, float y)
 {

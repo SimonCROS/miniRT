@@ -1,16 +1,11 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   plan.c                                             :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/01/26 16:51:16 by scros             #+#    #+#             */
-/*   Updated: 2021/02/17 14:34:45 by scros            ###   ########lyon.fr   */
-/*                                                                            */
-/* ************************************************************************** */
+#include <stdlib.h>
+#include <math.h>
 
-#include "minirt.h"
+#include "convert.h"
+#include "matrix.h"
+#include "vector3.h"
+
+#include "element/plan.h"
 
 static int	rot_deserialize(const char *str, t_vector3 *vector)
 {
@@ -46,8 +41,6 @@ t_object	*parse_plane(t_list *data)
 
 t_object	*new_plane(t_vector3 pos, t_vector3 rot, t_color col)
 {
-	t_object	*plan;
-
 	return (new_default_plane(pos, rot, col, NULL));
 }
 

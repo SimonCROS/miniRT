@@ -6,7 +6,7 @@
 #    By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/11/23 11:39:11 by scros             #+#    #+#              #
-#    Updated: 2021/03/05 15:21:40 by scros            ###   ########lyon.fr    #
+#    Updated: 2021/03/07 16:32:14 by scros            ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,18 +29,26 @@ endif
 
 FT			= libft.a
 
-SRCS		=	main.c				\
-				parsing/parser.c	\
-				parsing/gnl/get_next_line.c	\
+SRCS		=	main.c								\
+				parsing/parser.c					\
+				parsing/gnl/get_next_line.c			\
 				parsing/gnl/get_next_line_utils.c	\
-				entity/camera.c		\
-				object/light.c		\
-				object/2d/square.c	\
-				object/2d/circle.c	\
-				object/2d/triangle.c\
-				object/2d/plane.c	\
-				object/3d/sphere.c	\
-				object/3d/cylinder.c	\
+				element/camera.c					\
+				element/light.c						\
+				element/2d/square.c					\
+				element/2d/circle.c					\
+				element/2d/triangle.c				\
+				element/2d/plane.c					\
+				element/3d/sphere.c					\
+				element/3d/cylinder.c				\
+				engine/ray.c						\
+				display/window.c					\
+				display/image.c						\
+				hook/key_hook.c						\
+				hook/close_hook.c					\
+				event/on_change_camera.c			\
+				event/on_close.c					\
+				provider/scene_provider.c			\
 
 OBJS		= $(addprefix $(BIN)/, $(SRCS:.c=.o))
 
@@ -49,7 +57,7 @@ NAME		= miniRT
 CC			= gcc
 RM			= rm -f
 
-CFLAGS		= # -Wall -Wextra -Werror
+CFLAGS		= -Wall -Wextra -Werror
 INCLUDES	= -I$(INC) -I$(LIBFT)/$(INC) -I$(MINILIBX)
 
 HEADERS		= includes/minirt.h

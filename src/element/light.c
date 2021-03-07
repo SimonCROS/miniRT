@@ -1,16 +1,10 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   light.c                                            :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/01/12 15:44:13 by scros             #+#    #+#             */
-/*   Updated: 2021/02/17 15:35:40 by scros            ###   ########lyon.fr   */
-/*                                                                            */
-/* ************************************************************************** */
+#include <stdlib.h>
 
-#include "minirt.h"
+#include "convert.h"
+#include "matrix.h"
+#include "vector3.h"
+
+#include "element/light.h"
 
 t_light	*parse_light(t_list *data)
 {
@@ -34,7 +28,8 @@ t_light	*new_light(float brightness, t_vector3 position, t_color color)
 {
 	t_light	*light;
 
-	if (!(light = malloc(sizeof(t_light))))
+	light = malloc(sizeof(t_light));
+	if (!light)
 		return (NULL);
 	light->brightness = brightness;
 	light->position = position;

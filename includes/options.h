@@ -2,11 +2,11 @@
 # define OPTIONS_H
 
 typedef struct s_options {
-	int				width;
-	int				height;
+	size_t			width;
+	size_t			height;
 	int				threads;
-	int				chunk_width;
-	int				chunk_height;
+	size_t			chunk_width;
+	size_t			chunk_height;
 }	t_options;
 
 #endif

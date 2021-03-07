@@ -6,7 +6,6 @@
 # include "types.h"
 # include "color.h"
 
-# include "display/image.h"
 # include "util/scene.h"
 
 typedef void	(*t_pixel_writer)(void *, uint32_t, uint32_t, t_color);
@@ -21,7 +20,6 @@ typedef struct s_vars
 	t_biconsumer	on_finished;
 }	t_vars;
 
-void	force_put_image(t_vars *vars, t_image *image);
 void	init_window(char *file, t_scene *scene);
 
 #endif

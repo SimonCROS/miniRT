@@ -1,16 +1,11 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   circle.c                                           :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/01/12 15:44:13 by scros             #+#    #+#             */
-/*   Updated: 2021/02/26 15:44:52 by scros            ###   ########lyon.fr   */
-/*                                                                            */
-/* ************************************************************************** */
+#include <stdlib.h>
+#include <math.h>
 
-#include "minirt.h"
+#include "convert.h"
+#include "matrix.h"
+#include "vector3.h"
+
+#include "element/plan.h"
 
 int	parse_circle(t_list *data)
 {

@@ -1,10 +1,16 @@
-#include "options.h"
+#include <fcntl.h>
+
 #include "list.h"
 #include "color.h"
+#include "convert.h"
+
 #include "minirt.h"
+#include "options.h"
+#include "element/camera.h"
+#include "element/light.h"
+#include "element/plan.h"
+#include "util/get_next_line.h"
 #include "util/scene.h"
-#include "get_next_line.h"
-#include <fcntl.h>
 
 t_options	*parse_render(t_list *data)
 {

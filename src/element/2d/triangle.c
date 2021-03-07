@@ -1,16 +1,10 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   triangle.c                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/01/12 15:44:13 by scros             #+#    #+#             */
-/*   Updated: 2021/02/09 13:34:35 by scros            ###   ########lyon.fr   */
-/*                                                                            */
-/* ************************************************************************** */
+#include <stdlib.h>
 
-#include "minirt.h"
+#include "convert.h"
+#include "matrix.h"
+#include "vector3.h"
+
+#include "element/plan.h"
 
 t_object	*parse_triangle(t_list *data)
 {

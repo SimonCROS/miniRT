@@ -1,16 +1,4 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/11/26 13:45:01 by scros             #+#    #+#             */
-/*   Updated: 2021/02/26 13:50:31 by scros            ###   ########lyon.fr   */
-/*                                                                            */
-/* ************************************************************************** */
-
-#include "get_next_line.h"
+#include "util/get_next_line.h"
 
 int		delete(int ret, t_gnllist **remain, t_gnllist *element, void *p)
 {

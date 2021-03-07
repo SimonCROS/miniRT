@@ -20,7 +20,7 @@ int	key_hook(int i, t_vars *vars)
 		scene->index %= scene->cameras->size;
 		if (scene->index < 0)
 			scene->index = scene->cameras->size + scene->index;
-		return (on_change_camera(vars, scene));
+		return (on_change_camera(vars));
 	}
 	return (0);
 }

@@ -1,5 +1,7 @@
 #include "mlx.h"
 
+#include "ftstring.h"
+
 #include "display/image.h"
 #include "display/window.h"
 #include "element/camera.h"
@@ -12,16 +14,6 @@
 void	mlx_finished(t_camera *camera, t_image *image)
 {
 	camera->render = image;
-}
-
-void	force_put_image(t_vars *vars, t_image *image)
-{
-#if defined __APPLE__
-	mlx_sync(MLX_SYNC_WIN_FLUSH_CMD, vars->win);
-#elif defined __linux__
-	*(int*)(vars->mlx + 80) = 1;
-#endif
-	mlx_put_image_to_window(vars->mlx, vars->win, image->img, 0, 0);
 }
 
 void	init_window(char *file, t_scene *scene)

@@ -1,4 +1,11 @@
-#include "minirt.h"
+#include <stdlib.h>
+#include <math.h>
+
+#include "convert.h"
+#include "matrix.h"
+#include "vector3.h"
+
+#include "element/plan.h"
 
 static int	rot_deserialize(const char *str, t_vector3 *vector)
 {

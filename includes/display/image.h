@@ -17,5 +17,6 @@ typedef struct s_image
 
 t_image	*mlx_init_image(t_vars *vars, t_options *params);
 void	mlx_set_pixel(t_image *data, int x, int y, t_color color);
+void	force_put_image(t_vars *vars, t_image *image);
 
 #endif
