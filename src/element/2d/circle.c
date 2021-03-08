@@ -9,7 +9,8 @@
 
 int	parse_circle(t_list *data)
 {
-	
+	(void)data;
+	return (0);
 }
 
 int	collides_circle(void *a1, void *a2)

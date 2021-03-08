@@ -1,3 +1,8 @@
+#include <stdio.h>
+#ifdef __linux__
+# include <X11/Xlib.h>
+#endif
+
 #include "mlx.h"
 
 #include "ftstring.h"
@@ -6,10 +11,8 @@
 #include "display/window.h"
 #include "element/camera.h"
 #include "listener/hooks.h"
-
-#ifdef __linux__
-# include <X11/Xlib.h>
-#endif
+#include "listener/events.h"
+#include "util/logs.h"
 
 void	mlx_finished(t_camera *camera, t_image *image)
 {
@@ -43,5 +46,6 @@ void	init_window(char *file, t_scene *scene)
 	mlx_hook(vars.win, 17, 0L, &close_hook, &vars);
 	mlx_key_hook(vars.win, &key_hook, &vars);
 	mlx_string_put(vars.mlx, vars.win, 0, 50, ~0, "Press any key to start");
+	// on_change_camera(&vars);
 	mlx_loop(vars.mlx);
 }

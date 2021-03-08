@@ -1,6 +1,8 @@
 #ifndef OPTIONS_H
 # define OPTIONS_H
 
+# include <unistd.h>
+
 typedef struct s_options {
 	size_t			width;
 	size_t			height;

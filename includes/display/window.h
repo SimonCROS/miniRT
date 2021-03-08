@@ -18,6 +18,7 @@ typedef struct s_vars
 	t_pixel_writer	set_pixel;
 	t_biconsumer	on_refresh;
 	t_biconsumer	on_finished;
+	t_biconsumer	on_state_change;
 }	t_vars;
 
 void	init_window(char *file, t_scene *scene);

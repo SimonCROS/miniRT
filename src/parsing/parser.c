@@ -16,20 +16,17 @@ t_options	*parse_render(t_list *data)
 {
 	t_options	params;
 	t_options	*render_data;
-	t_color		color;
 	int			e;
 
 	if (data->size != 6)
 		return (NULL);
 	e = 1;
-	e = e && ft_atoi_full((char *)lst_get(data, 1), &params.width);
-	e = e && ft_atoi_full((char *)lst_get(data, 2), &params.height);
+	e = e && ft_atoul_full((char *)lst_get(data, 1), &params.width);
+	e = e && ft_atoul_full((char *)lst_get(data, 2), &params.height);
 	e = e && ft_atoi_full((char *)lst_get(data, 3), &params.threads);
-	e = e && ft_atoi_full((char *)lst_get(data, 4), &params.chunk_width);
-	e = e && ft_atoi_full((char *)lst_get(data, 5), &params.chunk_height);
-	if (!e || params.width < 1 || params.height < 1 || params.chunk_width < 1
-		|| params.chunk_height < 1 || params.threads < 1
-		|| params.threads > MAX_THREADS)
+	e = e && ft_atoul_full((char *)lst_get(data, 4), &params.chunk_width);
+	e = e && ft_atoul_full((char *)lst_get(data, 5), &params.chunk_height);
+	if (!e || params.threads < 1 || params.threads > MAX_THREADS)
 		return (NULL);
 	render_data = malloc(sizeof(t_options));
 	if (render_data)
@@ -73,7 +70,6 @@ void	parse(t_list *line, t_scene *scene)
 		lst_push(scene->objects, parse_sphere(line));
 	else if (ft_strcmp(lst_first(line), "cy") == 0)
 		lst_push(scene->objects, parse_cylinder(line));
-	// TODO errno
 }
 
 t_scene	*parse_file(char *file)
@@ -88,6 +84,7 @@ t_scene	*parse_file(char *file)
 	if (!scene)
 		return (NULL);
 	scene->index = 0;
+	scene->render = NULL;
 	scene->ambiant = NULL;
 	scene->cameras = lst_new(&free);
 	scene->lights = lst_new(&free);

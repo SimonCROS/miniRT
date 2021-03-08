@@ -1,6 +1,5 @@
 #include <math.h>
 #include <pthread.h>
-#include <stdio.h>
 
 #include "mlx.h"
 
@@ -20,6 +19,7 @@
 #include "engine/render_thread.h"
 #include "provider/scene_provider.h"
 #include "display/window.h"
+#include "util/logs.h"
 
 static pthread_mutex_t	g_mutex_flush = PTHREAD_MUTEX_INITIALIZER;
 
@@ -115,8 +115,10 @@ void	*render_thread(t_thread_data *data, int *chunk)
 	chunk_y = *chunk / ratio * params->chunk_height;
 	render_chunk(data, chunk_x, chunk_y);
 	pthread_mutex_lock(&g_mutex_flush);
-	if (data->vars->on_refresh)
-		data->vars->on_refresh(data->vars, data->image);
+	log_debug(NULL);
+	printf("Rendering chunk (%d,%d)...", chunk_x, chunk_y);
+	log_nl();
+	data->vars->on_refresh(data->vars, data->image);
 	pthread_mutex_unlock(&g_mutex_flush);
 	return (NULL);
 }
@@ -152,7 +154,7 @@ int		render2(t_vars *vars, t_camera *camera, t_scene *scene)
 	data.chunks = ceilf(params->width / (float)params->chunk_width)
 		* ceilf(params->height / (float)params->chunk_height);
 	pool = tpool_new(params->threads);
-	chunks = malloc(data.chunks * sizeof(int));
+	chunks = malloc(data.chunks * sizeof(size_t));
 	if (!chunks)
 		return (FALSE);
 	chunk = 0;
@@ -162,10 +164,12 @@ int		render2(t_vars *vars, t_camera *camera, t_scene *scene)
 		tpool_add_work(pool, (t_bifun)render_thread, &data, chunks + chunk);
 		chunk++;
 	}
+	tpool_set_name(pool, "CHUNK_WORKER");
 	tpool_start(pool);
 	tpool_wait(pool);
 	tpool_destroy(pool);
 	free(chunks);
+	log_info("Image successfully rendered");
 	vars->on_finished(camera, data.image);
 	return (TRUE);
 }
@@ -177,9 +181,10 @@ int		render(t_vars *vars)
 
 	scene = get_scene();
 	camera = lst_get(scene->cameras, scene->index);
-	if (camera->render && vars->on_refresh)
+	if (camera->render)
 	{
 		vars->on_refresh(vars, camera->render);
+		log_info("Image loaded from cache");
 		return (0);
 	}
 	return (render2(vars, camera, scene));
@@ -193,7 +198,7 @@ void	load_image(char *file, t_scene *scene)
 	(void)scene;
 	vars.init_image = (t_bifun)bmp_init_image;
 	vars.set_pixel = (t_pixel_writer)bmp_set_pixel;
-	vars.on_refresh = (NULL);
+	vars.on_refresh = null_biconsumer();
 	vars.on_finished = (t_bicon)bmp_finished;
 	render(&vars);
 }
@@ -202,8 +207,8 @@ int main(int argc, char **argv)
 {
 	int		save;
 
-	printf("Launching\n");
-
+	pthread_setname_np("MAIN");
+	log_info("Launching");
 	save = 0;
 	if (argc != 2)
 	{
@@ -212,7 +217,7 @@ int main(int argc, char **argv)
 		else
 			return (0);
 	}
-	if (!set_scene(argv[1]))
+	if (!load_scene(argv[1]))
 		exit(1); // TODO
 	if (save)
 		load_image(argv[1], get_scene());

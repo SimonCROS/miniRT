@@ -4,6 +4,6 @@
 # include "util/scene.h"
 
 t_scene	*get_scene(void);
-int		set_scene(char *file);
+int		load_scene(char *file);
 
 #endif

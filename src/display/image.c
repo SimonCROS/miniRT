@@ -1,6 +1,7 @@
 #include "mlx.h"
 
 #include "display/image.h"
+#include "engine/render_thread.h"
 
 void	mlx_set_pixel(t_image *data, int x, int y, t_color color)
 {
