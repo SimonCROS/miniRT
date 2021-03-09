@@ -17,7 +17,7 @@ LIBFT		= libft
 
 LINUX			= 0
 
-MINILIBX_OS_X	= minilibx
+MINILIBX_OS_X	= minilibx-macos
 MINILIBX_LINUX	= minilibx-linux
 ifeq ($(LINUX),0)
 MINILIBX		= $(MINILIBX_OS_X)
