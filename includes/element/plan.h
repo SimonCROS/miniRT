@@ -80,6 +80,7 @@ t_object	*parse_triangle(t_list *data);
 t_object	*parse_plane(t_list *data);
 t_object	*parse_square(t_list *data);
 t_object	*parse_sphere(t_list *data);
+t_object	*parse_circle(t_list *data);
 t_object	*parse_cylinder(t_list *data);
 
 #endif

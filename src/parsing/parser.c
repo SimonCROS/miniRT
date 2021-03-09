@@ -70,6 +70,8 @@ void	parse(t_list *line, t_scene *scene)
 		lst_push(scene->objects, parse_sphere(line));
 	else if (ft_strcmp(lst_first(line), "cy") == 0)
 		lst_push(scene->objects, parse_cylinder(line));
+	else if (ft_strcmp(lst_first(line), "ci") == 0)
+		lst_push(scene->objects, parse_circle(line));
 }
 
 t_scene	*parse_file(char *file)

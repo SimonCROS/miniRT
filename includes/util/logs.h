@@ -3,10 +3,17 @@
 
 # include <stdio.h>
 
-void	log_nl(void);
-int		log_info(char *str);
-int		log_warn(char *str);
-int		log_error(char *str);
-int		log_debug(char *str);
+typedef enum e_log_type
+{
+	INFO,
+	WARN,
+	ERROR,
+	DEBUG
+}	t_log_type;
+
+int	log_msg(t_log_type type, char *str);
+int	is_debug_enabled(void);
+int	set_debug(int debug);
+int	log_nl(void);
 
 #endif

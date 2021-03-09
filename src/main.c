@@ -115,9 +115,11 @@ void	*render_thread(t_thread_data *data, int *chunk)
 	chunk_y = *chunk / ratio * params->chunk_height;
 	render_chunk(data, chunk_x, chunk_y);
 	pthread_mutex_lock(&g_mutex_flush);
-	log_debug(NULL);
-	printf("Rendering chunk (%d,%d)...", chunk_x, chunk_y);
-	log_nl();
+	if (log_msg(DEBUG, NULL))
+	{
+		printf("Rendering chunk (%d,%d)...", chunk_x, chunk_y);
+		log_nl();
+	}
 	data->vars->on_refresh(data->vars, data->image);
 	pthread_mutex_unlock(&g_mutex_flush);
 	return (NULL);
@@ -136,7 +138,7 @@ void	bmp_finished(t_camera *camera, t_bitmap *image)
 	free(image);
 }
 
-int		render2(t_vars *vars, t_camera *camera, t_scene *scene)
+int	render2(t_vars *vars, t_camera *camera, t_scene *scene)
 {
 	t_tpool			*pool;
 	t_thread_data	data;
@@ -169,7 +171,7 @@ int		render2(t_vars *vars, t_camera *camera, t_scene *scene)
 	tpool_wait(pool);
 	tpool_destroy(pool);
 	free(chunks);
-	log_info("Image successfully rendered");
+	log_msg(INFO, "Image successfully rendered");
 	vars->on_finished(camera, data.image);
 	return (TRUE);
 }
@@ -184,7 +186,7 @@ int		render(t_vars *vars)
 	if (camera->render)
 	{
 		vars->on_refresh(vars, camera->render);
-		log_info("Image loaded from cache");
+		log_msg(DEBUG, "Image loaded from cache");
 		return (0);
 	}
 	return (render2(vars, camera, scene));
@@ -208,7 +210,7 @@ int main(int argc, char **argv)
 	int		save;
 
 	pthread_setname_np("MAIN");
-	log_info("Launching");
+	log_msg(INFO, "Launching");
 	save = 0;
 	if (argc != 2)
 	{

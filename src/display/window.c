@@ -14,7 +14,7 @@
 #include "listener/events.h"
 #include "util/logs.h"
 
-void	mlx_finished(t_camera *camera, t_image *image)
+static void	mlx_finished(t_camera *camera, t_image *image)
 {
 	camera->render = image;
 }
@@ -45,7 +45,8 @@ void	init_window(char *file, t_scene *scene)
 	free(name);
 	mlx_hook(vars.win, 17, 0L, &close_hook, &vars);
 	mlx_key_hook(vars.win, &key_hook, &vars);
-	mlx_string_put(vars.mlx, vars.win, 0, 50, ~0, "Press any key to start");
-	// on_change_camera(&vars);
+	mlx_string_put(vars.mlx, vars.win, 0, 50, ~0, "Press 'enter' to start");
+	mlx_string_put(vars.mlx, vars.win, 0, 70, ~0, "Press 'd' to start in debug mode");
+	mlx_string_put(vars.mlx, vars.win, 0, 90, ~0, "Press 'esc' to exit");
 	mlx_loop(vars.mlx);
 }
