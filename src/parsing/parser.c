@@ -50,6 +50,24 @@ t_color	*parse_ambiant(t_list *data)
 	return (color_clone(color_mulf(color, brightness)));
 }
 
+t_color	*parse_object(t_list *data)
+{
+	// TODO
+
+	// float		brightness;
+	// t_color		color;
+	// int			e;
+
+	// if (data->size != 3)
+	// 	return (NULL);
+	// e = 1;
+	// e = e && ft_atof_full((char *)lst_get(data, 1), &brightness);
+	// e = e && color_deserialize((char *)lst_get(data, 2), &color);
+	// if (!e || brightness < 0 || brightness > 1)
+	// 	return (NULL);
+	// return (color_clone(color_mulf(color, brightness)));
+}
+
 void	parse(t_list *line, t_scene *scene)
 {
 	if (ft_strcmp(lst_first(line), "R") == 0 && !(scene->render))
@@ -72,7 +90,35 @@ void	parse(t_list *line, t_scene *scene)
 		lst_push(scene->objects, parse_cylinder(line));
 	else if (ft_strcmp(lst_first(line), "ci") == 0)
 		lst_push(scene->objects, parse_circle(line));
+	else if (ft_strcmp(lst_first(line), "ob") == 0)
+		lst_push(scene->objects, parse_object(line));
 }
+
+// t_list	*parse_subfile(char *file)
+// {
+// 	t_list	*nodes;
+// 	int		fd;
+// 	char	*buffer;
+// 	int		result;
+
+// 	result = 1;
+// 	buffer = NULL;
+// 	fd = open(file, O_RDONLY);
+// 	nodes = lst_new((t_con)lst_destroy);
+// 	if (!nodes)
+// 		return (NULL);
+// 	while (result > 0)
+// 	{
+// 		result = get_next_line(fd, &buffer);
+// 		if (result < 0)
+// 			break ;
+// 		if (*buffer == '#')
+// 			continue ;
+// 		lst_push(nodes, as_listf((void **)ft_splitf(buffer, ' '), free));
+// 	}
+// 	lst_filter_in(nodes, (t_pre)lst_not_empty);
+// 	return (scene);
+// }
 
 t_scene	*parse_file(char *file)
 {
