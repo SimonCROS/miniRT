@@ -21,7 +21,7 @@ static int	rot_deserialize(const char *str, t_vector3 *vector)
 	return (1);
 }
 
-t_object	*parse_circle(t_list *data)
+t_object	*parse_circle(t_list *data, t_vector3 origin)
 {
 	t_vector3	pos;
 	t_vector3	rot;
@@ -39,7 +39,7 @@ t_object	*parse_circle(t_list *data)
 	if (!e)
 		return (NULL);
 	diametre = fabsf(diametre);
-	return (new_circle(diametre, pos, rot, color));
+	return (new_circle(diametre, vec3_addv(pos, origin), rot, color));
 }
 
 int	collides_circle(void *arg1, void *arg2)

@@ -21,7 +21,7 @@ static int	rot_deserialize(const char *str, t_vector3 *vector)
 	return (1);
 }
 
-t_object	*parse_cylinder(t_list *data)
+t_object	*parse_cylinder(t_list *data, t_vector3 origin)
 {
 	t_vector3	pos;
 	t_vector3	rot;
@@ -41,7 +41,7 @@ t_object	*parse_cylinder(t_list *data)
 		return (NULL);
 	attr[0] = fabsf(attr[0]);
 	attr[1] = fabsf(attr[1]);
-	return (new_cylinder(attr, pos, rot, color));
+	return (new_cylinder(attr, vec3_addv(pos, origin), rot, color));
 }
 
 int	test_intersect(float t[2], float *current_z)

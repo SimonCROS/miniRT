@@ -21,7 +21,7 @@ static int	rot_deserialize(const char *str, t_vector3 *vector)
 	return (1);
 }
 
-t_object	*parse_square(t_list *data)
+t_object	*parse_square(t_list *data, t_vector3 origin)
 {
 	t_vector3	pos;
 	t_vector3	rot;
@@ -39,7 +39,7 @@ t_object	*parse_square(t_list *data)
 	if (!e)
 		return (NULL);
 	width = fabsf(width);
-	return (new_square(width, pos, rot, color));
+	return (new_square(width, vec3_addv(pos, origin), rot, color));
 }
 
 // TODO set all functions not in .h static

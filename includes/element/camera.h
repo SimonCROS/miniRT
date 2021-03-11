@@ -13,7 +13,7 @@ typedef struct s_camera
 	float		fov;
 }	t_camera;
 
-t_camera	*parse_camera(t_list *data);
+t_camera	*parse_camera(t_list *data, t_vector3 origin);
 t_camera	*new_camera(t_vector3 position, t_vector3 direction, float fov);
 
 #endif

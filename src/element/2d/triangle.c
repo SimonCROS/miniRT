@@ -6,7 +6,7 @@
 
 #include "element/plan.h"
 
-t_object	*parse_triangle(t_list *data)
+t_object	*parse_triangle(t_list *data, t_vector3 origin)
 {
 	t_vector3	p1;
 	t_vector3	p2;
@@ -23,6 +23,9 @@ t_object	*parse_triangle(t_list *data)
 	e = e && color_deserialize((char *)lst_get(data, 4), &color);
 	if (!e)
 		return (NULL);
+	p1 = vec3_addv(p1, origin);
+	p2 = vec3_addv(p2, origin);
+	p3 = vec3_addv(p3, origin);
 	return (new_triangle(p1, p2, p3, color));
 }
 

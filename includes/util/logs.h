@@ -8,12 +8,13 @@ typedef enum e_log_type
 	INFO,
 	WARN,
 	ERROR,
-	DEBUG
+	DEBUG,
+	FATAL
 }	t_log_type;
 
-int	log_msg(t_log_type type, char *str);
-int	is_debug_enabled(void);
-int	set_debug(int debug);
-int	log_nl(void);
+int		log_msg(t_log_type type, char *str);
+int		is_debug_enabled(void);
+int		set_debug(int debug);
+int		log_nl(void);
 
 #endif

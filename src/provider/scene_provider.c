@@ -18,5 +18,5 @@ t_scene	*get_scene(void)
 
 int	load_scene(char *file)
 {
-	return (!!provider(parse_file(file)));
+	return (!!provider(parse(file)));
 }

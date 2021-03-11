@@ -4,6 +4,8 @@
 # define MAX_THREADS 16
 # define BUFFER_SIZE 50
 
+# include <errno.h>
+
 #include "display/window.h"
 int	render(t_vars *vars); // TEMP
 

@@ -20,7 +20,7 @@ static int	rot_deserialize(const char *str, t_vector3 *vector)
 	return (1);
 }
 
-t_camera	*parse_camera(t_list *data)
+t_camera	*parse_camera(t_list *data, t_vector3 origin)
 {
 	t_vector3	pos;
 	t_vector3	rot;
@@ -35,7 +35,7 @@ t_camera	*parse_camera(t_list *data)
 	e = e && ft_atoi_full((char *)lst_get(data, 3), &fov);
 	if (!e || fov < 0 || fov > 180)
 		return (NULL);
-	return (new_camera(pos, rot, fov));
+	return (new_camera(vec3_addv(pos, origin), rot, fov));
 }
 
 t_matrix44	look_at(t_vector3 from, t_vector3 to)

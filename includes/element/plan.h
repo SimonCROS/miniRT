@@ -76,11 +76,11 @@ t_object	*new_default_object(t_vector3 position, t_vector3 rotation,
 				t_color color, t_bipredicate collides);
 int			intersect_plane(t_vector3 position, t_vector3 rotation, t_ray *ray);
 int			collision(t_object *object, t_ray *ray);
-t_object	*parse_triangle(t_list *data);
-t_object	*parse_plane(t_list *data);
-t_object	*parse_square(t_list *data);
-t_object	*parse_sphere(t_list *data);
-t_object	*parse_circle(t_list *data);
-t_object	*parse_cylinder(t_list *data);
+t_object	*parse_triangle(t_list *data, t_vector3 origin);
+t_object	*parse_plane(t_list *data, t_vector3 origin);
+t_object	*parse_square(t_list *data, t_vector3 origin);
+t_object	*parse_sphere(t_list *data, t_vector3 origin);
+t_object	*parse_circle(t_list *data, t_vector3 origin);
+t_object	*parse_cylinder(t_list *data, t_vector3 origin);
 
 #endif

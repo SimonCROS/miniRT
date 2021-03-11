@@ -8,7 +8,7 @@
 
 # include "util/scene.h"
 
-typedef void	(*t_pixel_writer)(void *, uint32_t, uint32_t, t_color);
+typedef void	(*t_pixel_writer)(void *, int, int, t_color);
 
 typedef struct s_vars
 {

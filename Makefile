@@ -15,7 +15,7 @@ SRC			= src
 INC			= includes
 LIBFT		= libft
 
-LINUX			= 0
+LINUX			= 1
 
 MINILIBX_OS_X	= minilibx-macos
 MINILIBX_LINUX	= minilibx-linux
@@ -49,6 +49,7 @@ SRCS		=	main.c								\
 				event/on_change_camera.c			\
 				event/on_close.c					\
 				provider/scene_provider.c			\
+				provider/debug_mode_provider.c		\
 				util/logs.c							\
 
 OBJS		= $(addprefix $(BIN)/, $(SRCS:.c=.o))

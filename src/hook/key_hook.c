@@ -1,3 +1,4 @@
+#include "provider/debug_mode_provider.h"
 #include "provider/scene_provider.h"
 #include "display/window.h"
 #include "listener/events.h"

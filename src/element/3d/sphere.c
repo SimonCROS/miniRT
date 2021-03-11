@@ -7,7 +7,7 @@
 
 #include "element/plan.h"
 
-t_object	*parse_sphere(t_list *data)
+t_object	*parse_sphere(t_list *data, t_vector3 origin)
 {
 	t_vector3	pos;
 	float		diametre;
@@ -23,7 +23,7 @@ t_object	*parse_sphere(t_list *data)
 	if (!e)
 		return (NULL);
 	diametre = fabsf(diametre);
-	return (new_sphere(diametre, pos, color));
+	return (new_sphere(diametre, vec3_addv(pos, origin), color));
 }
 
 int			collides_sphere(void *arg1, void *arg2)
