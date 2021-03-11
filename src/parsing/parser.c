@@ -71,53 +71,59 @@ int	parse_object(t_scene *scene, t_list *data, int depth, t_vector3 origin)
 	return (TRUE);
 }
 
-void	parse_node(t_list *line, t_scene *scene, int depth, t_vector3 origin)
+int	parse_node(t_list *line, t_scene *scene, int depth, t_vector3 origin)
 {
+	void	*node;
+
 	if (ft_strcmp(lst_first(line), "R") == 0)
 	{
 		if (scene->render)
 		{
 			errno = -1;
-			log_msg(ERROR, "Found duplicated render node (R), skipping...");
+			log_msg(ERROR, "Found duplicated render node (R)");
+			return (FALSE);
 		}
-		else
-			scene->render = parse_render(line);
+		scene->render = parse_render(line);
+		node = scene->render;
 	}
 	else if (ft_strcmp(lst_first(line), "A") == 0 && !(scene->ambiant))
 	{
-		if (scene->render)
+		if (scene->ambiant)
 		{
 			errno = -1;
-			log_msg(ERROR, "Found duplicated ambiant node (A), skipping...");
+			log_msg(ERROR, "Found duplicated ambiant node (A)");
+			return (FALSE);
 		}
-		else
-			scene->ambiant = parse_ambiant(line);
+		scene->ambiant = parse_ambiant(line);
+		node = scene->ambiant;
 	}
 	else if (ft_strcmp(lst_first(line), "c") == 0)
-		lst_push(scene->cameras, parse_camera(line, origin));
+		node = lst_push(scene->cameras, parse_camera(line, origin));
 	else if (ft_strcmp(lst_first(line), "l") == 0)
-		lst_push(scene->lights, parse_light(line, origin));
+		node = lst_push(scene->lights, parse_light(line, origin));
 	else if (ft_strcmp(lst_first(line), "tr") == 0)
-		lst_push(scene->objects, parse_triangle(line, origin));
+		node = lst_push(scene->objects, parse_triangle(line, origin));
 	else if (ft_strcmp(lst_first(line), "pl") == 0)
-		lst_push(scene->objects, parse_plane(line, origin));
+		node = lst_push(scene->objects, parse_plane(line, origin));
 	else if (ft_strcmp(lst_first(line), "sq") == 0)
-		lst_push(scene->objects, parse_square(line, origin));
+		node = lst_push(scene->objects, parse_square(line, origin));
 	else if (ft_strcmp(lst_first(line), "sp") == 0)
-		lst_push(scene->objects, parse_sphere(line, origin));
+		node = lst_push(scene->objects, parse_sphere(line, origin));
 	else if (ft_strcmp(lst_first(line), "cy") == 0)
-		lst_push(scene->objects, parse_cylinder(line, origin));
+		node = lst_push(scene->objects, parse_cylinder(line, origin));
 	else if (ft_strcmp(lst_first(line), "ci") == 0)
-		lst_push(scene->objects, parse_circle(line, origin));
+		node = lst_push(scene->objects, parse_circle(line, origin));
 	else if (ft_strcmp(lst_first(line), "ob") == 0)
-		parse_object(scene, line, depth, origin);
+		return (parse_object(scene, line, depth, origin));
 	else
 	{
 		errno = -1;
 		log_msg(ERROR, NULL);
 		printf("Unknown type : %s", (char *)lst_first(line));
 		log_nl();
+		return (FALSE);
 	}
+	return (!!node);
 }
 
 int	parse_lines(t_list *nodes, int fd)
@@ -143,6 +149,7 @@ int	parse_file(t_scene *scene, char *file, int depth, t_vector3 origin)
 {
 	t_list		*nodes;
 	t_iterator	iterator;
+	int			success;
 	int			fd;
 
 	if (++depth == 5)
@@ -158,12 +165,14 @@ int	parse_file(t_scene *scene, char *file, int depth, t_vector3 origin)
 	fd = open(file, O_RDONLY);
 	if (fd < 0 || !parse_lines(nodes, fd))
 		return (FALSE);
+	close(fd);
 	lst_filter_in(nodes, (t_pre)lst_not_empty);
 	iterator = iterator_new(nodes);
-	while (!errno && iterator_has_next(&iterator))
-		parse_node(iterator_next(&iterator), scene, depth, origin);
+	success = 1;
+	while (success && iterator_has_next(&iterator))
+		success = parse_node(iterator_next(&iterator), scene, depth, origin);
 	lst_destroy(nodes);
-	return (!errno && TRUE);
+	return (success);
 }
 
 t_scene	*parse(char *file)
@@ -179,9 +188,15 @@ t_scene	*parse(char *file)
 	scene->cameras = lst_new(&free);
 	scene->lights = lst_new(&free);
 	scene->objects = lst_new(&free);
-	if (!parse_file(scene, file, 0, vec3_new(0, 0, 0)))
+	if (!scene->cameras || !scene->lights || !scene->objects
+		|| !parse_file(scene, file, 0, vec3_new(0, 0, 0)))
 	{
-		// TODO free scenes
+		free(scene->render);
+		free(scene->ambiant);
+		free(scene->cameras);
+		free(scene->lights);
+		free(scene->objects);
+		free(scene);
 		return (NULL);
 	}
 	return (scene);

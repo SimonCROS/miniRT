@@ -6,32 +6,31 @@
 #include "vector3.h"
 
 #include "element/plan.h"
+#include "util/parsing.h"
 
 t_object	*parse_sphere(t_list *data, t_vector3 origin)
 {
 	t_vector3	pos;
 	float		diametre;
 	t_color		color;
-	int			e;
 
 	if (data->size != 4)
 		return (NULL);
-	e = 1;
-	e = e && vec3_deserialize((char *)lst_get(data, 1), &pos);
-	e = e && ft_atof_full((char *)lst_get(data, 2), &diametre);
-	e = e && color_deserialize((char *)lst_get(data, 3), &color);
-	if (!e)
+	if (!vec_deserialize((char *)lst_get(data, 1), &pos)
+		|| !ft_atof_full((char *)lst_get(data, 2), &diametre)
+		|| !col_deserialize((char *)lst_get(data, 3), &color))
 		return (NULL);
 	diametre = fabsf(diametre);
 	return (new_sphere(diametre, vec3_addv(pos, origin), color));
 }
 
-int			collides_sphere(void *arg1, void *arg2)
+int	collides_sphere(void *arg1, void *arg2)
 {
 	t_ray		*ray;
 	t_object	*object;
 	t_vector3	to_center;
-	float		t0, t1;
+	float		t0;
+	float		t1;
 
 	object = arg1;
 	ray = arg2;
@@ -51,21 +50,25 @@ int			collides_sphere(void *arg1, void *arg2)
 		t1 = t0 - t1;
 		t0 = t0 - t1;
 	}
-	if (t0 < 0) {
+	if (t0 < 0)
+	{
 		t0 = t1;
-		if (t0 < 0) return 0;
+		if (t0 < 0)
+			return (FALSE);
 	}
 	ray->length = t0;
 	ray->phit = vec3_addv(ray->origin, vec3_muld(ray->direction, ray->length));
 	ray->nhit = vec3_normalize(vec3_subv(ray->phit, object->position));
-	return 1;
+	return (TRUE);
 }
 
-t_object		*new_sphere(float diametre, t_vector3 position, t_color color)
+t_object	*new_sphere(float diametre, t_vector3 position, t_color color)
 {
 	t_object	*object;
 
-	if (!(object = new_default_object(position, vec3_new(0, 1, 0), color, &collides_sphere)))
+	object = new_default_object(position, vec3_new(0, 1, 0), color,
+			&collides_sphere);
+	if (!object)
 		return (NULL);
 	object->data.sphere.radius = diametre / 2;
 	return (object);

@@ -6,7 +6,7 @@
 #    By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/11/23 11:39:11 by scros             #+#    #+#              #
-#    Updated: 2021/03/09 13:59:21 by scros            ###   ########lyon.fr    #
+#    Updated: 2021/03/11 13:48:02 by scros            ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,7 @@ SRC			= src
 INC			= includes
 LIBFT		= libft
 
-LINUX			= 1
+LINUX			= 0
 
 MINILIBX_OS_X	= minilibx-macos
 MINILIBX_LINUX	= minilibx-linux
@@ -51,6 +51,7 @@ SRCS		=	main.c								\
 				provider/scene_provider.c			\
 				provider/debug_mode_provider.c		\
 				util/logs.c							\
+				util/deserializers.c				\
 
 OBJS		= $(addprefix $(BIN)/, $(SRCS:.c=.o))
 

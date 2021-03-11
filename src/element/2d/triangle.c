@@ -5,6 +5,7 @@
 #include "vector3.h"
 
 #include "element/plan.h"
+#include "util/parsing.h"
 
 t_object	*parse_triangle(t_list *data, t_vector3 origin)
 {
@@ -12,16 +13,13 @@ t_object	*parse_triangle(t_list *data, t_vector3 origin)
 	t_vector3	p2;
 	t_vector3	p3;
 	t_color		color;
-	int			e;
 
 	if (data->size != 5)
 		return (NULL);
-	e = 1;
-	e = e && vec3_deserialize((char *)lst_get(data, 1), &p1);
-	e = e && vec3_deserialize((char *)lst_get(data, 2), &p2);
-	e = e && vec3_deserialize((char *)lst_get(data, 3), &p3);
-	e = e && color_deserialize((char *)lst_get(data, 4), &color);
-	if (!e)
+	if (!vec3_deserialize((char *)lst_get(data, 1), &p1)
+		|| !vec3_deserialize((char *)lst_get(data, 2), &p2)
+		|| !vec3_deserialize((char *)lst_get(data, 3), &p3)
+		|| !color_deserialize((char *)lst_get(data, 4), &color))
 		return (NULL);
 	p1 = vec3_addv(p1, origin);
 	p2 = vec3_addv(p2, origin);

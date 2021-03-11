@@ -5,13 +5,13 @@
 #include "vector3.h"
 
 #include "element/light.h"
+#include "util/parsing.h"
 
 t_light	*parse_light(t_list *data, t_vector3 origin)
 {
 	t_vector3	pos;
 	float		brightness;
 	t_color		color;
-	int			e;
 
 	if (data->size != 4)
 		return (NULL);
