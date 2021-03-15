@@ -85,7 +85,7 @@ int	ulong_deserialize(char *str, unsigned long *result)
 		errno = -1;
 		log_msg(ERROR, NULL);
 		printf("Unable to parse the following part into an unsigned long \
-			\"%s\"", str);
+\"%s\"", str);
 		log_nl();
 		return (0);
 	}
