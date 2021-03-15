@@ -14,10 +14,10 @@ t_object	*parse_sphere(t_list *data, t_vector3 origin)
 	float		diametre;
 	t_color		color;
 
-	if (data->size != 4)
+	if (!args_size(lst_first(data), data->size, 4))
 		return (NULL);
 	if (!vec_deserialize((char *)lst_get(data, 1), &pos)
-		|| !ft_atof_full((char *)lst_get(data, 2), &diametre)
+		|| !float_deserialize((char *)lst_get(data, 2), &diametre)
 		|| !col_deserialize((char *)lst_get(data, 3), &color))
 		return (NULL);
 	diametre = fabsf(diametre);

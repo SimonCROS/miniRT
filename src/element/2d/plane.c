@@ -14,11 +14,11 @@ t_object	*parse_plane(t_list *data, t_vector3 origin)
 	t_vector3	rot;
 	t_color		color;
 
-	if (data->size != 4)
+	if (!args_size(lst_first(data), data->size, 4))
 		return (NULL);
-	if (!vec3_deserialize((char *)lst_get(data, 1), &pos)
+	if (!vec_deserialize((char *)lst_get(data, 1), &pos)
 		|| !dir_deserialize((char *)lst_get(data, 2), &rot)
-		|| !color_deserialize((char *)lst_get(data, 3), &color))
+		|| !col_deserialize((char *)lst_get(data, 3), &color))
 		return (NULL);
 	return (new_plane(vec3_addv(pos, origin), rot, color));
 }

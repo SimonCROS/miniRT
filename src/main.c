@@ -62,7 +62,10 @@ void	render_chunk(t_thread_data *data, size_t start_x, size_t start_y)
 			iterator_reset(&objectIterator);
 
 			if (!object)
+			{
+				data->vars->set_pixel(data->image, x, y, *(data->scene->background));
 				continue;
+			}
 			ray.color = color_mul(object->color, *(data->scene->ambiant));
 
 			while (iterator_has_next(&lightIterator))

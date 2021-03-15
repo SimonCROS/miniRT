@@ -12,6 +12,7 @@ typedef struct s_scene {
 	t_list		*lights;
 	t_list		*objects;
 	t_color		*ambiant;
+	t_color		*background;
 	int			index;
 }	t_scene;
 

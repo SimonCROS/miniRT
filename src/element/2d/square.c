@@ -15,11 +15,11 @@ t_object	*parse_square(t_list *data, t_vector3 origin)
 	float		width;
 	t_color		color;
 
-	if (data->size != 5)
+	if (!args_size(lst_first(data), data->size, 5))
 		return (NULL);
 	if (!vec3_deserialize((char *)lst_get(data, 1), &pos)
 		|| !dir_deserialize((char *)lst_get(data, 2), &rot)
-		|| !ft_atof_full((char *)lst_get(data, 3), &width)
+		|| !float_deserialize((char *)lst_get(data, 3), &width)
 		|| !color_deserialize((char *)lst_get(data, 4), &color))
 		return (NULL);
 	width = fabsf(width);

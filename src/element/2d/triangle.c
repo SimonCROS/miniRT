@@ -14,7 +14,7 @@ t_object	*parse_triangle(t_list *data, t_vector3 origin)
 	t_vector3	p3;
 	t_color		color;
 
-	if (data->size != 5)
+	if (!args_size(lst_first(data), data->size, 5))
 		return (NULL);
 	if (!vec3_deserialize((char *)lst_get(data, 1), &p1)
 		|| !vec3_deserialize((char *)lst_get(data, 2), &p2)

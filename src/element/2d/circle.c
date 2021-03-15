@@ -15,12 +15,12 @@ t_object	*parse_circle(t_list *data, t_vector3 origin)
 	float		diametre;
 	t_color		color;
 
-	if (data->size != 5)
+	if (!args_size(lst_first(data), data->size, 5))
 		return (NULL);
-	if (!vec3_deserialize((char *)lst_get(data, 1), &pos)
+	if (!vec_deserialize((char *)lst_get(data, 1), &pos)
 		|| !dir_deserialize((char *)lst_get(data, 2), &rot)
-		|| !ft_atof_full((char *)lst_get(data, 3), &diametre)
-		|| !color_deserialize((char *)lst_get(data, 4), &color))
+		|| !float_deserialize((char *)lst_get(data, 3), &diametre)
+		|| !col_deserialize((char *)lst_get(data, 4), &color))
 		return (NULL);
 	diametre = fabsf(diametre);
 	return (new_circle(diametre, vec3_addv(pos, origin), rot, color));

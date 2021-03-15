@@ -13,11 +13,11 @@ t_camera	*parse_camera(t_list *data, t_vector3 origin)
 	t_vector3	rot;
 	int			fov;
 
-	if (data->size != 4)
+	if (!args_size(lst_first(data), data->size, 4))
 		return (NULL);
 	if (!vec_deserialize((char *)lst_get(data, 1), &pos)
 		|| !dir_deserialize((char *)lst_get(data, 2), &rot)
-		|| !bounded_int_sederialize((char *)lst_get(data, 3), &fov, 0, 180))
+		|| !bounded_int_deserialize((char *)lst_get(data, 3), &fov, 0, 180))
 		return (NULL);
 	return (new_camera(vec3_addv(pos, origin), rot, fov));
 }

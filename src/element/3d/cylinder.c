@@ -15,7 +15,7 @@ t_object	*parse_cylinder(t_list *data, t_vector3 origin)
 	float		attr[2];
 	t_color		color;
 
-	if (data->size != 6)
+	if (!args_size(lst_first(data), data->size, 6))
 		return (NULL);
 	if (!vec_deserialize((char *)lst_get(data, 1), &pos)
 		|| !dir_deserialize((char *)lst_get(data, 2), &rot)

@@ -1,0 +1,6 @@
+R       2560 1440         8 600 600
+A       0.2                                                   255,255,255
+
+c       0,10,30           0,0,-1            60
+
+ob      0,0,0             "scenes/crash/elements/circular.rt"

@@ -18,17 +18,15 @@ t_options	*parse_render(t_list *data)
 {
 	t_options	params;
 	t_options	*render_data;
-	int			e;
 
-	if (data->size != 6)
+	if (!args_size(lst_first(data), data->size, 6))
 		return (NULL);
-	e = 1;
-	e = e && ft_atoul_full((char *)lst_get(data, 1), &params.width);
-	e = e && ft_atoul_full((char *)lst_get(data, 2), &params.height);
-	e = e && ft_atoi_full((char *)lst_get(data, 3), &params.threads);
-	e = e && ft_atoul_full((char *)lst_get(data, 4), &params.chunk_width);
-	e = e && ft_atoul_full((char *)lst_get(data, 5), &params.chunk_height);
-	if (!e || params.threads < 1 || params.threads > MAX_THREADS)
+	if (!ulong_deserialize((char *)lst_get(data, 1), &params.width)
+		|| !ulong_deserialize((char *)lst_get(data, 2), &params.height)
+		|| !bounded_int_deserialize((char *)lst_get(data, 3), &params.threads,
+			1, MAX_THREADS)
+		|| !ulong_deserialize((char *)lst_get(data, 4), &params.chunk_width)
+		|| !ulong_deserialize((char *)lst_get(data, 5), &params.chunk_height))
 		return (NULL);
 	render_data = malloc(sizeof(t_options));
 	if (render_data)
@@ -36,18 +34,27 @@ t_options	*parse_render(t_list *data)
 	return (render_data);
 }
 
+t_color	*parse_background(t_list *data)
+{
+	t_color		background;
+
+	if (!args_size(lst_first(data), data->size, 2))
+		return (NULL);
+	if (!col_deserialize((char *)lst_get(data, 1), &background))
+		return (NULL);
+	return (color_clone(background));
+}
+
 t_color	*parse_ambiant(t_list *data)
 {
 	float		brightness;
 	t_color		color;
-	int			e;
 
-	if (data->size != 3)
+	if (!args_size(lst_first(data), data->size, 3))
 		return (NULL);
-	e = 1;
-	e = e && ft_atof_full((char *)lst_get(data, 1), &brightness);
-	e = e && color_deserialize((char *)lst_get(data, 2), &color);
-	if (!e || brightness < 0 || brightness > 1)
+	if (!bounded_float_deserialize((char *)lst_get(data, 1), &brightness, 0,
+			1)
+		|| !col_deserialize((char *)lst_get(data, 2), &color))
 		return (NULL);
 	return (color_clone(color_mulf(color, brightness)));
 }
@@ -56,13 +63,10 @@ int	parse_object(t_scene *scene, t_list *data, int depth, t_vector3 origin)
 {
 	t_vector3	pos;
 	char		*file;
-	int			e;
 
-	if (data->size != 3)
+	if (!args_size(lst_first(data), data->size, 3))
 		return (FALSE);
-	e = 1;
-	e = e && vec3_deserialize((char *)lst_get(data, 1), &pos);
-	if (!e)
+	if (!vec_deserialize((char *)lst_get(data, 1), &pos))
 		return (FALSE);
 	file = ft_strtrim((char *)lst_get(data, 2), "\"");
 	if (!parse_file(scene, file, depth, vec3_addv(pos, origin)))
@@ -86,7 +90,7 @@ int	parse_node(t_list *line, t_scene *scene, int depth, t_vector3 origin)
 		scene->render = parse_render(line);
 		node = scene->render;
 	}
-	else if (ft_strcmp(lst_first(line), "A") == 0 && !(scene->ambiant))
+	else if (ft_strcmp(lst_first(line), "A") == 0)
 	{
 		if (scene->ambiant)
 		{
@@ -96,6 +100,17 @@ int	parse_node(t_list *line, t_scene *scene, int depth, t_vector3 origin)
 		}
 		scene->ambiant = parse_ambiant(line);
 		node = scene->ambiant;
+	}
+	else if (ft_strcmp(lst_first(line), "B") == 0)
+	{
+		if (scene->background)
+		{
+			errno = -1;
+			log_msg(ERROR, "Found duplicated background node (B)");
+			return (FALSE);
+		}
+		scene->background = parse_background(line);
+		node = scene->background;
 	}
 	else if (ft_strcmp(lst_first(line), "c") == 0)
 		node = lst_push(scene->cameras, parse_camera(line, origin));
@@ -119,7 +134,7 @@ int	parse_node(t_list *line, t_scene *scene, int depth, t_vector3 origin)
 	{
 		errno = -1;
 		log_msg(ERROR, NULL);
-		printf("Unknown type : %s", (char *)lst_first(line));
+		printf("Unknown type : \"%s\"", (char *)lst_first(line));
 		log_nl();
 		return (FALSE);
 	}
@@ -175,6 +190,41 @@ int	parse_file(t_scene *scene, char *file, int depth, t_vector3 origin)
 	return (success);
 }
 
+int	is_scene_valid(t_scene *scene)
+{
+	if (!scene->render || !scene->ambiant || !scene->cameras->size)
+	{
+		errno = -1;
+		if (!scene->render)
+			log_msg(ERROR, "Render node (R) not defined.");
+		if (!scene->ambiant)
+			log_msg(ERROR, "Ambiant node (A) not defined.");
+		if (!scene->cameras->size)
+			log_msg(ERROR, "No camera defined.");
+		return (FALSE);
+	}
+	if (!scene->background)
+	{
+		log_msg(WARN, "Background node (B) not defined (default to black).");
+		scene->background = color_clone(color_new(0, 0, 0));
+		if (!scene->background)
+			return (FALSE);
+	}
+	return (TRUE);
+}
+
+void	*free_scene(t_scene *scene)
+{
+	free(scene->render);
+	free(scene->ambiant);
+	free(scene->cameras);
+	free(scene->lights);
+	free(scene->objects);
+	free(scene->background);
+	free(scene);
+	return (NULL);
+}
+
 t_scene	*parse(char *file)
 {
 	t_scene	*scene;
@@ -185,19 +235,13 @@ t_scene	*parse(char *file)
 	scene->index = 0;
 	scene->render = NULL;
 	scene->ambiant = NULL;
+	scene->background = NULL;
 	scene->cameras = lst_new(&free);
 	scene->lights = lst_new(&free);
 	scene->objects = lst_new(&free);
 	if (!scene->cameras || !scene->lights || !scene->objects
-		|| !parse_file(scene, file, 0, vec3_new(0, 0, 0)))
-	{
-		free(scene->render);
-		free(scene->ambiant);
-		free(scene->cameras);
-		free(scene->lights);
-		free(scene->objects);
-		free(scene);
-		return (NULL);
-	}
+		|| !parse_file(scene, file, 0, vec3_new(0, 0, 0))
+		|| !is_scene_valid(scene))
+		return (free_scene(scene));
 	return (scene);
 }

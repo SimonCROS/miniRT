@@ -6,7 +6,7 @@
 #    By: scros <scros@student.42lyon.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/11/23 11:39:11 by scros             #+#    #+#              #
-#    Updated: 2021/03/11 13:48:02 by scros            ###   ########lyon.fr    #
+#    Updated: 2021/03/15 11:15:10 by scros            ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -52,6 +52,7 @@ SRCS		=	main.c								\
 				provider/debug_mode_provider.c		\
 				util/logs.c							\
 				util/deserializers.c				\
+				util/deserializers2.c				\
 
 OBJS		= $(addprefix $(BIN)/, $(SRCS:.c=.o))
 
