@@ -23,6 +23,7 @@ typedef struct s_cylinder
 	t_vector3		position2;
 	float			radius;
 	float			height;
+	int				caps;
 }	t_cylinder;
 
 typedef struct s_square

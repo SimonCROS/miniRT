@@ -12,7 +12,7 @@ t_object	*parse_cylinder(t_list *data, t_vector3 origin)
 {
 	t_vector3	pos;
 	t_vector3	rot;
-	float		attr[2];
+	float		attr[3];
 	t_color		color;
 
 	if (!args_size(lst_first(data), data->size, 6))
@@ -25,6 +25,7 @@ t_object	*parse_cylinder(t_list *data, t_vector3 origin)
 		return (NULL);
 	attr[0] = fabsf(attr[0]);
 	attr[1] = fabsf(attr[1]);
+	attr[2] = ((char *)lst_first(data))[1] == 'c';
 	return (new_cylinder(attr, vec3_addv(pos, origin), rot, color));
 }
 
@@ -103,24 +104,29 @@ int	collides_cylinder(void *arg1, void *arg2)
 		return (0);
 	if (intersect_side(object, ray))
 		collides = TRUE;
-	tmp = *ray;
-	tmp.length = INFINITY;
-	if (intersect_base(object->position, object->rotation, &tmp, object->data.cylinder.radius))
+	if (object->data.cylinder.caps)
 	{
-		if (!collides || tmp.length < ray->length)
+		tmp = *ray;
+		tmp.length = INFINITY;
+		if (intersect_base(object->position, object->rotation, &tmp, object->data.cylinder.radius))
 		{
-			*ray = tmp;
-			collides = TRUE;
+			if (!collides || tmp.length < ray->length)
+			{
+				*ray = tmp;
+				collides = TRUE;
+			}
+		}
+		tmp = *ray;
+		tmp.length = INFINITY;
+		if (intersect_base(object->data.cylinder.position2, object->rotation, &tmp, object->data.cylinder.radius))
+		{
+			if (!collides || tmp.length < ray->length)
+			{
+				*ray = tmp;
+				collides = TRUE;
+			}
 		}
 	}
-	tmp = *ray;
-	tmp.length = INFINITY;
-	if (intersect_base(object->data.cylinder.position2, object->rotation, &tmp, object->data.cylinder.radius))
-		if (!collides || tmp.length < ray->length)
-		{
-			*ray = tmp;
-			collides = TRUE;
-		}
 	return collides;
 }
 
@@ -138,6 +144,7 @@ t_object	*new_cylinder(float *attrs, t_vector3 pos, t_vector3 rot,
 		return (NULL);
 	object->data.cylinder.radius = attrs[0] / 2;
 	object->data.cylinder.height = attrs[1];
+	object->data.cylinder.caps = attrs[2];
 	object->data.cylinder.position2 = pos2;
 	return (object);
 }

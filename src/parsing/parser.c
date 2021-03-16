@@ -157,7 +157,10 @@ int	parse_lines(t_list *nodes, int fd)
 		if (result < 0)
 			break ;
 		if (*buffer == '#')
+		{
+			free(buffer);
 			continue ;
+		}
 		lst_push(nodes, as_listf((void **)ft_splitf(buffer, ' '), free));
 	}
 	return (result != -1);
