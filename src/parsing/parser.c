@@ -70,7 +70,10 @@ int	parse_object(t_scene *scene, t_list *data, int depth, t_vector3 origin)
 		return (FALSE);
 	file = ft_strtrim((char *)lst_get(data, 2), "\"");
 	if (!parse_file(scene, file, depth, vec3_addv(pos, origin)))
+	{
+		free(file);
 		return (FALSE);
+	}
 	free(file);
 	return (TRUE);
 }
@@ -179,7 +182,10 @@ int	parse_file(t_scene *scene, char *file, int depth, t_vector3 origin)
 		return (FALSE);
 	fd = open(file, O_RDONLY);
 	if (fd < 0 || !parse_lines(nodes, fd))
+	{
+		lst_destroy(nodes);
 		return (FALSE);
+	}
 	close(fd);
 	lst_filter_in(nodes, (t_pre)lst_not_empty);
 	iterator = iterator_new(nodes);
@@ -213,22 +219,12 @@ int	is_scene_valid(t_scene *scene)
 	return (TRUE);
 }
 
-void	*free_scene(t_scene *scene)
-{
-	free(scene->render);
-	free(scene->ambiant);
-	free(scene->cameras);
-	free(scene->lights);
-	free(scene->objects);
-	free(scene->background);
-	free(scene);
-	return (NULL);
-}
-
 t_scene	*parse(char *file)
 {
 	t_scene	*scene;
 
+	if (!file)
+		return (NULL);
 	scene = malloc(sizeof(t_scene));
 	if (!scene)
 		return (NULL);

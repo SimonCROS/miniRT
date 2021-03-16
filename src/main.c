@@ -163,6 +163,7 @@ int	render2(t_vars *vars, t_camera *camera, t_scene *scene)
 	if (!chunks)
 		return (FALSE);
 	chunk = 0;
+	vars->on_refresh(vars, data.image);
 	while (chunk < data.chunks)
 	{
 		chunks[chunk] = chunk;
@@ -230,6 +231,7 @@ int	main(int argc, char **argv)
 	{
 		log_msg(FATAL, "An error occurred while parsing the file");
 		perror("Error\nAn error occurred while parsing the file");
+		while (1);
 		exit(EXIT_FAILURE);
 	}
 	log_msg(INFO, "Parsing finished, starting raytracer engine...");

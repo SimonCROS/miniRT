@@ -16,4 +16,6 @@ typedef struct s_scene {
 	int			index;
 }	t_scene;
 
+void	*free_scene(t_scene *scene);
+
 #endif
