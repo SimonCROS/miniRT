@@ -136,6 +136,7 @@ t_bitmap	*bmp_init_image(t_vars *vars, t_options *params)
 
 void	bmp_finished(t_camera *camera, t_bitmap *image)
 {
+	log_msg(INFO, "Saving...");
 	(void)camera;
 	bmp_save("render.bmp", image);
 	free(image);
@@ -231,10 +232,9 @@ int	main(int argc, char **argv)
 	{
 		log_msg(FATAL, "An error occurred while parsing the file");
 		perror("Error\nAn error occurred while parsing the file");
-		while (1);
 		exit(EXIT_FAILURE);
 	}
-	log_msg(INFO, "Parsing finished, starting raytracer engine...");
+	log_msg(INFO, "Parsing finished");
 	if (save)
 		load_image(argv[1], get_scene());
 	else

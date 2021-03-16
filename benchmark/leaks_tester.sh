@@ -1,4 +1,4 @@
-# make re
+cd ..
 for entry in "scenes/crash"/*.rt
 do
 	echo "\033[1;31mTesting $entry...\033[0m"

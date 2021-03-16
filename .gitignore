@@ -6,4 +6,5 @@ miniRT
 *.dylib
 *.swiftdoc
 *.swiftmodule
+*.bmp
 minilibx-linux
