@@ -1,39 +1,39 @@
-R       1920 1080          8 300 300
-A       0.7                                                   255,255,255
-B                                                             18,247,255
+# R       1920 1080          8 300 300
+# A       0.7                                                   255,255,255
+# B                                                             18,247,255
 
-c       0,35,40            0,-0.4,-1        60
-c       45,40,20           -0.9,-0.3,-0.7   60
+# c       0,35,40            0,-0.4,-1        60
+# c       45,40,20           -0.9,-0.3,-0.7   60
 
-l       -400,400,400                        1                 255,255,255
+# l       -400,400,400                        1                 255,255,255
 
-pl      0,0,0              0,1,0                              0,255,0
+# pl      0,0,0              0,1,0                              0,255,0
 
-ob      0,0,0              "scenes/elements/flower.rt"
-ob      30,0,-12           "scenes/elements/flower.rt"
-ob      5,0,-45            "scenes/elements/flower.rt"
-ob      25,0,-32           "scenes/elements/flower.rt"
-ob      -45,0,-7           "scenes/elements/flower.rt"
-ob      11,0,-7            "scenes/elements/flower.rt"
-ob      -23,0,-50          "scenes/elements/flower.rt"
-ob      23,0,-77           "scenes/elements/flower.rt"
-ob      44,0,-45           "scenes/elements/flower.rt"
-ob      36,0,-54           "scenes/elements/flower.rt"
-ob      23,0,-62           "scenes/elements/flower.rt"
-ob      -32,0,-26          "scenes/elements/flower.rt"
-ob      51,0,-27           "scenes/elements/flower.rt"
-ob      -25,0,-87          "scenes/elements/flower.rt"
-ob      56,0,-41           "scenes/elements/flower.rt"
-ob      24,0,-12           "scenes/elements/flower.rt"
-ob      46,0,-56           "scenes/elements/flower.rt"
-ob      65,0,-4            "scenes/elements/flower.rt"
-ob      -2,0,-65           "scenes/elements/flower.rt"
-ob      23,0,-32           "scenes/elements/flower.rt"
-ob      -21,0,-12          "scenes/elements/flower.rt"
-ob      8,0,-3             "scenes/elements/flower.rt"
-ob      68,0,-23           "scenes/elements/flower.rt"
-ob      32,0,-36           "scenes/elements/flower.rt"
-ob      38,0,-80           "scenes/elements/flower.rt"
-ob      -65,0,-45          "scenes/elements/flower.rt"
-ob      57,0,-35           "scenes/elements/flower.rt"
-ob      -24,0,-12          "scenes/elements/flower.rt"
+# ob      0,0,0              "scenes/elements/flower.rt"
+# ob      30,0,-12           "scenes/elements/flower.rt"
+# ob      5,0,-45            "scenes/elements/flower.rt"
+# ob      25,0,-32           "scenes/elements/flower.rt"
+# ob      -45,0,-7           "scenes/elements/flower.rt"
+# ob      11,0,-7            "scenes/elements/flower.rt"
+# ob      -23,0,-50          "scenes/elements/flower.rt"
+# ob      23,0,-77           "scenes/elements/flower.rt"
+# ob      44,0,-45           "scenes/elements/flower.rt"
+# ob      36,0,-54           "scenes/elements/flower.rt"
+# ob      23,0,-62           "scenes/elements/flower.rt"
+# ob      -32,0,-26          "scenes/elements/flower.rt"
+# ob      51,0,-27           "scenes/elements/flower.rt"
+# ob      -25,0,-87          "scenes/elements/flower.rt"
+# ob      56,0,-41           "scenes/elements/flower.rt"
+# ob      24,0,-12           "scenes/elements/flower.rt"
+# ob      46,0,-56           "scenes/elements/flower.rt"
+# ob      65,0,-4            "scenes/elements/flower.rt"
+# ob      -2,0,-65           "scenes/elements/flower.rt"
+# ob      23,0,-32           "scenes/elements/flower.rt"
+# ob      -21,0,-12          "scenes/elements/flower.rt"
+# ob      8,0,-3             "scenes/elements/flower.rt"
+# ob      68,0,-23           "scenes/elements/flower.rt"
+# ob      32,0,-36           "scenes/elements/flower.rt"
+# ob      38,0,-80           "scenes/elements/flower.rt"
+# ob      -65,0,-45          "scenes/elements/flower.rt"
+# ob      57,0,-35           "scenes/elements/flower.rt"
+# ob      -24,0,-12          "scenes/elements/flower.rt"

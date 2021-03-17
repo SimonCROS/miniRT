@@ -139,7 +139,9 @@ void	bmp_finished(t_camera *camera, t_bitmap *image)
 	log_msg(INFO, "Saving...");
 	(void)camera;
 	bmp_save("render.bmp", image);
+	free(image->body);
 	free(image);
+	free_scene(get_scene());
 }
 
 int	render2(t_vars *vars, t_camera *camera, t_scene *scene)

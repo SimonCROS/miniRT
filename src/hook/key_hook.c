@@ -12,7 +12,7 @@ int	key_hook(int i, t_vars *vars)
 	scene = get_scene();
 	if (i == 53 || i == 65307)
 		return (on_close(vars));
-	if (!started && (i == 36 || i == 2))
+	if (!started && (i == 36 || i == 65293 || i == 2 || i == 100))
 	{
 		started = 1;
 		set_debug(i == 2);

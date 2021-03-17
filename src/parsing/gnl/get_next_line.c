@@ -97,7 +97,10 @@ int		get_next_line(int fd, char **line)
 	t_gnllist			*remain;
 	ssize_t				result;
 
-	if (BUFFER_SIZE < 1 || !(tmp_line = malloc(0)))
+	if (BUFFER_SIZE < 1)
+		return (-1);
+	tmp_line = malloc(1);
+	if (!tmp_line)
 		return (-1);
 	*tmp_line = 0;
 	if (!(remain = get_or_create_remain(&remain_lst, fd)))
