@@ -14,11 +14,6 @@
 #include "listener/events.h"
 #include "util/logs.h"
 
-static void	mlx_finished(t_camera *camera, t_image *image)
-{
-	camera->render = image;
-}
-
 void	init_window(char *file, t_scene *scene)
 {
 	char	*name;
@@ -48,7 +43,7 @@ void	init_window(char *file, t_scene *scene)
 	vars.init_image = (t_bifun)mlx_init_image;
 	vars.set_pixel = (t_pixel_writer)mlx_set_pixel;
 	vars.on_refresh = (t_bicon)force_put_image;
-	vars.on_finished = (t_bicon)mlx_finished;
+	vars.on_finished = null_biconsumer();
 	free(name);
 	mlx_hook(vars.win, 17, 0L, &close_hook, &vars);
 	mlx_key_hook(vars.win, &key_hook, &vars);

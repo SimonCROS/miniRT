@@ -134,8 +134,12 @@ t_bitmap	*bmp_init_image(t_vars *vars, t_options *params)
 	return (bmp_init(params->width, params->height));
 }
 
-void	bmp_finished(t_camera *camera, t_bitmap *image)
+void	bmp_finished(t_vars *vars, t_camera *camera)
 {
+	t_bitmap	*image;
+
+	(void)vars;
+	image = camera->render;
 	log_msg(INFO, "Saving...");
 	(void)camera;
 	bmp_save("render.bmp", image);
@@ -179,7 +183,8 @@ int	render2(t_vars *vars, t_camera *camera, t_scene *scene)
 	tpool_destroy(pool);
 	free(chunks);
 	log_msg(INFO, "Image successfully rendered");
-	vars->on_finished(camera, data.image);
+	camera->render = data.image;
+	vars->on_finished(vars, camera);
 	return (TRUE);
 }
 
