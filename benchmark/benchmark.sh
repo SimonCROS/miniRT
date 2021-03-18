@@ -4,6 +4,7 @@ cd $(dirname "$0")/..
 RENDER="render.bmp"
 TIMEFORMAT="Time : %Rs"
 mkdir -p benchmark/renders
+rm -f benchmark/renders/*
 rm -f $RENDER
 for entry in "scenes"/*.rt "scenes"/crash/*.rt
 do
@@ -11,6 +12,7 @@ do
 	if command -v valgrind &> /dev/null
 	then
 		valgrind --tool=memcheck --leak-check=full --leak-resolution=high --show-reachable=yes ./miniRT $entry --save
+		printf "\n"
 	elif command -v leaks &> /dev/null
 	then
 		leaks -quiet -atExit -- ./miniRT $entry --save
@@ -19,5 +21,4 @@ do
 	then
 		mv -f $RENDER benchmark/renders/$(basename ${entry%.*}).bmp
 	fi
-	printf "\n"
 done

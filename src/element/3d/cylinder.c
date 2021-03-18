@@ -96,13 +96,14 @@ int	intersect_base(t_vector3 position, t_vector3 rotation, t_ray *ray, float rad
 	return (FALSE);
 }
 
-int	collides_caps(t_object *obj, t_ray *ray, t_vector3 base)
+int	collides_caps(t_object *obj, t_ray *ray, t_vector3 base, int collides)
 {
 	t_ray		tmp;
 
 	tmp = *ray;
 	tmp.length = INFINITY;
-	if (intersect_base(base, obj->rotation, &tmp, obj->data.cylinder.radius))
+	if (intersect_base(base, obj->rotation, &tmp, obj->data.cylinder.radius)
+		&& (!collides || tmp.length < ray->length))
 	{
 		*ray = tmp;
 		return (TRUE);
@@ -114,17 +115,16 @@ int	collides_cylinder(void *arg1, void *arg2)
 {
 	t_ray		*ray;
 	t_object	*obj;
-	int			collides;
+	int			ret;
 
 	obj = arg1;
 	ray = arg2;
-	collides = FALSE;
 	if (!intersect_cylinder(obj, ray, &(ray->length)))
 		return (FALSE);
-	// if (intersect_side(obj, ray))
-	// 	return (TRUE);
-	return (collides_caps(obj, ray, obj->position)
-		|| collides_caps(obj, ray, obj->data.cylinder.position2));
+	ret = intersect_side(obj, ray);
+	ret = collides_caps(obj, ray, obj->position, ret) || ret;
+	ret = collides_caps(obj, ray, obj->data.cylinder.position2, ret) || ret;
+	return (ret);
 }
 
 t_object	*new_cylinder(float *attrs, t_vector3 pos, t_vector3 rot,

@@ -11,7 +11,7 @@
 #include "listener/events.h"
 #include "util/logs.h"
 
-void	init_window(char *file, t_scene *scene)
+static int	init_mlx(t_vars *vars, char *file, t_scene *scene)
 {
 	char	*name;
 
