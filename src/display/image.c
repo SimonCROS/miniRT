@@ -19,8 +19,19 @@ t_image	*mlx_init_image(t_vars *vars, t_options *params)
 	if (!img)
 		return (NULL);
 	img->img = mlx_new_image(vars->mlx, params->width, params->height);
+	if (!img->img)
+	{
+		free(img);
+		return (NULL);
+	}
 	img->addr = mlx_get_data_addr(img->img, &img->bits_per_pixel,
 			&img->line_length, &img->endian);
+	if (!img->addr)
+	{
+		mlx_destroy_image(vars->mlx, img->img);
+		free(img);
+		return (NULL);
+	}
 	return (img);
 }
 

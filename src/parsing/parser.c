@@ -162,6 +162,12 @@ int	parse_lines(t_list *nodes, int fd)
 			free(buffer);
 			continue ;
 		}
+		if (*buffer == ' ')
+		{
+			free(buffer);
+			log_msg(ERROR, "Line starts with space.");
+			return (FALSE);
+		}
 		lst_push(nodes, as_listf((void **)ft_splitf(buffer, ' '), free));
 	}
 	return (result != -1);

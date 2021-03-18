@@ -134,6 +134,20 @@ t_bitmap	*bmp_init_image(t_vars *vars, t_options *params)
 	return (bmp_init(params->width, params->height));
 }
 
+// void	bmp_free(t_vars *vars)
+// {
+// 	free(image->body);
+// 	free(image);
+// 	free_scene(get_scene());
+// }
+
+// void	bmp_exit(t_vars *vars)
+// {
+// 	free(image->body);
+// 	free(image);
+// 	free_scene(get_scene());
+// }
+
 void	bmp_finished(t_vars *vars, t_camera *camera)
 {
 	t_bitmap	*image;
@@ -159,6 +173,8 @@ int	render2(t_vars *vars, t_camera *camera, t_scene *scene)
 	params = scene->render;
 	data.vars = vars;
 	data.image = vars->init_image(vars, params);
+	// if (!data.image)
+	// 	return ()
 	data.width = params->width;
 	data.height = params->height;
 	data.camera = camera;
