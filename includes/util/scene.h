@@ -1,8 +1,7 @@
 #ifndef SCENE_H
 # define SCENE_H
 
-# include "list.h"
-# include "color.h"
+#include "libft.h"
 
 # include "options.h"
 

@@ -3,8 +3,7 @@
 
 # include <stdlib.h>
 
-# include "types.h"
-# include "color.h"
+#include "libft.h"
 
 # include "util/scene.h"
 

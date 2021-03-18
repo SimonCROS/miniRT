@@ -1,7 +1,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "ftstring.h"
+#include "libft.h"
 #include "tpool.h"
 
 #include "minirt.h"

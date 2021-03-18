@@ -1,8 +1,7 @@
 #ifndef RAY_H
 # define RAY_H
 
-# include "vector3.h"
-# include "color.h"
+#include "libft.h"
 
 # include "options.h"
 # include "element/camera.h"

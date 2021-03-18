@@ -3,12 +3,8 @@
 
 #include "mlx.h"
 
-#include "matrix.h"
-#include "bitmap.h"
+#include "libft.h"
 #include "tpool.h"
-#include "list.h"
-#include "iterator.h"
-#include "ftstring.h"
 
 #include "minirt.h"
 #include "options.h"

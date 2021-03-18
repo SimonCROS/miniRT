@@ -1,8 +1,7 @@
 #ifndef CAMERA_H
 # define CAMERA_H
 
-# include "matrix.h"
-# include "list.h"
+#include "libft.h"
 
 typedef struct s_camera
 {

@@ -1,10 +1,7 @@
 #ifndef PLAN_H
 # define PLAN_H
 
-# include "vector3.h"
-# include "color.h"
-# include "types.h"
-# include "list.h"
+#include "libft.h"
 
 # include "engine/ray.h"
 

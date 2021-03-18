@@ -1,7 +1,7 @@
 #ifndef IMAGE_H
 # define IMAGE_H
 
-# include "color.h"
+#include "libft.h"
 
 # include "display/window.h"
 # include "options.h"

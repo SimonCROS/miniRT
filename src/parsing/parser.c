@@ -1,8 +1,6 @@
 #include <fcntl.h>
 
-#include "list.h"
-#include "color.h"
-#include "convert.h"
+#include "libft.h"
 
 #include "minirt.h"
 #include "options.h"

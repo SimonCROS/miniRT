@@ -2,7 +2,7 @@
 
 #include "mlx.h"
 
-#include "ftstring.h"
+#include "libft.h"
 
 #include "display/image.h"
 #include "display/window.h"
