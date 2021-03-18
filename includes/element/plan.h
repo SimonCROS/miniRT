@@ -22,8 +22,6 @@ typedef struct s_cylinder
 {
 	t_vector3		position2;
 	float			radius;
-	float			height;
-	int				caps;
 }	t_cylinder;
 
 typedef struct s_square
@@ -42,15 +40,6 @@ typedef struct s_triangle
 	t_vector3		p3;
 }	t_triangle;
 
-typedef union u_object_data
-{
-	t_square		square;
-	t_sphere		sphere;
-	t_circle		circle;
-	t_cylinder		cylinder;
-	t_triangle		triangle;
-}	t_object_data;
-
 typedef struct s_object
 {
 	t_bipredicate	collides;
@@ -58,7 +47,14 @@ typedef struct s_object
 	t_vector3		rotation;
 	int				is_plane;
 	t_color			color;
-	t_object_data	data;
+	union u_object_data
+	{
+		t_square		square;
+		t_sphere		sphere;
+		t_circle		circle;
+		t_cylinder		cylinder;
+		t_triangle		triangle;
+	}	data;
 }	t_object;
 
 t_object	*new_sphere(float diametre, t_vector3 position, t_color color);

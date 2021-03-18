@@ -10,22 +10,20 @@ int	key_hook(int i, t_vars *vars)
 	t_scene		*scene;
 
 	scene = get_scene();
-	if (i == 53 || i == 65307)
+	if (i == K_ESC)
 		return (on_close(vars));
-	if (!started && (i == 36 || i == 65293 || i == 2 || i == 100))
+	if (!started && (i == K_ENTER || i == K_D))
 	{
 		started = 1;
 		set_debug(i == 2);
 		return (on_change_camera(vars));
 	}
-	else if (scene->cameras->size > 1 && (i == 123 || i == 125 || i == 124
-			|| i == 126 || i == 6536 || i == 65362 || i == 65363 || i == 65364))
+	else if (scene->cameras->size > 1 && (i == K_LEFT || i == K_RIGHT
+			|| i == K_UP || i == K_DOWN))
 	{
-		if (scene->cameras->size == 1)
-			return (0);
-		if (i == 123 || i == 125 || i == 65361 || i == 65364)
+		if (i == K_LEFT || i == K_DOWN)
 			scene->index--;
-		if (i == 124 || i == 126 || i == 65362 || i == 65363)
+		if (i == K_RIGHT || i == K_UP)
 			scene->index++;
 		scene->index %= scene->cameras->size;
 		if (scene->index < 0)

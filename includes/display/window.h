@@ -8,6 +8,24 @@
 
 # include "util/scene.h"
 
+# ifdef __APPLE__
+#  define K_LEFT 123
+#  define K_RIGHT 124
+#  define K_DOWN 125
+#  define K_UP 126
+#  define K_ESC 53
+#  define K_ENTER 36
+#  define K_D 2
+# else
+#  define K_LEFT 65361
+#  define K_RIGHT 65364
+#  define K_DOWN 65362
+#  define K_UP 65362
+#  define K_ESC 65307
+#  define K_ENTER 65293
+#  define K_D 100
+# endif
+
 typedef void	(*t_pixel_writer)(void *, int, int, t_color);
 
 typedef struct s_vars

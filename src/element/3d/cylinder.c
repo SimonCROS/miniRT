@@ -25,7 +25,6 @@ t_object	*parse_cylinder(t_list *data, t_vector3 origin)
 		return (NULL);
 	attr[0] = fabsf(attr[0]);
 	attr[1] = fabsf(attr[1]);
-	attr[2] = ((char *)lst_first(data))[1] == 'c';
 	return (new_cylinder(attr, vec3_addv(pos, origin), rot, color));
 }
 
@@ -37,35 +36,42 @@ int	test_intersect(float t[2], float *current_z)
 
 int	intersect_cylinder(t_object *cp, t_ray *r, float *current_z)
 {
-	t_vector3 eye = vec3_subv(r->origin, cp->position);
-	float a = vec3_dotv(r->direction, r->direction) - pow(vec3_dotv(r->direction, cp->rotation), 2);
-	float b = 2 * (vec3_dotv(r->direction, eye) - vec3_dotv(r->direction, cp->rotation) * vec3_dotv(eye, cp->rotation));
-	float c = vec3_dotv(eye, eye) - pow(vec3_dotv(eye, cp->rotation), 2) - cp->data.cylinder.radius * cp->data.cylinder.radius;
-	float t[2];
-	float delta;
-	delta = sqrt((b * b) - (4 * a * c));
+	t_vector3	eye;
+	float		a[3];
+	float		t[2];
+	float		delta;
+
+	eye = vec3_subv(r->origin, cp->position);
+	a[0] = vec3_dotv(r->direction, r->direction)
+		- pow(vec3_dotv(r->direction, cp->rotation), 2);
+	a[1] = 2 * (vec3_dotv(r->direction, eye) - vec3_dotv(r->direction,
+				cp->rotation) * vec3_dotv(eye, cp->rotation));
+	a[2] = vec3_dotv(eye, eye) - pow(vec3_dotv(eye, cp->rotation), 2)
+		- cp->data.cylinder.radius * cp->data.cylinder.radius;
+	delta = sqrt((a[1] * a[1]) - (4 * a[0] * a[2]));
 	if (delta < 0)
 		return (0);
-	t[0] = (-b - (delta)) / (2 * a);
-	t[1] = (-b + (delta)) / (2 * a);
+	t[0] = (-a[1] - (delta)) / (2 * a[0]);
+	t[1] = (-a[1] + (delta)) / (2 * a[0]);
 	return (test_intersect(t, current_z));
 }
 
-int	intersect_side(t_object *object, t_ray *ray)
+int	intersect_side(t_object *obj, t_ray *ray)
 {
-	t_ray	to_bot;
+	t_ray		to_bot;
+	t_vector3	point;
 
 	ray->phit = vec3_addv(vec3_muld(ray->direction, ray->length), ray->origin);
-	to_bot.direction = object->rotation;
+	to_bot.direction = obj->rotation;
 	to_bot.origin = ray->phit;
-	if (!intersect_plane(object->data.cylinder.position2, object->rotation, &to_bot))
-		return 0;
+	if (!intersect_plane(obj->data.cylinder.position2, obj->rotation, &to_bot))
+		return (FALSE);
 	to_bot.direction = vec3_negate(to_bot.direction);
-	if (!intersect_plane(object->position, object->rotation, &to_bot))
-		return 0;
-	t_vector3 point = vec3_addv(vec3_muld(object->rotation, to_bot.length), object->position);
+	if (!intersect_plane(obj->position, obj->rotation, &to_bot))
+		return (FALSE);
+	point = vec3_addv(vec3_muld(obj->rotation, to_bot.length), obj->position);
 	ray->nhit = vec3_normalize(vec3_subv(ray->phit, point));
-	return 1;
+	return (TRUE);
 }
 
 int	intersect_base(t_vector3 position, t_vector3 rotation, t_ray *ray, float radius)
@@ -85,49 +91,40 @@ int	intersect_base(t_vector3 position, t_vector3 rotation, t_ray *ray, float rad
 		v = vec3_subv(ray->phit, position);
 		d2 = vec3_length_squared(v);
 		if (d2 <= radius * radius)
-			return (1);
+			return (TRUE);
 	}
-	return (0);
+	return (FALSE);
+}
+
+int	collides_caps(t_object *obj, t_ray *ray, t_vector3 base)
+{
+	t_ray		tmp;
+
+	tmp = *ray;
+	tmp.length = INFINITY;
+	if (intersect_base(base, obj->rotation, &tmp, obj->data.cylinder.radius))
+	{
+		*ray = tmp;
+		return (TRUE);
+	}
+	return (FALSE);
 }
 
 int	collides_cylinder(void *arg1, void *arg2)
 {
 	t_ray		*ray;
-	t_object	*object;
-	t_ray		tmp;
+	t_object	*obj;
 	int			collides;
 
-	object = arg1;
+	obj = arg1;
 	ray = arg2;
 	collides = FALSE;
-	if (!intersect_cylinder(object, ray, &(ray->length)))
-		return (0);
-	if (intersect_side(object, ray))
-		collides = TRUE;
-	if (object->data.cylinder.caps)
-	{
-		tmp = *ray;
-		tmp.length = INFINITY;
-		if (intersect_base(object->position, object->rotation, &tmp, object->data.cylinder.radius))
-		{
-			if (!collides || tmp.length < ray->length)
-			{
-				*ray = tmp;
-				collides = TRUE;
-			}
-		}
-		tmp = *ray;
-		tmp.length = INFINITY;
-		if (intersect_base(object->data.cylinder.position2, object->rotation, &tmp, object->data.cylinder.radius))
-		{
-			if (!collides || tmp.length < ray->length)
-			{
-				*ray = tmp;
-				collides = TRUE;
-			}
-		}
-	}
-	return collides;
+	if (!intersect_cylinder(obj, ray, &(ray->length)))
+		return (FALSE);
+	// if (intersect_side(obj, ray))
+	// 	return (TRUE);
+	return (collides_caps(obj, ray, obj->position)
+		|| collides_caps(obj, ray, obj->data.cylinder.position2));
 }
 
 t_object	*new_cylinder(float *attrs, t_vector3 pos, t_vector3 rot,
@@ -143,8 +140,6 @@ t_object	*new_cylinder(float *attrs, t_vector3 pos, t_vector3 rot,
 	if (!object)
 		return (NULL);
 	object->data.cylinder.radius = attrs[0] / 2;
-	object->data.cylinder.height = attrs[1];
-	object->data.cylinder.caps = attrs[2];
 	object->data.cylinder.position2 = pos2;
 	return (object);
 }

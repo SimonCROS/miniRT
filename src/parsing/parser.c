@@ -127,7 +127,8 @@ int	parse_node(t_list *line, t_scene *scene, int depth, t_vector3 origin)
 		node = lst_push(scene->objects, parse_square(line, origin));
 	else if (ft_strcmp(lst_first(line), "sp") == 0)
 		node = lst_push(scene->objects, parse_sphere(line, origin));
-	else if (ft_strcmp(lst_first(line), "cy") == 0)
+	else if (ft_strcmp(lst_first(line), "cy") == 0
+		|| ft_strcmp(lst_first(line), "ccy") == 0)
 		node = lst_push(scene->objects, parse_cylinder(line, origin));
 	else if (ft_strcmp(lst_first(line), "ci") == 0)
 		node = lst_push(scene->objects, parse_circle(line, origin));
