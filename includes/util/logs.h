@@ -12,6 +12,7 @@ typedef enum e_log_type
 	FATAL
 }	t_log_type;
 
+int		log_msg_arg(t_log_type type, char *str, char *arg);
 int		log_msg(t_log_type type, char *str);
 int		is_debug_enabled(void);
 int		set_debug(int debug);

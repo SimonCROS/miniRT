@@ -6,7 +6,10 @@
 
 # include <errno.h>
 
-#include "display/window.h"
+# include "libft.h"
+
+# include "display/window.h"
+
 int	render(t_vars *vars); // TEMP
 
 #endif

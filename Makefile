@@ -19,6 +19,8 @@ FT			= libft.a
 
 SRCS		=	main.c								\
 				parsing/parser.c					\
+				parsing/node_parser.c				\
+				parsing/misc_parser.c				\
 				parsing/gnl/get_next_line.c			\
 				parsing/gnl/get_next_line_utils.c	\
 				element/camera.c					\
