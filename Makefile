@@ -3,7 +3,7 @@ SRC			= src
 INC			= includes
 LIBFT		= libft
 
-LINUX			= 0
+LINUX			= 1
 
 MINILIBX_OS_X	= minilibx-macos
 MINILIBX_LINUX	= minilibx-linux
@@ -32,6 +32,7 @@ SRCS		=	main.c								\
 				element/3d/sphere.c					\
 				element/3d/cylinder.c				\
 				engine/ray.c						\
+				engine/collision.c					\
 				display/window.c					\
 				display/image.c						\
 				hook/key_hook.c						\

@@ -1,14 +1,16 @@
 #include "util/get_next_line.h"
 
-int		delete(int ret, t_gnllist **remain, t_gnllist *element, void *p)
+int	delete(int ret, t_gnllist **remain, t_gnllist *element, void *p)
 {
-	t_gnllist *elem;
+	t_gnllist	*elem;
 
 	if (remain && *remain && element)
 	{
 		if (element == *remain)
 			*remain = element->next;
-		else if ((elem = *remain))
+		else if (*remain)
+		{
+			elem = *remain;
 			while (elem)
 			{
 				if (elem->next == element)
@@ -18,6 +20,7 @@ int		delete(int ret, t_gnllist **remain, t_gnllist *element, void *p)
 				}
 				elem = elem->next;
 			}
+		}
 		if (element->content)
 			free(element->content);
 		free(element);
@@ -29,8 +32,8 @@ int		delete(int ret, t_gnllist **remain, t_gnllist *element, void *p)
 
 t_gnllist	*get_or_create_remain(t_gnllist **remain, int fd)
 {
-	t_gnllist *new_element;
-	t_gnllist *elem;
+	t_gnllist	*new_element;
+	t_gnllist	*elem;
 
 	elem = *remain;
 	while (elem)
@@ -39,7 +42,8 @@ t_gnllist	*get_or_create_remain(t_gnllist **remain, int fd)
 			return (elem);
 		elem = elem->next;
 	}
-	if (!(new_element = malloc(sizeof(*new_element))))
+	new_element = malloc(sizeof(*new_element));
+	if (!new_element)
 		return (NULL);
 	new_element->content = NULL;
 	new_element->fd = fd;

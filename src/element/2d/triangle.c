@@ -29,24 +29,20 @@ int	collides_triangle(void *arg1, void *arg2)
 {
 	t_ray		*ray;
 	t_object	*plan;
-	t_vector3	c1;
-	t_vector3	c2;
-	t_vector3	c3;
-	t_vector3	edge1;
-	t_vector3	edge2;
-	t_vector3	edge3;
+	t_vector3	edges[3];
+	t_vector3	dists[3];
 
 	plan = arg1;
 	ray = arg2;
-	edge1 = vec3_subv(plan->data.triangle.p2, plan->data.triangle.p1);
-	edge2 = vec3_subv(plan->data.triangle.p3, plan->data.triangle.p2);
-	edge3 = vec3_subv(plan->data.triangle.p1, plan->data.triangle.p3);
-	c1 = vec3_subv(ray->phit, plan->data.triangle.p1);
-	c2 = vec3_subv(ray->phit, plan->data.triangle.p2);
-	c3 = vec3_subv(ray->phit, plan->data.triangle.p3);
-	if (vec3_dotv(plan->rotation, vec3_crossv(edge1, c1)) > 0
-		&& vec3_dotv(plan->rotation, vec3_crossv(edge2, c2)) > 0
-		&& vec3_dotv(plan->rotation, vec3_crossv(edge3, c3)) > 0)
+	edges[0] = vec3_subv(plan->data.triangle.p2, plan->data.triangle.p1);
+	edges[1] = vec3_subv(plan->data.triangle.p3, plan->data.triangle.p2);
+	edges[2] = vec3_subv(plan->data.triangle.p1, plan->data.triangle.p3);
+	dists[0] = vec3_subv(ray->phit, plan->data.triangle.p1);
+	dists[1] = vec3_subv(ray->phit, plan->data.triangle.p2);
+	dists[2] = vec3_subv(ray->phit, plan->data.triangle.p3);
+	if (vec3_dotv(plan->rotation, vec3_crossv(edges[0], dists[0])) > 0
+		&& vec3_dotv(plan->rotation, vec3_crossv(edges[1], dists[1])) > 0
+		&& vec3_dotv(plan->rotation, vec3_crossv(edges[2], dists[2])) > 0)
 		return (1);
 	return (0);
 }
