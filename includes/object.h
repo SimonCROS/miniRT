@@ -1,9 +1,14 @@
-#ifndef PLAN_H
-# define PLAN_H
+#ifndef OBJECT_H
+# define OBJECT_H
 
-#include "libft.h"
+# include "libft.h"
 
-# include "engine/ray.h"
+typedef struct s_light
+{
+	float		brightness;
+	t_vector3	position;
+	t_color		color;
+}	t_light;
 
 typedef struct s_circle
 {
@@ -68,13 +73,15 @@ t_object	*new_default_plane(t_vector3 position, t_vector3 rotation,
 				t_color color, t_bipredicate collides);
 t_object	*new_default_object(t_vector3 position, t_vector3 rotation,
 				t_color color, t_bipredicate collides);
-int			intersect_plane(t_vector3 position, t_vector3 rotation, t_ray *ray);
-int			collision(t_object *object, t_ray *ray);
+
 t_object	*parse_triangle(t_list *data, t_vector3 origin);
 t_object	*parse_plane(t_list *data, t_vector3 origin);
 t_object	*parse_square(t_list *data, t_vector3 origin);
 t_object	*parse_sphere(t_list *data, t_vector3 origin);
 t_object	*parse_circle(t_list *data, t_vector3 origin);
 t_object	*parse_cylinder(t_list *data, t_vector3 origin);
+
+t_light		*parse_light(t_list *data, t_vector3 origin);
+t_light		*new_light(float brightness, t_vector3 position, t_color color);
 
 #endif

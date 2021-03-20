@@ -1,4 +1,4 @@
-#include "util/get_next_line.h"
+#include "get_next_line.h"
 
 int	delete(int ret, t_gnllist **remain, t_gnllist *element, void *p)
 {

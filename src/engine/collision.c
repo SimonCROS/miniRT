@@ -1,8 +1,5 @@
 #include "minirt.h"
-
-// To remove
-#include "element/plan.h"
-#include "engine/ray.h"
+#include "object.h"
 
 int	intersect_plane(t_vector3 pos, t_vector3 rot, t_ray *ray)
 {
