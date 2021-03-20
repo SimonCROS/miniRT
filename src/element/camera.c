@@ -1,9 +1,4 @@
-#include <stdlib.h>
-
-#include "libft.h"
-
-#include "element/camera.h"
-#include "util/parsing.h"
+#include "minirt.h"
 
 t_camera	*parse_camera(t_list *data, t_vector3 origin)
 {

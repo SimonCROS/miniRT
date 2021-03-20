@@ -1,12 +1,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "libft.h"
-#include "tpool.h"
-
 #include "minirt.h"
-#include "util/logs.h"
-#include "provider/debug_mode_provider.h"
 
 int	log_nl(void)
 {

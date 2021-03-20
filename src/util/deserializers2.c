@@ -1,9 +1,6 @@
 #include <errno.h>
 
-#include "libft.h"
-
-#include "util/parsing.h"
-#include "util/logs.h"
+#include "minirt.h"
 
 int	vec_deserialize(const char *str, t_vector3 *vector)
 {

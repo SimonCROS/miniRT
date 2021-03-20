@@ -1,6 +1,4 @@
-#include "provider/scene_provider.h"
-#include "display/window.h"
-#include "listener/events.h"
+#include "minirt.h"
 
 int	close_hook(t_vars *vars)
 {

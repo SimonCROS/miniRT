@@ -3,14 +3,13 @@
 
 # include <errno.h>
 # include <stdio.h>
-# include <pthread.h>
 
 # include "libft.h"
+# include "tpool.h"
 
 /*** Definitions **************************************************************/
 
 # define MAX_THREADS 16
-# define BUFFER_SIZE 50
 
 # ifdef __APPLE__
 #  define K_LEFT 123

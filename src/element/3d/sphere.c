@@ -1,10 +1,7 @@
-#include <stdlib.h>
+#include "minirt.h"
+#include "object.h"
+
 #include <math.h>
-
-#include "libft.h"
-
-#include "element/plan.h"
-#include "util/parsing.h"
 
 t_object	*parse_sphere(t_list *data, t_vector3 origin)
 {

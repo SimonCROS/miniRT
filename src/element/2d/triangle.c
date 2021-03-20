@@ -1,9 +1,7 @@
-#include <stdlib.h>
+#include "minirt.h"
+#include "object.h"
 
-#include "libft.h"
-
-#include "element/plan.h"
-#include "util/parsing.h"
+#include <math.h>
 
 t_object	*parse_triangle(t_list *data, t_vector3 origin)
 {

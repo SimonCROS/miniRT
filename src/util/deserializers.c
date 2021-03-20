@@ -1,9 +1,6 @@
 #include <errno.h>
 
-#include "libft.h"
-
-#include "util/parsing.h"
-#include "util/logs.h"
+#include "minirt.h"
 
 int	float_deserialize(char *str, float *result)
 {

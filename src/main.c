@@ -7,15 +7,7 @@
 #include "tpool.h"
 
 #include "minirt.h"
-#include "options.h"
-#include "element/camera.h"
-#include "element/light.h"
-#include "element/plan.h"
-#include "engine/ray.h"
-#include "engine/render_thread.h"
-#include "provider/scene_provider.h"
-#include "display/window.h"
-#include "util/logs.h"
+#include "object.h"
 
 static pthread_mutex_t	g_mutex_flush = PTHREAD_MUTEX_INITIALIZER;
 

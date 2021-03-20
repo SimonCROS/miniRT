@@ -1,6 +1,4 @@
-#include "provider/scene_provider.h"
-#include "util/parsing.h"
-#include <stdlib.h>
+#include "minirt.h"
 
 static t_scene	*provider(t_scene *scene)
 {

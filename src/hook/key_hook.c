@@ -1,8 +1,4 @@
-#include "provider/debug_mode_provider.h"
-#include "provider/scene_provider.h"
-#include "display/window.h"
-#include "listener/events.h"
-#include "util/logs.h"
+#include "minirt.h"
 
 int	key_hook(int i, t_vars *vars)
 {

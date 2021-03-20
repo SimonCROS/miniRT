@@ -1,9 +1,4 @@
-#include <stdlib.h>
-
-#include "libft.h"
-
-#include "element/light.h"
-#include "util/parsing.h"
+#include "minirt.h"
 
 t_light	*parse_light(t_list *data, t_vector3 origin)
 {
