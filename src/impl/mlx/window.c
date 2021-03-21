@@ -33,6 +33,7 @@ void	init_window(char *file, t_scene *scene)
 	if (!init_mlx(&vars, file, scene))
 	{
 		free_scene(scene);
+		errno = -1;
 		perror("Error\nCan't generate the frame");
 		exit(EXIT_FAILURE);
 		return ;
