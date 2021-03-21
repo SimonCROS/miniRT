@@ -23,6 +23,7 @@ static int	parse_lines(t_list *nodes, int fd)
 		if (*buffer == ' ')
 		{
 			free(buffer);
+			errno = -1;
 			log_msg(ERROR, "Line starts with space.");
 			return (FALSE);
 		}
