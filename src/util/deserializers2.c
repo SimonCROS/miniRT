@@ -1,5 +1,3 @@
-#include <errno.h>
-
 #include "minirt.h"
 
 int	vec_deserialize(const char *str, t_vector3 *vector)

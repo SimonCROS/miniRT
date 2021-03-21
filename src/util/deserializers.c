@@ -1,5 +1,3 @@
-#include <errno.h>
-
 #include "minirt.h"
 
 int	float_deserialize(char *str, float *result)

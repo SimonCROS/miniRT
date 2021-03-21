@@ -1,6 +1,3 @@
-#include <string.h>
-#include <stdio.h>
-
 #include "minirt.h"
 
 int	log_nl(void)

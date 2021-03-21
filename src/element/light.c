@@ -1,4 +1,5 @@
 #include "minirt.h"
+#include "object.h"
 
 t_light	*parse_light(t_list *data, t_vector3 origin)
 {

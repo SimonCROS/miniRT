@@ -84,4 +84,6 @@ t_object	*parse_cylinder(t_list *data, t_vector3 origin);
 t_light		*parse_light(t_list *data, t_vector3 origin);
 t_light		*new_light(float brightness, t_vector3 position, t_color color);
 
+int			collision(t_object *object, t_ray *ray);
+
 #endif

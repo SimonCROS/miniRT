@@ -1,6 +1,6 @@
-#include "minirt.h"
-
 #include "mlx.h"
+
+#include "minirt.h"
 
 static void	free_render(t_camera *camera, t_vars *vars)
 {

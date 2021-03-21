@@ -1,6 +1,4 @@
-#include <stdlib.h>
-
-#include "util/scene.h"
+#include "minirt.h"
 
 void	*free_scene(t_scene *scene)
 {

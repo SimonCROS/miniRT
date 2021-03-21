@@ -1,14 +1,5 @@
 #include "minirt.h"
-
-// To remove
-#include "options.h"
-#include "element/camera.h"
-#include "element/light.h"
-#include "element/plan.h"
-#include "util/get_next_line.h"
-#include "util/scene.h"
-#include "util/logs.h"
-#include "util/parsing.h"
+#include "object.h"
 
 t_options	*parse_render(t_list *data)
 {

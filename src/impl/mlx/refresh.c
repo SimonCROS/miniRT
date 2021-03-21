@@ -1,3 +1,5 @@
+#include "mlx.h"
+
 #include "minirt.h"
 
 #if defined __APPLE__
@@ -17,4 +19,5 @@ void	force_put_image(t_vars *vars, t_image *image)
 	*(int *)(vars->mlx + 80) = 1;
 	mlx_put_image_to_window(vars->mlx, vars->win, image->img, 0, 0);
 }
+
 #endif

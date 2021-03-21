@@ -33,8 +33,9 @@ SRCS		=	main.c								\
 				element/3d/cylinder.c				\
 				engine/ray.c						\
 				engine/collision.c					\
-				display/window.c					\
-				display/image.c						\
+				impl/mlx/window.c					\
+				impl/mlx/image.c					\
+				impl/mlx/refresh.c					\
 				hook/key_hook.c						\
 				hook/close_hook.c					\
 				event/on_change_camera.c			\

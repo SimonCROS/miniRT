@@ -2,14 +2,7 @@
 
 #include "mlx.h"
 
-#include "libft.h"
-
-#include "display/image.h"
-#include "display/window.h"
-#include "element/camera.h"
-#include "listener/hooks.h"
-#include "listener/events.h"
-#include "util/logs.h"
+#include "minirt.h"
 
 static int	init_mlx(t_vars *vars, char *file, t_scene *scene)
 {

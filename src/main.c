@@ -27,10 +27,10 @@ void	render_chunk(t_thread_data *data, size_t start_x, size_t start_y)
 			if (y >= data->height)
 				break;
 
-			t_ray	ray = compute_ray(data->scene->render, data->camera, x, y);
+			t_ray		ray = compute_ray(data->scene->render, data->camera, x, y);
 			t_object	*object = NULL;
 			t_object	*object_test;
-			t_ray	obj_ray;
+			t_ray		obj_ray;
 
 			while (iterator_has_next(&objectIterator))
 			{
@@ -46,9 +46,7 @@ void	render_chunk(t_thread_data *data, size_t start_x, size_t start_y)
 					}
 				}
 			}
-
 			iterator_reset(&objectIterator);
-
 			if (!object)
 			{
 				data->vars->set_pixel(data->image, x, y, *(data->scene->background));
@@ -144,7 +142,11 @@ void	bmp_finished(t_vars *vars, t_camera *camera)
 	image = camera->render;
 	log_msg(INFO, "Saving...");
 	(void)camera;
-	bmp_save("render.bmp", image);
+	if (!bmp_save("render.bmp", image))
+	{
+		log_msg(DEBUG, "Error while saving image to bmp.");
+		perror("Error\nError while saving image to bmp");
+	}
 	free(image->body);
 	free(image);
 	free_scene(get_scene());

@@ -45,6 +45,22 @@ typedef struct s_ray		t_ray;
 typedef struct s_thread_dat	t_thread_data;
 typedef struct s_camera		t_camera;
 
+/*** Mlx implementation *******************************************************/
+
+struct s_image
+{
+	void	*img;
+	char	*addr;
+	int		bits_per_pixel;
+	int		line_length;
+	int		endian;
+};
+
+t_image		*mlx_init_image(t_vars *vars, t_options *params);
+void		mlx_set_pixel(t_image *image, int x, int y, t_color color);
+void		force_put_image(t_vars *vars, t_image *image);
+void		init_window(char *file, t_scene *scene);
+
 /*** General ******************************************************************/
 
 struct s_vars
@@ -76,8 +92,8 @@ int			on_close(t_vars *vars);
 
 /*** Hooks ********************************************************************/
 
-int			key_hook(int key, t_vars *vars, t_scene *scene);
-int			close_hook(t_vars *vars, t_scene *scene);
+int			key_hook(int key, t_vars *vars);
+int			close_hook(t_vars *vars);
 
 /*** Engine *******************************************************************/
 
@@ -93,7 +109,6 @@ struct s_ray
 };
 
 t_ray		compute_ray(t_options *render, t_camera *camera, float x, float y);
-int			collision(t_object *object, t_ray *ray);
 int			intersect_plane(t_vector3 position, t_vector3 rotation, t_ray *ray);
 
 /*** Camera *******************************************************************/
@@ -152,22 +167,6 @@ struct s_scene
 void		*free_scene(t_scene *scene);
 t_scene		*get_scene(void);
 int			load_scene(char *file);
-
-/*** Mlx implementation *******************************************************/
-
-struct s_image
-{
-	void	*img;
-	char	*addr;
-	int		bits_per_pixel;
-	int		line_length;
-	int		endian;
-};
-
-t_image		*mlx_init_image(t_vars *vars, t_options *params);
-void		mlx_set_pixel(t_image *image, int x, int y, t_color color);
-void		force_put_image(t_vars *vars, t_image *image);
-void		init_window(char *file, t_scene *scene);
 
 /*** Parsing utils ************************************************************/
 

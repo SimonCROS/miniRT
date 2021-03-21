@@ -1,15 +1,5 @@
 #include "minirt.h"
-
-// to rm
-#include "util/logs.h"
-#include "options.h"
-#include "element/camera.h"
-#include "element/light.h"
-#include "element/plan.h"
-#include "util/get_next_line.h"
-#include "util/scene.h"
-#include "util/logs.h"
-#include "util/parsing.h"
+#include "object.h"
 
 static int	duplicated_node(char *type)
 {

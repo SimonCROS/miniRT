@@ -1,16 +1,8 @@
 #include <fcntl.h>
 
-#include "libft.h"
-
 #include "minirt.h"
-#include "options.h"
-#include "element/camera.h"
-#include "element/light.h"
-#include "element/plan.h"
-#include "util/get_next_line.h"
-#include "util/scene.h"
-#include "util/logs.h"
-#include "util/parsing.h"
+#include "object.h"
+#include "get_next_line.h"
 
 static int	parse_lines(t_list *nodes, int fd)
 {
