@@ -2,7 +2,6 @@
 
 #include "minirt.h"
 #include "object.h"
-#include "get_next_line.h"
 
 static int	parse_lines(t_list *nodes, int fd)
 {

@@ -11,6 +11,8 @@
 
 # define MAX_THREADS 16
 
+# define BUFF_SIZE 50
+
 # ifdef __APPLE__
 #  define K_LEFT 123
 #  define K_RIGHT 124
@@ -44,6 +46,8 @@ typedef void				(*t_pixel_writer)(void *, int, int, t_color);
 typedef struct s_ray		t_ray;
 typedef struct s_thread_dat	t_thread_data;
 typedef struct s_camera		t_camera;
+
+typedef struct s_gnl_entry	t_gnl_entry;
 
 /*** Mlx implementation *******************************************************/
 
@@ -188,5 +192,17 @@ t_options	*parse_render(t_list *data);
 t_color		*parse_ambiant(t_list *data);
 t_color		*parse_background(t_list *data);
 t_scene		*parse(char *file);
+
+/*** GNL **********************************************************************/
+
+struct s_gnl_entry
+{
+	void	*next;
+	int		fd;
+	char	*content;
+};
+
+char		**ft_split_first(char *s, char c);
+int			get_next_line(int fd, char **line);
 
 #endif

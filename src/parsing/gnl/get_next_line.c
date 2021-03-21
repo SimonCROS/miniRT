@@ -1,8 +1,9 @@
-#include "get_next_line.h"
+#include "minirt.h"
 
-int	delete(int ret, t_gnllist **remain, t_gnllist *element, void *p)
+#include <stdio.h>
+int	delete(int ret, t_gnl_entry **remain, t_gnl_entry *element, void *p)
 {
-	t_gnllist	*elem;
+	t_gnl_entry	*elem;
 
 	if (remain && *remain && element)
 	{
@@ -21,8 +22,7 @@ int	delete(int ret, t_gnllist **remain, t_gnllist *element, void *p)
 				elem = elem->next;
 			}
 		}
-		if (element->content)
-			free(element->content);
+		free(element->content);
 		free(element);
 	}
 	if (p)
@@ -30,10 +30,10 @@ int	delete(int ret, t_gnllist **remain, t_gnllist *element, void *p)
 	return (ret);
 }
 
-t_gnllist	*get_or_create_remain(t_gnllist **remain, int fd)
+t_gnl_entry	*get_or_create_remain(t_gnl_entry **remain, int fd)
 {
-	t_gnllist	*new_element;
-	t_gnllist	*elem;
+	t_gnl_entry	*new_element;
+	t_gnl_entry	*elem;
 
 	elem = *remain;
 	while (elem)
@@ -52,40 +52,40 @@ t_gnllist	*get_or_create_remain(t_gnllist **remain, int fd)
 	return (new_element);
 }
 
-ssize_t	read_line(int fd, char **line, char ***current, t_gnllist *remain)
+ssize_t	read_line(int fd, char **line, char ***current, t_gnl_entry *remain)
 {
 	char	*tmp;
 	ssize_t	result;
 
-	if (!(remain->content = malloc(BUFFER_SIZE + 1)))
+	remain->content = malloc(BUFF_SIZE + 1);
+	if (!remain->content)
 		return (-1);
-	result = read(fd, remain->content, BUFFER_SIZE);
+	result = read(fd, remain->content, BUFF_SIZE);
 	if (result < 0)
 		return (-1);
-	if (*current)
-		free(*current);
-	if (result >= 0)
+	free(*current);
+	remain->content[result] = 0;
+	*current = ft_split_first(remain->content, '\n');
+	if (!current)
+		return (-1);
+	if (result)
 	{
-		remain->content[result] = 0;
-		if (!(*current = ft_split_first(remain->content, '\n')))
+		tmp = *line;
+		*line = ft_strjoin(tmp, (*current)[0]);
+		if (!line)
 			return (-1);
-		if (result > 0)
-		{
-			tmp = *line;
-			if (!(*line = ft_strjoin(tmp, (*current)[0])))
-				return (-1);
-			free(tmp);
-		}
-		free((*current)[0]);
+		free(tmp);
 	}
+	free((*current)[0]);
 	return (result);
 }
 
-int		load_remain(t_gnllist *remain, char **line, char ***current)
+int	load_remain(t_gnl_entry *remain, char **line, char ***current)
 {
 	if (remain->content)
 	{
-		if (!(*current = ft_split_first(remain->content, '\n')))
+		*current = ft_split_first(remain->content, '\n');
+		if (!*current)
 			return (-1);
 		free(*line);
 		*line = (*current)[0];
@@ -93,33 +93,34 @@ int		load_remain(t_gnllist *remain, char **line, char ***current)
 	return (1);
 }
 
-int		get_next_line(int fd, char **line)
+int	get_next_line(int fd, char **line)
 {
-	static t_gnllist	*remain_lst;
+	static t_gnl_entry	*remain_lst;
 	char				**current;
 	char				*tmp_line;
-	t_gnllist			*remain;
+	t_gnl_entry			*remain;
 	ssize_t				result;
 
-	if (BUFFER_SIZE < 1)
+	if (BUFF_SIZE < 1)
 		return (-1);
-	tmp_line = malloc(1);
-	if (!tmp_line)
-		return (-1);
-	*tmp_line = 0;
-	if (!(remain = get_or_create_remain(&remain_lst, fd)))
+	tmp_line = NULL;
+	remain = get_or_create_remain(&remain_lst, fd);
+	if (!remain)
 		return (delete(-1, NULL, NULL, tmp_line));
 	current = NULL;
 	if (load_remain(remain, &tmp_line, &current) == -1)
 		return (delete(-1, &remain_lst, remain, tmp_line));
-	result = BUFFER_SIZE;
-	while (result == BUFFER_SIZE && (!current || !current[1]))
-		if ((result = read_line(fd, &tmp_line, &current, remain)) == -1)
+	result = BUFF_SIZE;
+	while (result == BUFF_SIZE && (!current || !current[1]))
+	{
+		result = read_line(fd, &tmp_line, &current, remain);
+		if (result == -1)
 			return (delete(-1, &remain_lst, remain, tmp_line));
+	}
 	remain->content = current[1];
 	free(current);
 	*line = tmp_line;
-	if (result == BUFFER_SIZE || (result && remain->content))
+	if (result == BUFF_SIZE || (result && remain->content))
 		return (1);
 	return (delete(0, &remain_lst, remain, NULL));
 }
