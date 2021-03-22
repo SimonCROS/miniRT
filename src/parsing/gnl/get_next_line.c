@@ -1,6 +1,5 @@
 #include "minirt.h"
 
-#include <stdio.h>
 static int	delete(int ret, t_gnl_entry **remain, t_gnl_entry *element, void *p)
 {
 	t_gnl_entry	*elem;
