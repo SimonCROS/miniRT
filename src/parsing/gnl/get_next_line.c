@@ -30,7 +30,8 @@ static int	delete(int ret, t_gnl_entry **remain, t_gnl_entry *element, void *p)
 	return (ret);
 }
 
-static int	get_or_create_remain(t_gnl_entry **remain, int fd, t_gnl_entry **buf)
+static int	get_or_create_remain(t_gnl_entry **remain, int fd,
+	t_gnl_entry **buf)
 {
 	t_gnl_entry	*new_element;
 	t_gnl_entry	*elem;
@@ -56,7 +57,8 @@ static int	get_or_create_remain(t_gnl_entry **remain, int fd, t_gnl_entry **buf)
 	return (TRUE);
 }
 
-static ssize_t	read_line(int fd, char **line, char ***current, t_gnl_entry *remain)
+static ssize_t	read_line(int fd, char **line, char ***current,
+	t_gnl_entry *remain)
 {
 	char	*tmp;
 	ssize_t	result;
