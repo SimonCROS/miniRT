@@ -1,7 +1,7 @@
 #include "minirt.h"
 
 #include <stdio.h>
-int	delete(int ret, t_gnl_entry **remain, t_gnl_entry *element, void *p)
+static int	delete(int ret, t_gnl_entry **remain, t_gnl_entry *element, void *p)
 {
 	t_gnl_entry	*elem;
 
@@ -30,7 +30,7 @@ int	delete(int ret, t_gnl_entry **remain, t_gnl_entry *element, void *p)
 	return (ret);
 }
 
-t_gnl_entry	*get_or_create_remain(t_gnl_entry **remain, int fd)
+static int	get_or_create_remain(t_gnl_entry **remain, int fd, t_gnl_entry **buf)
 {
 	t_gnl_entry	*new_element;
 	t_gnl_entry	*elem;
@@ -39,20 +39,24 @@ t_gnl_entry	*get_or_create_remain(t_gnl_entry **remain, int fd)
 	while (elem)
 	{
 		if (elem->fd == fd)
-			return (elem);
+		{
+			*buf = elem;
+			return (TRUE);
+		}
 		elem = elem->next;
 	}
 	new_element = malloc(sizeof(*new_element));
 	if (!new_element)
-		return (NULL);
+		return (FALSE);
 	new_element->content = NULL;
 	new_element->fd = fd;
 	new_element->next = *remain;
 	*remain = new_element;
-	return (new_element);
+	*buf = new_element;
+	return (TRUE);
 }
 
-ssize_t	read_line(int fd, char **line, char ***current, t_gnl_entry *remain)
+static ssize_t	read_line(int fd, char **line, char ***current, t_gnl_entry *remain)
 {
 	char	*tmp;
 	ssize_t	result;
@@ -80,7 +84,7 @@ ssize_t	read_line(int fd, char **line, char ***current, t_gnl_entry *remain)
 	return (result);
 }
 
-int	load_remain(t_gnl_entry *remain, char **line, char ***current)
+static int	load_remain(t_gnl_entry *remain, char **line, char ***current)
 {
 	if (remain->content)
 	{
@@ -101,16 +105,12 @@ int	get_next_line(int fd, char **line)
 	t_gnl_entry			*remain;
 	ssize_t				result;
 
-	if (BUFF_SIZE < 1)
+	if (!gnl_init(&current, &tmp_line, &result))
 		return (-1);
-	tmp_line = NULL;
-	remain = get_or_create_remain(&remain_lst, fd);
-	if (!remain)
+	if (!get_or_create_remain(&remain_lst, fd, &remain))
 		return (delete(-1, NULL, NULL, tmp_line));
-	current = NULL;
 	if (load_remain(remain, &tmp_line, &current) == -1)
 		return (delete(-1, &remain_lst, remain, tmp_line));
-	result = BUFF_SIZE;
 	while (result == BUFF_SIZE && (!current || !current[1]))
 	{
 		result = read_line(fd, &tmp_line, &current, remain);

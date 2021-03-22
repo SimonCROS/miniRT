@@ -204,5 +204,6 @@ struct s_gnl_entry
 
 char		**ft_split_first(char *s, char c);
 int			get_next_line(int fd, char **line);
+int			gnl_init(char ***current, char **tmp_line, ssize_t *result);
 
 #endif

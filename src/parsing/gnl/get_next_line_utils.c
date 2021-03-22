@@ -27,3 +27,13 @@ char	**ft_split_first(char *s, char c)
 	}
 	return (parts);
 }
+
+int	gnl_init(char ***current, char **tmp_line, ssize_t *result)
+{
+	if (BUFF_SIZE < 1)
+		return (FALSE);
+	*tmp_line = NULL;
+	*current = NULL;
+	*result = BUFF_SIZE;
+	return (TRUE);
+}
