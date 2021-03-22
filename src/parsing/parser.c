@@ -20,7 +20,11 @@ static int	parse_lines(t_list *nodes, int fd)
 			free(buffer);
 			continue ;
 		}
-		lst_push(nodes, as_listf((void **)ft_splitf(buffer, ' '), free));
+		if (!lst_push(nodes, as_listf((void **)ft_splitf(buffer, ' '), free)))
+		{
+			errno = -1;
+			return (-1);
+		}
 	}
 	return (result != -1);
 }
