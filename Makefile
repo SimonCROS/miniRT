@@ -31,6 +31,7 @@ SRCS		=	main.c								\
 				element/2d/plane.c					\
 				element/3d/sphere.c					\
 				element/3d/cylinder.c				\
+				element/3d/cylinder2.c				\
 				engine/ray.c						\
 				engine/collision.c					\
 				impl/mlx/window.c					\

@@ -23,12 +23,6 @@ t_object	*parse_cylinder(t_list *data, t_vector3 origin)
 	return (new_cylinder(attr, vec3_addv(pos, origin), rot, color));
 }
 
-int	test_intersect(float t[2], float *current_z)
-{
-	*(current_z) = fminf(t[0], t[1]);
-	return (*current_z > 0);
-}
-
 int	intersect_cylinder(t_object *cp, t_ray *r, float *current_z)
 {
 	t_vector3	eye;
@@ -48,7 +42,8 @@ int	intersect_cylinder(t_object *cp, t_ray *r, float *current_z)
 		return (0);
 	t[0] = (-a[1] - (delta)) / (2 * a[0]);
 	t[1] = (-a[1] + (delta)) / (2 * a[0]);
-	return (test_intersect(t, current_z));
+	*(current_z) = fminf(t[0], t[1]);
+	return (*current_z > 0);
 }
 
 int	intersect_side(t_object *obj, t_ray *ray)
@@ -69,51 +64,10 @@ int	intersect_side(t_object *obj, t_ray *ray)
 	return (TRUE);
 }
 
-int	intersect_base(t_vector3 position, t_vector3 rotation, t_ray *ray, float radius)
+int	collides_cylinder(t_object *obj, t_ray *ray)
 {
-	t_vector3	v;
-	float		d2;
-	t_vector3	p;
-
-	if (intersect_plane(position, rotation, ray))
-	{
-		p = vec3_muld(ray->direction, ray->length);
-		p = vec3_addv(p, ray->origin);
-		ray->phit = p;
-		ray->nhit = rotation;
-		if (vec3_dotv(rotation, ray->direction) > 0)
-			ray->nhit = vec3_negate(ray->nhit);
-		v = vec3_subv(ray->phit, position);
-		d2 = vec3_length_squared(v);
-		if (d2 <= radius * radius)
-			return (TRUE);
-	}
-	return (FALSE);
-}
-
-int	collides_caps(t_object *obj, t_ray *ray, t_vector3 base, int collides)
-{
-	t_ray		tmp;
-
-	tmp = *ray;
-	tmp.length = INFINITY;
-	if (intersect_base(base, obj->rotation, &tmp, obj->data.cylinder.radius)
-		&& (!collides || tmp.length < ray->length))
-	{
-		*ray = tmp;
-		return (TRUE);
-	}
-	return (FALSE);
-}
-
-int	collides_cylinder(void *arg1, void *arg2)
-{
-	t_ray		*ray;
-	t_object	*obj;
 	int			ret;
 
-	obj = arg1;
-	ray = arg2;
 	if (!intersect_cylinder(obj, ray, &(ray->length)))
 		return (FALSE);
 	ret = intersect_side(obj, ray);
@@ -131,7 +85,7 @@ t_object	*new_cylinder(float *attrs, t_vector3 pos, t_vector3 rot,
 
 	pos1 = vec3_subv(pos, vec3_muld(rot, attrs[1] / 2));
 	pos2 = vec3_addv(pos, vec3_muld(rot, attrs[1] / 2));
-	object = new_default_object(pos1, rot, color, &collides_cylinder);
+	object = new_default_object(pos1, rot, color, (t_bipre)collides_cylinder);
 	if (!object)
 		return (NULL);
 	object->data.cylinder.radius = attrs[0] / 2;

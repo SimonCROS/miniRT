@@ -86,4 +86,6 @@ t_light		*new_light(float brightness, t_vector3 position, t_color color);
 
 int			collision(t_object *object, t_ray *ray);
 
+int			collides_caps(t_object *obj, t_ray *ray, t_vector3 base, int coll);
+
 #endif

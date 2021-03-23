@@ -23,15 +23,11 @@ t_object	*parse_triangle(t_list *data, t_vector3 origin)
 	return (new_triangle(p1, p2, p3, color));
 }
 
-int	collides_triangle(void *arg1, void *arg2)
+int	collides_triangle(t_object *plan, t_ray *ray)
 {
-	t_ray		*ray;
-	t_object	*plan;
 	t_vector3	edges[3];
 	t_vector3	dists[3];
 
-	plan = arg1;
-	ray = arg2;
 	edges[0] = vec3_subv(plan->data.triangle.p2, plan->data.triangle.p1);
 	edges[1] = vec3_subv(plan->data.triangle.p3, plan->data.triangle.p2);
 	edges[2] = vec3_subv(plan->data.triangle.p1, plan->data.triangle.p3);
@@ -55,7 +51,8 @@ t_object	*new_triangle(t_vector3 p1, t_vector3 p2, t_vector3 p3, t_color col)
 	cen = vec3_divd(vec3_addv(p1, vec3_addv(p2, p3)), 3);
 	d1 = vec3_subv(p2, p1);
 	d2 = vec3_subv(p3, p2);
-	plan = new_default_plane(cen, vec3_crossv(d1, d2), col, &collides_triangle);
+	plan = new_default_plane(cen, vec3_crossv(d1, d2), col,
+			(t_bipre)collides_triangle);
 	if (!plan)
 		return (NULL);
 	plan->data.triangle.p1 = p1;

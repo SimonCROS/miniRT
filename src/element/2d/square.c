@@ -21,8 +21,6 @@ t_object	*parse_square(t_list *data, t_vector3 origin)
 	return (new_square(width, vec3_addv(pos, origin), rot, color));
 }
 
-// TODO set all functions not in .h static
-
 int	orient(t_vector3 a, t_vector3 b, t_vector3 c, t_vector3 n)
 {
 	int	result;
@@ -35,15 +33,11 @@ int	orient(t_vector3 a, t_vector3 b, t_vector3 c, t_vector3 n)
 	return (0);
 }
 
-int	collides_square(void *arg1, void *arg2)
+int	collides_square(t_object *plan, t_ray *ray)
 {
-	t_ray		*ray;
-	t_object	*plan;
 	t_square	*square;
 	int			in;
 
-	plan = arg1;
-	ray = arg2;
 	square = &(plan->data.square);
 	in = orient(ray->phit, square->p1, square->p2, plan->rotation);
 	in += orient(ray->phit, square->p2, square->p3, plan->rotation);
@@ -61,7 +55,8 @@ t_object	*new_square(float width, t_vector3 position, t_vector3 rotation,
 	float		mid;
 	t_vector3	diagonal;
 
-	plan = new_default_plane(position, rotation, color, &collides_square);
+	plan = new_default_plane(position, rotation, color,
+			(t_bipre)collides_square);
 	if (!plan)
 		return (NULL);
 	mid = (width * sqrtf(2)) / 2;
