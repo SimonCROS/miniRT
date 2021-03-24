@@ -11,83 +11,100 @@
 
 static pthread_mutex_t	g_mutex_flush = PTHREAD_MUTEX_INITIALIZER;
 
-void	render_chunk(t_thread_data *data, size_t start_x, size_t start_y)
+void	render_light(t_scene *scene, t_object *object, t_light *light,
+	t_ray *ray)
 {
 	t_iterator	objectIterator;
+	t_ray		light_ray;
+	t_vector3	lightDir;
+	float		lightDistance2;
+	float		LdotN;
+	short		inShadow;
+	float		atm;
+	t_object	*object_test;
+
+	lightDir = vec3_subv(light->position, ray->phit);
+	lightDistance2 = vec3_length_squared(lightDir);
+	lightDir = vec3_normalize(lightDir);
+	LdotN = fmaxf(0, vec3_dotv(lightDir, ray->nhit));
+	inShadow = FALSE;
+	light_ray.origin = ray->phit;
+	light_ray.direction = lightDir;
+	light_ray.length = INFINITY;
+	objectIterator = iterator_new(scene->objects);
+	while (iterator_has_next(&objectIterator))
+	{
+		object_test = iterator_next(&objectIterator);
+		if (object_test == object)
+			continue ;
+		if (collision(object_test, &light_ray)
+			&& light_ray.length * light_ray.length <= lightDistance2)
+			break ;
+	}
+	atm = (1 - inShadow) * light->brightness * LdotN;
+	ray->color = color_add(ray->color, color_mul(object->color,
+				color_mulf(color_mulf(light->color, light->brightness),
+					atm)));
+}
+
+void	render_pixel_color(t_scene *scene, t_object *object, t_ray *ray)
+{
 	t_iterator	lightIterator;
 
-	objectIterator = iterator_new(data->scene->objects);
-	lightIterator = iterator_new(data->scene->lights);
-	for (size_t x = start_x; x < start_x + data->scene->render->chunk_width; x++)
+	lightIterator = iterator_new(scene->lights);
+	ray->color = color_mul(object->color, *(scene->ambiant));
+	while (iterator_has_next(&lightIterator))
+		render_light(scene, object, iterator_next(&lightIterator), ray);
+}
+
+void	render_pixel(t_thread_data *data, t_scene *scene, size_t x, size_t y)
+{
+	t_iterator	objectIterator;
+	t_ray		ray;
+	t_object	*object;
+	t_object	*object_test;
+	t_ray		object_ray;
+
+	object = NULL;
+	ray = compute_ray(scene->render, data->camera, x, y);
+	objectIterator = iterator_new(scene->objects);
+	while (iterator_has_next(&objectIterator))
 	{
-		if (x >= data->width)
-			break;
-		for (size_t y = start_y; y < start_y + data->scene->render->chunk_height; y++)
+		object_test = iterator_next(&objectIterator);
+		object_ray = ray;
+		if (collision(object_test, &object_ray))
 		{
-			if (y >= data->height)
-				break;
-
-			t_ray		ray = compute_ray(data->scene->render, data->camera, x, y);
-			t_object	*object = NULL;
-			t_object	*object_test;
-			t_ray		obj_ray;
-
-			while (iterator_has_next(&objectIterator))
+			if (object_ray.length < ray.length)
 			{
-				object_test = iterator_next(&objectIterator);
-				obj_ray = ray;
-
-				if (collision(object_test, &obj_ray))
-				{
-					if (obj_ray.length < ray.length)
-					{
-						ray = obj_ray;
-						object = object_test;
-					}
-				}
+				ray = object_ray;
+				object = object_test;
 			}
-			iterator_reset(&objectIterator);
-			if (!object)
-			{
-				data->vars->set_pixel(data->image, x, y, *(data->scene->background));
-				continue;
-			}
-			ray.color = color_mul(object->color, *(data->scene->ambiant));
-
-			while (iterator_has_next(&lightIterator))
-			{
-				t_light *light = iterator_next(&lightIterator);
-
-				t_vector3 lightDir = vec3_subv(light->position, ray.phit);
-				float lightDistance2 = vec3_length_squared(lightDir); 
-				lightDir = vec3_normalize(lightDir);
-				float LdotN = fmaxf(0, vec3_dotv(lightDir, ray.nhit));
-				short inShadow = FALSE;
-
-				t_ray light_ray;
-				light_ray.origin = ray.phit;
-				light_ray.direction = lightDir;
-				light_ray.length = INFINITY;
-				while (iterator_has_next(&objectIterator))
-				{
-					t_object *obj_test = iterator_next(&objectIterator);
-					if (obj_test == object)
-						continue;
-					if ((inShadow = collision(obj_test, &light_ray)))
-					{
-						if (light_ray.length * light_ray.length > lightDistance2)
-							inShadow = 0;
-						else
-							break;
-					}
-				}
-				iterator_reset(&objectIterator);
-				float atm = (1 - inShadow) * light->brightness * LdotN;
-				ray.color = color_add(ray.color, color_mul(object->color, color_mulf(color_mulf(light->color, light->brightness), atm)));
-			}
-			iterator_reset(&lightIterator);
-			data->vars->set_pixel(data->image, x, y, ray.color);
 		}
+	}
+	if (!object)
+		ray.color = *(scene->background);
+	else
+		render_pixel_color(scene, object, &ray);
+	data->vars->set_pixel(data->image, x, y, ray.color);
+}
+
+void	render_chunk(t_thread_data *data, size_t start_x, size_t start_y)
+{
+	t_scene		*scene;
+	size_t		x;
+	size_t		y;
+
+	scene = data->scene;
+	x = start_x;
+	while (x < start_x + scene->render->chunk_width && x < data->width)
+	{
+		y = start_y;
+		while (y < start_y + scene->render->chunk_height && y < data->height)
+		{
+			render_pixel(data, scene, x, y);
+			y++;
+		}
+		x++;
 	}
 }
 
@@ -194,7 +211,7 @@ int	render2(t_vars *vars, t_camera *camera, t_scene *scene)
 	return (TRUE);
 }
 
-int		render(t_vars *vars)
+int	render(t_vars *vars)
 {
 	t_scene		*scene;
 	t_camera	*camera;

@@ -3,7 +3,7 @@ SRC			= src
 INC			= includes
 LIBFT		= libft
 
-LINUX			= 0
+LINUX			= 1
 
 MINILIBX_OS_X	= minilibx-macos
 MINILIBX_LINUX	= minilibx-linux
