@@ -64,6 +64,13 @@ void		mlx_set_pixel(t_image *image, int x, int y, t_color color);
 void		force_put_image(t_vars *vars, t_image *image);
 void		init_window(char *file, t_scene *scene);
 
+int			key_hook(int key, t_vars *vars);
+int			close_hook(t_vars *vars);
+
+/*** Bmp implementation *******************************************************/
+
+void		init_bmp_image(char *file, t_scene *scene);
+
 /*** General ******************************************************************/
 
 struct s_vars
@@ -81,11 +88,6 @@ struct s_vars
 
 int			on_change_camera(t_vars *vars);
 int			on_close(t_vars *vars);
-
-/*** Hooks ********************************************************************/
-
-int			key_hook(int key, t_vars *vars);
-int			close_hook(t_vars *vars);
 
 /*** Engine *******************************************************************/
 
@@ -129,7 +131,7 @@ enum e_log_type
 };
 
 int			log_nl(void);
-int			log_msg_arg(t_log_type type, char *str, char *arg);
+int			log_msg_arg(t_log_type type, char *str, const char *arg);
 int			log_msg(t_log_type type, char *str);
 int			is_debug_enabled(void);
 int			set_debug(int debug);

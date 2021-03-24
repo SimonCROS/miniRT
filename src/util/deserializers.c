@@ -7,9 +7,8 @@ int	float_deserialize(char *str, float *result)
 	if (!ft_atof_full(str, &res))
 	{
 		errno = -1;
-		log_msg(ERROR, NULL);
-		printf("Unable to parse the following part into a float \"%s\"", str);
-		log_nl();
+		log_msg_arg(ERROR,
+			"Unable to parse the following part into a float \"%s\"", str);
 		return (0);
 	}
 	*result = res;
@@ -42,9 +41,8 @@ int	int_deserialize(char *str, int *result)
 	if (!ft_atoi_full(str, &res))
 	{
 		errno = -1;
-		log_msg(ERROR, NULL);
-		printf("Unable to parse the following part into an int \"%s\"", str);
-		log_nl();
+		log_msg_arg(ERROR,
+			"Unable to parse the following part into an int \"%s\"", str);
 		return (0);
 	}
 	*result = res;
@@ -77,10 +75,9 @@ int	ulong_deserialize(char *str, unsigned long *result)
 	if (!ft_atoul_full(str, &res))
 	{
 		errno = -1;
-		log_msg(ERROR, NULL);
-		printf("Unable to parse the following part into an unsigned long \
-\"%s\"", str);
-		log_nl();
+		log_msg_arg(ERROR,
+			"Unable to parse the following part into an unsigned long \"%s\"",
+			str);
 		return (0);
 	}
 	*result = res;

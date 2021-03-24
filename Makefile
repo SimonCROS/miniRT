@@ -35,11 +35,12 @@ SRCS		=	main.c								\
 				engine/ray.c						\
 				engine/renderer.c					\
 				engine/collision.c					\
+				impl/bmp/bmp.c						\
 				impl/mlx/image.c					\
 				impl/mlx/window.c					\
 				impl/mlx/refresh.c					\
-				hook/key_hook.c						\
-				hook/close_hook.c					\
+				impl/mlx/hook/key_hook.c			\
+				impl/mlx/hook/close_hook.c			\
 				event/on_close.c					\
 				event/on_change_camera.c			\
 				provider/scene_provider.c			\

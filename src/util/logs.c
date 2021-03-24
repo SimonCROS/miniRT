@@ -28,7 +28,7 @@ int	log_msg(t_log_type type, char *str)
 	return (len);
 }
 
-int	log_msg_arg(t_log_type type, char *str, char *arg)
+int	log_msg_arg(t_log_type type, char *str, const char *arg)
 {
 	char	thread[50];
 	int		len;

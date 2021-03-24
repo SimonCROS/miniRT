@@ -7,9 +7,8 @@ int	vec_deserialize(const char *str, t_vector3 *vector)
 	if (!vec3_deserialize(str, &rot))
 	{
 		errno = -1;
-		log_msg(ERROR, NULL);
-		printf("Unable to parse the following part into a vector \"%s\"", str);
-		log_nl();
+		log_msg_arg(ERROR,
+			"Unable to parse the following part into a vector \"%s\"", str);
 		return (0);
 	}
 	*vector = rot;
@@ -26,9 +25,8 @@ int	dir_deserialize(const char *str, t_vector3 *direction)
 		|| dir.z < -1 || dir.z > 1)
 	{
 		errno = -1;
-		log_msg(ERROR, NULL);
-		printf("Unable to parse the following part into a direction \"%s\"", str);
-		log_nl();
+		log_msg_arg(ERROR,
+			"Unable to parse the following part into a direction \"%s\"", str);
 		return (0);
 	}
 	*direction = dir;
@@ -42,9 +40,8 @@ int	col_deserialize(const char *str, t_color *color)
 	if (!color_deserialize(str, &col))
 	{
 		errno = -1;
-		log_msg(ERROR, NULL);
-		printf("Unable to parse the following part into a color \"%s\"", str);
-		log_nl();
+		log_msg_arg(ERROR,
+			"Unable to parse the following part into a color \"%s\"", str);
 		return (0);
 	}
 	*color = col;
