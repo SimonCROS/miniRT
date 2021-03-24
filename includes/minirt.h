@@ -44,7 +44,6 @@ typedef struct s_image		t_image;
 typedef void				(*t_pixel_writer)(void *, int, int, t_color);
 
 typedef struct s_ray		t_ray;
-typedef struct s_thread_dat	t_thread_data;
 typedef struct s_camera		t_camera;
 
 typedef struct s_gnl_entry	t_gnl_entry;
@@ -76,17 +75,6 @@ struct s_vars
 	t_biconsumer	on_refresh;
 	t_biconsumer	on_finished;
 	t_biconsumer	on_state_change;
-};
-
-struct s_thread_dat
-{
-	t_vars			*vars;
-	void			*image;
-	size_t			width;
-	size_t			height;
-	t_camera		*camera;
-	t_scene			*scene;
-	size_t			chunks;
 };
 
 /*** Events *******************************************************************/

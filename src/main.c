@@ -1,132 +1,12 @@
 #include <math.h>
-#include <pthread.h>
-
 #include "mlx.h"
 
 #include "libft.h"
 #include "tpool.h"
 
 #include "minirt.h"
+#include "renderer.h"
 #include "object.h"
-
-static pthread_mutex_t	g_mutex_flush = PTHREAD_MUTEX_INITIALIZER;
-
-void	render_light(t_scene *scene, t_object *object, t_light *light,
-	t_ray *ray)
-{
-	t_iterator	objectIterator;
-	t_ray		light_ray;
-	t_vector3	lightDir;
-	float		lightDistance2;
-	float		LdotN;
-	short		inShadow;
-	float		atm;
-	t_object	*obj_test;
-
-	lightDir = vec3_subv(light->position, ray->phit);
-	lightDistance2 = vec3_length_squared(lightDir);
-	lightDir = vec3_normalize(lightDir);
-	LdotN = fmaxf(0, vec3_dotv(lightDir, ray->nhit));
-	inShadow = FALSE;
-	light_ray.origin = ray->phit;
-	light_ray.direction = lightDir;
-	light_ray.length = INFINITY;
-	objectIterator = iterator_new(scene->objects);
-	while (iterator_has_next(&objectIterator))
-	{
-		obj_test = iterator_next(&objectIterator);
-		if (obj_test == object)
-			continue ;
-		if (collision(obj_test, &light_ray)
-			&& light_ray.length * light_ray.length <= lightDistance2)
-			break ;
-	}
-	atm = (1 - inShadow) * light->brightness * LdotN;
-	ray->color = color_add(ray->color, color_mul(object->color,
-				color_mulf(color_mulf(light->color, light->brightness),
-					atm)));
-}
-
-void	render_pixel_color(t_scene *scene, t_object *object, t_ray *ray)
-{
-	t_iterator	lightIterator;
-
-	lightIterator = iterator_new(scene->lights);
-	ray->color = color_mul(object->color, *(scene->ambiant));
-	while (iterator_has_next(&lightIterator))
-		render_light(scene, object, iterator_next(&lightIterator), ray);
-}
-
-void	render_pixel(t_thread_data *data, t_scene *scene, size_t x, size_t y)
-{
-	t_iterator	objectIterator;
-	t_ray		ray;
-	t_object	*object;
-	t_object	*obj_test;
-	t_ray		obj_ray;
-
-	object = NULL;
-	ray = compute_ray(scene->render, data->camera, x, y);
-	objectIterator = iterator_new(scene->objects);
-	while (iterator_has_next(&objectIterator))
-	{
-		obj_test = iterator_next(&objectIterator);
-		obj_ray = ray;
-		if (collision(obj_test, &obj_ray) && obj_ray.length < ray.length)
-		{
-			ray = obj_ray;
-			object = obj_test;
-		}
-	}
-	if (!object)
-		ray.color = *(scene->background);
-	else
-		render_pixel_color(scene, object, &ray);
-	data->vars->set_pixel(data->image, x, y, ray.color);
-}
-
-void	render_chunk(t_thread_data *data, size_t start_x, size_t start_y)
-{
-	t_scene		*scene;
-	size_t		x;
-	size_t		y;
-
-	scene = data->scene;
-	x = start_x;
-	while (x < start_x + scene->render->chunk_width && x < data->width)
-	{
-		y = start_y;
-		while (y < start_y + scene->render->chunk_height && y < data->height)
-		{
-			render_pixel(data, scene, x, y);
-			y++;
-		}
-		x++;
-	}
-}
-
-void	*render_thread(t_thread_data *data, int *chunk)
-{
-	t_options	*params;
-	int			chunk_x;
-	int			chunk_y;
-	int			ratio;
-
-	params = data->scene->render;
-	ratio = (int)ceilf(params->width / (float)params->chunk_width);
-	chunk_x = *chunk % ratio * params->chunk_width;
-	chunk_y = *chunk / ratio * params->chunk_height;
-	render_chunk(data, chunk_x, chunk_y);
-	pthread_mutex_lock(&g_mutex_flush);
-	if (log_msg(DEBUG, NULL))
-	{
-		printf("Rendering chunk (%d,%d)...", chunk_x, chunk_y);
-		log_nl();
-	}
-	data->vars->on_refresh(data->vars, data->image);
-	pthread_mutex_unlock(&g_mutex_flush);
-	return (NULL);
-}
 
 t_bitmap	*bmp_init_image(t_vars *vars, t_options *params)
 {
@@ -183,6 +63,7 @@ int	render2(t_vars *vars, t_camera *camera, t_scene *scene)
 	data.height = params->height;
 	data.camera = camera;
 	data.scene = scene;
+	pthread_mutex_init(&(data.mutex_flush), NULL);
 	data.chunks = ceilf(params->width / (float)params->chunk_width)
 		* ceilf(params->height / (float)params->chunk_height);
 	pool = tpool_new(params->threads);

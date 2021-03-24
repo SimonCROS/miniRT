@@ -23,24 +23,25 @@ SRCS		=	main.c								\
 				parsing/misc_parser.c				\
 				parsing/gnl/get_next_line.c			\
 				parsing/gnl/get_next_line_utils.c	\
-				element/camera.c					\
 				element/light.c						\
+				element/camera.c					\
+				element/2d/plane.c					\
+				element/3d/sphere.c					\
 				element/2d/square.c					\
 				element/2d/circle.c					\
 				element/2d/triangle.c				\
-				element/2d/plane.c					\
-				element/3d/sphere.c					\
 				element/3d/cylinder.c				\
 				element/3d/cylinder2.c				\
 				engine/ray.c						\
+				engine/renderer.c					\
 				engine/collision.c					\
-				impl/mlx/window.c					\
 				impl/mlx/image.c					\
+				impl/mlx/window.c					\
 				impl/mlx/refresh.c					\
 				hook/key_hook.c						\
 				hook/close_hook.c					\
-				event/on_change_camera.c			\
 				event/on_close.c					\
+				event/on_change_camera.c			\
 				provider/scene_provider.c			\
 				provider/debug_mode_provider.c		\
 				util/logs.c							\
