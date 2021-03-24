@@ -21,7 +21,7 @@ t_object	*parse_square(t_list *data, t_vector3 origin)
 	return (new_square(width, vec3_addv(pos, origin), rot, color));
 }
 
-int	orient(t_vector3 a, t_vector3 b, t_vector3 c, t_vector3 n)
+static int	orient(t_vector3 a, t_vector3 b, t_vector3 c, t_vector3 n)
 {
 	int	result;
 

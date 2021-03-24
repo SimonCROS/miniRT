@@ -19,7 +19,7 @@ t_object	*parse_sphere(t_list *data, t_vector3 origin)
 	return (new_sphere(diametre, vec3_addv(pos, origin), color));
 }
 
-int	check(t_object *object, t_ray *ray, float tca, float thc)
+static int	check(t_object *object, t_ray *ray, float tca, float thc)
 {
 	float		t[2];
 
@@ -43,7 +43,7 @@ int	check(t_object *object, t_ray *ray, float tca, float thc)
 	return (TRUE);
 }
 
-int	collides_sphere(t_object *object, t_ray *ray)
+static int	collides_sphere(t_object *object, t_ray *ray)
 {
 	t_vector3	to_center;
 	float		tca;
