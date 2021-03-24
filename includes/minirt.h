@@ -67,6 +67,9 @@ void		init_window(char *file, t_scene *scene);
 int			key_hook(int key, t_vars *vars);
 int			close_hook(t_vars *vars);
 
+int			on_change_camera(t_vars *vars);
+int			on_close(t_vars *vars);
+
 /*** Bmp implementation *******************************************************/
 
 void		init_bmp_image(char *file, t_scene *scene);
@@ -83,11 +86,6 @@ struct s_vars
 	t_biconsumer	on_finished;
 };
 
-/*** Events *******************************************************************/
-
-int			on_change_camera(t_vars *vars);
-int			on_close(t_vars *vars);
-
 /*** Engine *******************************************************************/
 
 struct s_ray
@@ -101,6 +99,7 @@ struct s_ray
 	float		light;
 };
 
+int			render(t_vars *vars);
 t_ray		compute_ray(t_options *render, t_camera *camera, float x, float y);
 int			intersect_plane(t_vector3 position, t_vector3 rotation, t_ray *ray);
 

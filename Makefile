@@ -1,23 +1,33 @@
-BIN			= bin
-SRC			= src
-INC			= includes
-LIBFT		= libft
+NAME					:= miniRT
+LINUX					:= 1
 
-LINUX			= 1
+override HEADERS		:= includes/minirt.h
 
-MINILIBX_OS_X	= minilibx-macos
-MINILIBX_LINUX	= minilibx-linux
+override BIN			:= bin
+override SRC			:= src
+override INC			:= includes
+override LIBFT_DIR		:= libft
+
+override LIBFT			:= libft.a
+
+override MINILIBX_OS_X	:= minilibx-macos
+override MINILIBX_LINUX	:= minilibx-linux
 ifeq ($(LINUX),0)
-MINILIBX		= $(MINILIBX_OS_X)
-MLX				= libmlx.dylib
+override MINILIBX		:= $(MINILIBX_OS_X)
+override MLX			:= libmlx.dylib
 else
-MINILIBX		= $(MINILIBX_LINUX)
-MLX				= libmlx.a
+override MINILIBX		:= $(MINILIBX_LINUX)
+override MLX			:= libmlx.a
 endif
 
-FT			= libft.a
+override CC				:= gcc
+override RM				:= rm -f
 
-SRCS		=	main.c								\
+override CFLAGS			:= -Wall -Wextra -Werror
+override INCLUDES		:= -I$(INC) -I$(LIBFT_DIR)/$(INC) -I$(MINILIBX)
+
+override SRCS	:=									\
+				main.c								\
 				parsing/parser.c					\
 				parsing/node_parser.c				\
 				parsing/misc_parser.c				\
@@ -35,14 +45,15 @@ SRCS		=	main.c								\
 				engine/ray.c						\
 				engine/renderer.c					\
 				engine/collision.c					\
+				engine/engine_manager.c				\
 				impl/bmp/bmp.c						\
 				impl/mlx/image.c					\
 				impl/mlx/window.c					\
 				impl/mlx/refresh.c					\
 				impl/mlx/hook/key_hook.c			\
 				impl/mlx/hook/close_hook.c			\
-				event/on_close.c					\
-				event/on_change_camera.c			\
+				impl/mlx/event/on_close.c			\
+				impl/mlx/event/on_change_camera.c	\
 				provider/scene_provider.c			\
 				provider/debug_mode_provider.c		\
 				util/logs.c							\
@@ -50,58 +61,43 @@ SRCS		=	main.c								\
 				util/deserializers.c				\
 				util/deserializers2.c				\
 
-OBJS		= $(addprefix $(BIN)/, $(SRCS:.c=.o))
+override OBJS	:= $(addprefix $(BIN)/, $(SRCS:.c=.o))
 
-NAME		= miniRT
-
-CC			= gcc
-RM			= rm -f
-
-CFLAGS		= -Wall -Wextra# -Werror
-INCLUDES	= -I$(INC) -I$(LIBFT)/$(INC) -I$(MINILIBX)
-
-HEADERS		= includes/minirt.h
-
-all:		$(NAME)
-
-LIBRARIES	= -lpthread
+LIBRARIES	:= -lpthread
 ifeq ($(LINUX),1)
 LIBRARIES	+= -lm -lXext -lX11
 endif
 
+all:		$(NAME)
+
 $(BIN)/%.o:	$(SRC)/%.c $(HEADERS)
-			@ mkdir -p $(dir $@);
+			@mkdir -p $(dir $@);
 			$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@ -O3
 
 $(NAME):	compile_lib $(OBJS)
-			@ ln -sf $(MINILIBX)/$(MLX) .
-			@ ln -sf $(LIBFT)/$(FT) .
-			@ $(CC) $(CFLAGS) $(OBJS) $(MLX) $(FT) -o $(NAME) $(LIBRARIES)
+			@ln -sf $(MINILIBX)/$(MLX) .
+			@ln -sf $(LIBFT_DIR)/$(LIBFT) .
+			@$(CC) $(CFLAGS) $(OBJS) $(MLX) $(LIBFT) -o $(NAME) $(LIBRARIES)
 
 compile_lib:
-			@ $(MAKE) -C $(LIBFT)
-			@ $(MAKE) -C $(MINILIBX)
+			@$(MAKE) -C $(LIBFT_DIR)
+			@$(MAKE) -C $(MINILIBX)
 
-re_lib:
-			@ $(MAKE) -C $(LIBFT) re
-			@ $(MAKE) -C $(MINILIBX) re
-
-clean_lib:
-			@ $(MAKE) -C $(LIBFT) clean
-
-fclean_lib:
-			@ $(MAKE) -C $(LIBFT) fclean
-
-clean:		clean_lib
+clean:
+			@$(MAKE) -C $(MINILIBX) clean
+			@$(MAKE) -C $(LIBFT_DIR) clean
 			@echo "Deleting objects...\n"
-			@$(RM) $(OBJS) $(MLX)
+			@$(RM) $(OBJS)
+			@find . -type d -empty -delete
 
-fclean:		fclean_lib
+fclean:
+			@$(MAKE) -C $(MINILIBX) clean
+			@$(MAKE) -C $(LIBFT_DIR) fclean
 			@echo "Deleting objects...\n"
 			@$(RM) $(OBJS)
 			@echo "Deleting $(NAME)\n"
-			@$(RM) $(NAME) $(FT) $(MLX)
+			@$(RM) $(NAME) $(LIBFT) $(MLX)
 
 re:			fclean all
 
-.PHONY:		all clean fclean re compile_lib re_lib clean_lib fclean_lib
+.PHONY:		all clean fclean re compile_lib
