@@ -21,7 +21,7 @@ void	render_light(t_scene *scene, t_object *object, t_light *light,
 	float		LdotN;
 	short		inShadow;
 	float		atm;
-	t_object	*object_test;
+	t_object	*obj_test;
 
 	lightDir = vec3_subv(light->position, ray->phit);
 	lightDistance2 = vec3_length_squared(lightDir);
@@ -34,10 +34,10 @@ void	render_light(t_scene *scene, t_object *object, t_light *light,
 	objectIterator = iterator_new(scene->objects);
 	while (iterator_has_next(&objectIterator))
 	{
-		object_test = iterator_next(&objectIterator);
-		if (object_test == object)
+		obj_test = iterator_next(&objectIterator);
+		if (obj_test == object)
 			continue ;
-		if (collision(object_test, &light_ray)
+		if (collision(obj_test, &light_ray)
 			&& light_ray.length * light_ray.length <= lightDistance2)
 			break ;
 	}
@@ -62,23 +62,20 @@ void	render_pixel(t_thread_data *data, t_scene *scene, size_t x, size_t y)
 	t_iterator	objectIterator;
 	t_ray		ray;
 	t_object	*object;
-	t_object	*object_test;
-	t_ray		object_ray;
+	t_object	*obj_test;
+	t_ray		obj_ray;
 
 	object = NULL;
 	ray = compute_ray(scene->render, data->camera, x, y);
 	objectIterator = iterator_new(scene->objects);
 	while (iterator_has_next(&objectIterator))
 	{
-		object_test = iterator_next(&objectIterator);
-		object_ray = ray;
-		if (collision(object_test, &object_ray))
+		obj_test = iterator_next(&objectIterator);
+		obj_ray = ray;
+		if (collision(obj_test, &obj_ray) && obj_ray.length < ray.length)
 		{
-			if (object_ray.length < ray.length)
-			{
-				ray = object_ray;
-				object = object_test;
-			}
+			ray = obj_ray;
+			object = obj_test;
 		}
 	}
 	if (!object)
@@ -247,16 +244,13 @@ int	main(int argc, char **argv)
 	pthread_setname_ft("MAIN");
 	log_msg(INFO, "Starting program...");
 	save = 0;
-	if (argc != 2)
+	if (argc == 3 && !ft_strcmp(argv[2], "--save"))
+		save = 1;
+	else if (argc != 2)
 	{
-		if (argc == 3 && !ft_strcmp(argv[2], "--save"))
-			save = 1;
-		else
-		{
-			errno = EINVAL;
-			perror("Error\nUnable to parse program arguments");
-			exit(EXIT_FAILURE);
-		}
+		errno = EINVAL;
+		perror("Error\nUnable to parse program arguments");
+		exit(EXIT_FAILURE);
 	}
 	if (!load_scene(argv[1]))
 	{
