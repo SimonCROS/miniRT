@@ -5,7 +5,7 @@
 
 #include "tpool.h"
 
-static int	render2(t_vars *vars, t_camera *camera, t_scene *scene)
+static void	render2(t_vars *vars, t_camera *camera, t_scene *scene)
 {
 	t_tpool			*pool;
 	t_thread_data	data;
@@ -15,26 +15,32 @@ static int	render2(t_vars *vars, t_camera *camera, t_scene *scene)
 
 	params = scene->render;
 	data.vars = vars;
-	data.image = vars->init_image(vars, params);
-	// if (!data.image)
-	// 	return ()
 	data.width = params->width;
 	data.height = params->height;
 	data.camera = camera;
 	data.scene = scene;
-	pthread_mutex_init(&(data.mutex_flush), NULL);
+	data.image = vars->init_image(vars, params);
 	data.chunks = ceilf(params->width / (float)params->chunk_width)
 		* ceilf(params->height / (float)params->chunk_height);
 	pool = tpool_new(params->threads);
 	chunks = malloc(data.chunks * sizeof(size_t));
-	if (!chunks)
-		return (FALSE);
+	if (!data.image || !pool || !chunks)
+	{
+		perror("Error\nAn error occurred while starting rendering");
+		exit_minirt(vars, pool, chunks, EXIT_FAILURE);
+	}
 	chunk = 0;
 	vars->on_refresh(vars, data.image);
+	pthread_mutex_init(&(data.mutex_flush), NULL);
 	while (chunk < data.chunks)
 	{
 		chunks[chunk] = chunk;
-		tpool_add_work(pool, (t_bifun)render_thread, &data, chunks + chunk);
+		if (!tpool_add_work(pool, (t_bifun)render_thread,
+				&data, chunks + chunk))
+		{
+			perror("Error\nAn error occurred while starting rendering");
+			exit_minirt(vars, pool, chunks, EXIT_FAILURE);
+		}
 		chunk++;
 	}
 	tpool_set_name(pool, "CHUNK_WORKER");
@@ -45,7 +51,6 @@ static int	render2(t_vars *vars, t_camera *camera, t_scene *scene)
 	log_msg(INFO, "Image successfully rendered");
 	camera->render = data.image;
 	vars->on_finished(vars, camera);
-	return (TRUE);
 }
 
 int	render(t_vars *vars)
@@ -59,7 +64,8 @@ int	render(t_vars *vars)
 	{
 		vars->on_refresh(vars, camera->render);
 		log_msg(DEBUG, "Image loaded from cache");
-		return (0);
 	}
-	return (render2(vars, camera, scene));
+	else
+		render2(vars, camera, scene);
+	return (0);
 }

@@ -7,7 +7,7 @@ int	key_hook(int i, t_vars *vars)
 
 	scene = get_scene();
 	if (i == K_ESC)
-		return (on_close(vars));
+		exit_minirt(vars, NULL, NULL, EXIT_SUCCESS);
 	if (!started && (i == K_ENTER || i == K_D))
 	{
 		started = 1;

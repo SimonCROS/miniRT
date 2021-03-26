@@ -28,6 +28,7 @@ override INCLUDES		:= -I$(INC) -I$(LIBFT_DIR)/$(INC) -I$(MINILIBX)
 
 override SRCS	:=									\
 				main.c								\
+				exit.c								\
 				parsing/parser.c					\
 				parsing/node_parser.c				\
 				parsing/misc_parser.c				\
@@ -52,7 +53,6 @@ override SRCS	:=									\
 				impl/mlx/refresh.c					\
 				impl/mlx/hook/key_hook.c			\
 				impl/mlx/hook/close_hook.c			\
-				impl/mlx/event/on_close.c			\
 				impl/mlx/event/on_change_camera.c	\
 				provider/scene_provider.c			\
 				provider/debug_mode_provider.c		\

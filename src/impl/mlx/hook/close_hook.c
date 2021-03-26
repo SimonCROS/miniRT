@@ -2,5 +2,6 @@
 
 int	close_hook(t_vars *vars)
 {
-	return (on_close(vars));
+	exit_minirt(vars, NULL, NULL, EXIT_SUCCESS);
+	return (TRUE);
 }

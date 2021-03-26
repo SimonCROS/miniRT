@@ -64,6 +64,8 @@ void		mlx_set_pixel(t_image *image, int x, int y, t_color color);
 void		force_put_image(t_vars *vars, t_image *image);
 void		init_window(char *file, t_scene *scene);
 
+void		mlx_free_image(t_camera *camera, t_vars *vars);
+
 int			key_hook(int key, t_vars *vars);
 int			close_hook(t_vars *vars);
 
@@ -84,7 +86,11 @@ struct s_vars
 	t_pixel_writer	set_pixel;
 	t_biconsumer	on_refresh;
 	t_biconsumer	on_finished;
+	t_biconsumer	free_image;
+	t_consumer		on_exit;
 };
+
+void		exit_minirt(t_vars *vars, t_tpool *pool, void *other, int __status);
 
 /*** Engine *******************************************************************/
 
