@@ -2,16 +2,10 @@
 
 #include "minirt.h"
 
-void	mlx_free_image(t_camera *camera, t_vars *vars)
+void	mlx_free_image(t_image *image, t_vars *vars)
 {
-	t_image	*image;
-
-	image = (t_image *)camera->render;
-	if (image)
-	{
-		mlx_destroy_image(vars->mlx, image->img);
-		free(image);
-	}
+	mlx_destroy_image(vars->mlx, image->img);
+	free(image);
 }
 
 void	mlx_set_pixel(t_image *data, int x, int y, t_color color)

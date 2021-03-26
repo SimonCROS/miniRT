@@ -26,6 +26,8 @@ static void	render2(t_vars *vars, t_camera *camera, t_scene *scene)
 	chunks = malloc(data.chunks * sizeof(size_t));
 	if (!data.image || !pool || !chunks)
 	{
+		if (data.image)
+			vars->free_image(data.image, vars);
 		perror("Error\nAn error occurred while starting rendering");
 		exit_minirt(vars, pool, chunks, EXIT_FAILURE);
 	}
