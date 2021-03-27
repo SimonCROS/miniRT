@@ -23,7 +23,7 @@ t_object	*parse_cylinder(t_list *data, t_vector3 origin)
 	return (new_cylinder(attr, vec3_addv(pos, origin), rot, color));
 }
 
-int	intersect_cylinder(t_object *cp, t_ray *r, float *current_z)
+static int	intersect_cylinder(t_object *cp, t_ray *r, float *current_z)
 {
 	t_vector3	eye;
 	float		a[3];
@@ -46,7 +46,7 @@ int	intersect_cylinder(t_object *cp, t_ray *r, float *current_z)
 	return (*current_z > 0);
 }
 
-int	intersect_side(t_object *obj, t_ray *ray)
+static int	intersect_side(t_object *obj, t_ray *ray)
 {
 	t_ray		to_bot;
 	t_vector3	point;
@@ -64,7 +64,7 @@ int	intersect_side(t_object *obj, t_ray *ray)
 	return (TRUE);
 }
 
-int	collides_cylinder(t_object *obj, t_ray *ray)
+static int	collides_cylinder(t_object *obj, t_ray *ray)
 {
 	int			ret;
 

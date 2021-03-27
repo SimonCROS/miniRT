@@ -23,7 +23,7 @@ static int	parse_lines(t_list *nodes, int fd)
 		if (!lst_push(nodes, as_listf((void **)ft_splitf(buffer, ' '), free)))
 		{
 			errno = -1;
-			return (-1);
+			return (0);
 		}
 	}
 	return (result != -1);
@@ -53,6 +53,7 @@ int	parse_file(t_scene *scene, char *file, int depth, t_vector3 origin)
 	if (fd < 0 || !parse_lines(nodes, fd))
 	{
 		lst_destroy(nodes);
+		close(fd);
 		return (FALSE);
 	}
 	close(fd);

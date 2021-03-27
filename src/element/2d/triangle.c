@@ -23,7 +23,7 @@ t_object	*parse_triangle(t_list *data, t_vector3 origin)
 	return (new_triangle(p1, p2, p3, color));
 }
 
-int	collides_triangle(t_object *plan, t_ray *ray)
+static int	collides_triangle(t_object *plan, t_ray *ray)
 {
 	t_vector3	edges[3];
 	t_vector3	dists[3];

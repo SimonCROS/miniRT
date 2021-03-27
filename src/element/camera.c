@@ -15,7 +15,7 @@ t_camera	*parse_camera(t_list *data, t_vector3 origin)
 	return (new_camera(vec3_addv(pos, origin), rot, fov));
 }
 
-t_matrix44	look_at(t_vector3 from, t_vector3 to)
+static t_matrix44	look_at(t_vector3 from, t_vector3 to)
 {
 	static t_vector3	tmp = (t_vector3){0, 1, 0};
 	t_matrix44			camToWorld;

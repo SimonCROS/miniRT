@@ -44,7 +44,6 @@ typedef struct s_image		t_image;
 typedef void				(*t_pixel_writer)(void *, int, int, t_color);
 
 typedef struct s_ray		t_ray;
-typedef struct s_thread_dat	t_thread_data;
 typedef struct s_camera		t_camera;
 
 typedef struct s_gnl_entry	t_gnl_entry;
@@ -65,6 +64,18 @@ void		mlx_set_pixel(t_image *image, int x, int y, t_color color);
 void		force_put_image(t_vars *vars, t_image *image);
 void		init_window(char *file, t_scene *scene);
 
+void		mlx_free_image(t_image *image, t_vars *vars);
+
+int			key_hook(int key, t_vars *vars);
+int			close_hook(t_vars *vars);
+
+int			on_change_camera(t_vars *vars);
+int			on_close(t_vars *vars);
+
+/*** Bmp implementation *******************************************************/
+
+void		init_bmp_image(char *file, t_scene *scene);
+
 /*** General ******************************************************************/
 
 struct s_vars
@@ -75,29 +86,11 @@ struct s_vars
 	t_pixel_writer	set_pixel;
 	t_biconsumer	on_refresh;
 	t_biconsumer	on_finished;
-	t_biconsumer	on_state_change;
+	t_biconsumer	free_image;
+	t_consumer		on_exit;
 };
 
-struct s_thread_dat
-{
-	t_vars			*vars;
-	void			*image;
-	size_t			width;
-	size_t			height;
-	t_camera		*camera;
-	t_scene			*scene;
-	size_t			chunks;
-};
-
-/*** Events *******************************************************************/
-
-int			on_change_camera(t_vars *vars);
-int			on_close(t_vars *vars);
-
-/*** Hooks ********************************************************************/
-
-int			key_hook(int key, t_vars *vars);
-int			close_hook(t_vars *vars);
+void		exit_minirt(t_vars *vars, t_tpool *pool, void *other, int __status);
 
 /*** Engine *******************************************************************/
 
@@ -112,6 +105,7 @@ struct s_ray
 	float		light;
 };
 
+int			render(t_vars *vars);
 t_ray		compute_ray(t_options *render, t_camera *camera, float x, float y);
 int			intersect_plane(t_vector3 position, t_vector3 rotation, t_ray *ray);
 
@@ -141,7 +135,7 @@ enum e_log_type
 };
 
 int			log_nl(void);
-int			log_msg_arg(t_log_type type, char *str, char *arg);
+int			log_msg_arg(t_log_type type, char *str, const char *arg);
 int			log_msg(t_log_type type, char *str);
 int			is_debug_enabled(void);
 int			set_debug(int debug);

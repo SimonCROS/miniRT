@@ -4,6 +4,11 @@
 
 #include "minirt.h"
 
+static void	mlx_exit(t_vars *vars)
+{
+	mlx_destroy_window(vars->mlx, vars->win);
+}
+
 static int	init_mlx(t_vars *vars, char *file, t_scene *scene)
 {
 	char	*name;
@@ -42,6 +47,8 @@ void	init_window(char *file, t_scene *scene)
 	vars.set_pixel = (t_pixel_writer)mlx_set_pixel;
 	vars.on_refresh = (t_bicon)force_put_image;
 	vars.on_finished = null_biconsumer();
+	vars.free_image = (t_bicon)mlx_free_image;
+	vars.on_exit = (t_con)mlx_exit;
 	mlx_hook(vars.win, 17, 0L, &close_hook, &vars);
 	mlx_key_hook(vars.win, &key_hook, &vars);
 	mlx_loop(vars.mlx);
