@@ -31,7 +31,7 @@ int	dir_deserialize(const char *str, t_vector3 *direction)
 		log_nl();
 		return (0);
 	}
-	*direction = dir;
+	*direction = vec3_normalize(dir);
 	return (1);
 }
 
