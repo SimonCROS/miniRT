@@ -97,6 +97,7 @@ fclean:
 			@$(RM) $(OBJS)
 			@echo "Deleting $(NAME)\n"
 			@$(RM) $(NAME) $(LIBFT) $(MLX)
+			@find . -type d -empty -delete
 
 re:			fclean all
 
