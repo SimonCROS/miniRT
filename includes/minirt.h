@@ -23,8 +23,8 @@
 #  define K_D 2
 # else
 #  define K_LEFT 65361
-#  define K_RIGHT 65364
-#  define K_DOWN 65362
+#  define K_RIGHT 65363
+#  define K_DOWN 65364
 #  define K_UP 65362
 #  define K_ESC 65307
 #  define K_ENTER 65293
@@ -117,7 +117,7 @@ struct s_camera
 	t_vector3	direction;
 	t_matrix44	c2w;
 	void		*render;
-	float		fov;
+	float		hlen;
 };
 
 t_camera	*parse_camera(t_list *data, t_vector3 origin);

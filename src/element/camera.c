@@ -1,4 +1,5 @@
 #include "minirt.h"
+#include "math.h"
 
 t_camera	*parse_camera(t_list *data, t_vector3 origin)
 {
@@ -52,7 +53,7 @@ t_camera	*new_camera(t_vector3 position, t_vector3 direction, float fov)
 		return (NULL);
 	camera->position = position;
 	camera->direction = vec3_normalize(direction);
-	camera->fov = fov;
+	camera->hlen = tan(fov / 2 * M_PI / 180);
 	camera->c2w = look_at(vec3_new(0, 0, 0), camera->direction);
 	camera->render = NULL;
 	return (camera);
