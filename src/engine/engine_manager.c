@@ -16,8 +16,7 @@ static void	render3(t_vars *vars, t_tpool *pool, t_thread_data *data,
 	while (chunk < data->chunks)
 	{
 		chunks[chunk] = chunk;
-		if (!tpool_add_work(pool, (t_bifun)render_thread,
-				&data, chunks + chunk))
+		if (!tpool_add_work(pool, (t_bifun)render_thread, data, chunks + chunk))
 		{
 			perror("Error\nAn error occurred while starting rendering");
 			exit_minirt(vars, pool, chunks, EXIT_FAILURE);

@@ -6,17 +6,25 @@
 
 static void	mlx_exit(t_vars *vars)
 {
-	mlx_destroy_window(vars->mlx, vars->win);
-	free(vars->mlx);
+	if (vars->mlx)
+	{
+		if (vars->win)
+			mlx_destroy_window(vars->mlx, vars->win);
+		free(vars->mlx);
+	}
 }
 
 #elif defined __linux__
 
 static void	mlx_exit(t_vars *vars)
 {
-	mlx_destroy_window(vars->mlx, vars->win);
-	mlx_destroy_display(vars->mlx);
-	free(vars->mlx);
+	if (vars->mlx)
+	{
+		if (vars->win)
+			mlx_destroy_window(vars->mlx, vars->win);
+		mlx_destroy_display(vars->mlx);
+		free(vars->mlx);
+	}
 }
 
 #endif
@@ -44,6 +52,7 @@ static int	init_mlx(t_vars *vars, char *file, t_scene *scene)
 	char	*name;
 
 	vars->mlx = mlx_init();
+	vars->win = NULL;
 	if (!vars->mlx)
 		return (FALSE);
 	init_window_size(vars, scene);
@@ -66,12 +75,12 @@ void	init_window(char *file, t_scene *scene)
 {
 	t_vars	vars;
 
+	vars.on_exit = (t_con)mlx_exit;
 	if (!init_mlx(&vars, file, scene))
 	{
-		free_scene(scene);
 		errno = -1;
 		perror("Error\nCan't generate the frame");
-		exit(EXIT_FAILURE);
+		exit_minirt(&vars, NULL, NULL, EXIT_FAILURE);
 		return ;
 	}
 	vars.init_image = (t_bifun)mlx_init_image;
@@ -79,7 +88,6 @@ void	init_window(char *file, t_scene *scene)
 	vars.on_refresh = (t_bicon)force_put_image;
 	vars.on_finished = null_biconsumer();
 	vars.free_image = (t_bicon)mlx_free_image;
-	vars.on_exit = (t_con)mlx_exit;
 	mlx_hook(vars.win, 17, 0L, &close_hook, &vars);
 	mlx_key_hook(vars.win, &key_hook, &vars);
 	mlx_loop(vars.mlx);
