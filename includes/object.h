@@ -40,6 +40,8 @@ typedef struct s_triangle
 	t_vector3		p1;
 	t_vector3		p2;
 	t_vector3		p3;
+	t_vector3		edge1;
+	t_vector3		edge2;
 }	t_triangle;
 
 typedef struct s_object

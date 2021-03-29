@@ -23,40 +23,55 @@ t_object	*parse_triangle(t_list *data, t_vector3 origin)
 	return (new_triangle(p1, p2, p3, color));
 }
 
-static int	collides_triangle(t_object *plan, t_ray *ray)
+static int	collides_triangle(t_object *object, t_ray *ray)
 {
-	t_vector3	edges[3];
-	t_vector3	dists[3];
+	t_vector3 pvec = (t_vector3) { 0,0,0 };
+	t_vector3 tvec = (t_vector3) { 0,0,0 };
+	t_vector3 qvec = (t_vector3) { 0,0,0 };
+	float det, invdet, u, v;
 
-	edges[0] = vec3_subv(plan->data.triangle.p2, plan->data.triangle.p1);
-	edges[1] = vec3_subv(plan->data.triangle.p3, plan->data.triangle.p2);
-	edges[2] = vec3_subv(plan->data.triangle.p1, plan->data.triangle.p3);
-	dists[0] = vec3_subv(ray->phit, plan->data.triangle.p1);
-	dists[1] = vec3_subv(ray->phit, plan->data.triangle.p2);
-	dists[2] = vec3_subv(ray->phit, plan->data.triangle.p3);
-	if (vec3_dotv(plan->rotation, vec3_crossv(edges[0], dists[0])) > 0
-		&& vec3_dotv(plan->rotation, vec3_crossv(edges[1], dists[1])) > 0
-		&& vec3_dotv(plan->rotation, vec3_crossv(edges[2], dists[2])) > 0)
-		return (1);
-	return (0);
+	pvec = vec3_crossv(ray->direction, object->data.triangle.edge2);
+	det = vec3_dotv(object->data.triangle.edge1, pvec);
+	if (det > -__FLT_EPSILON__ && det < __FLT_EPSILON__)
+		return (FALSE);
+	invdet = 1 / det;
+	tvec = vec3_subv(ray->origin, object->data.triangle.p1);
+	u = invdet * vec3_dotv(tvec, pvec);
+	if (u < 0 || u > 1)
+		return (FALSE);
+	qvec = vec3_crossv(tvec, object->data.triangle.edge1);
+	v = invdet * vec3_dotv(ray->direction, qvec);
+	if (v < 0 || u + v > 1)
+		return (FALSE);
+	float t = invdet * vec3_dotv(object->data.triangle.edge2, qvec);
+	if (t > __FLT_EPSILON__)
+	{
+		ray->length = t;
+		ray->phit = vec3_addv(vec3_muld(ray->direction, t), ray->origin);
+		ray->nhit = object->rotation;
+		if (vec3_dotv(object->rotation, ray->direction) > 0)
+			ray->nhit = vec3_negate(ray->nhit);
+		return (TRUE);
+	}
+	return (FALSE);
 }
 
 t_object	*new_triangle(t_vector3 p1, t_vector3 p2, t_vector3 p3, t_color col)
 {
 	t_object	*plan;
-	t_vector3	cen;
-	t_vector3	d1;
-	t_vector3	d2;
+	t_vector3	edge1;
+	t_vector3	edge2;
 
-	cen = vec3_divd(vec3_addv(p1, vec3_addv(p2, p3)), 3);
-	d1 = vec3_subv(p2, p1);
-	d2 = vec3_subv(p3, p2);
-	plan = new_default_plane(cen, vec3_crossv(d1, d2), col,
+	edge1 = vec3_subv(p2, p1);
+	edge2 = vec3_subv(p3, p1);
+	plan = new_default_object(p1, vec3_crossv(edge1, edge2), col,
 			(t_bipre)collides_triangle);
 	if (!plan)
 		return (NULL);
 	plan->data.triangle.p1 = p1;
 	plan->data.triangle.p2 = p2;
 	plan->data.triangle.p3 = p3;
+	plan->data.triangle.edge1 = edge1;
+	plan->data.triangle.edge2 = edge2;
 	return (plan);
 }
