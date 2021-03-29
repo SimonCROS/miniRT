@@ -11,5 +11,6 @@ l       -15,100,0                        0.6                  255,255,255
 
 pl      0,0,0              0,1,0                              0,255,0
 
-ob      -15,0,0                "scenes/elements/pokemon/charmander.rt"
-ob       15,0,0                "scenes/elements/pokemon/squirtle.rt"
+ob      -30,0,0                "scenes/elements/pokemon/charmander.rt"
+ob       30,0,0                "scenes/elements/pokemon/squirtle.rt"
+ob       0,0,0                 "scenes/elements/pokemon/bulbasau.rt"

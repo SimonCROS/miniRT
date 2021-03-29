@@ -28,8 +28,8 @@ static void	render_light(t_scene *scene, t_object *object, t_ray *ray)
 	t_vector3	lightDir;
 	float		light_distance2;
 
-	lightIterator = iterator_new(scene->lights);
 	ray->color = color_mul(object->color, *(scene->ambiant));
+	lightIterator = iterator_new(scene->lights);
 	while (iterator_has_next(&lightIterator))
 	{
 		light = iterator_next(&lightIterator);
