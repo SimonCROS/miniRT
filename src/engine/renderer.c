@@ -84,6 +84,7 @@ static void	render_chunk(t_thread_data *data, size_t start_x, size_t start_y)
 
 	scene = data->scene;
 	x = start_x;
+	printf("a\n");
 	while (x < start_x + scene->render->chunk_width && x < data->width)
 	{
 		y = start_y;
