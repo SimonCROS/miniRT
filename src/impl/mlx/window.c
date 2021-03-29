@@ -7,11 +7,8 @@
 static void	mlx_exit(t_vars *vars)
 {
 	if (vars->mlx)
-	{
 		if (vars->win)
 			mlx_destroy_window(vars->mlx, vars->win);
-		free(vars->mlx);
-	}
 }
 
 #elif defined __linux__
