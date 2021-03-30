@@ -43,6 +43,7 @@ t_object	*new_default_object(t_vector3 pos, t_vector3 rot, t_color col,
 	object = malloc(sizeof(t_object));
 	if (!object)
 		return (NULL);
+	object->pre_collision = NULL;
 	object->position = pos;
 	object->rotation = vec3_normalize(rot);
 	object->collides = collides;

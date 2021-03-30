@@ -23,6 +23,56 @@ t_object	*parse_triangle(t_list *data, t_vector3 origin)
 	return (new_triangle(p1, p2, p3, color));
 }
 
+int	pre_collision(t_object *triangle, float x, float y)
+{
+	if (x < triangle->data.triangle.min_raster.x
+		|| x > triangle->data.triangle.max_raster.x
+		|| y < triangle->data.triangle.min_raster.y
+		|| y > triangle->data.triangle.max_raster.y)
+		return (FALSE);
+	return (TRUE);
+}
+
+static t_vector3	convert_to_raster(t_options *render, t_camera *camera,
+	t_vector3 vertexWorld)
+{
+	t_vector3		vertexView;
+	t_vector3		vertexCamera;
+	t_vector3		vertexScreen;
+	t_vector3		vertexNDC;
+	t_vector3		vertexRaster;
+
+	vertexView = vec3_normalize(vec3_subv(camera->position, vertexWorld));
+	vertexCamera = mat44_mul_vec(mat44_inverse(camera->c2w), vertexView);
+	vertexScreen.x = -vertexCamera.x / camera->hlen
+		/ (render->width / (float) render->height) / vertexCamera.z;
+	vertexScreen.y = -vertexCamera.y / camera->hlen / vertexCamera.z;
+	vertexNDC.x = (vertexScreen.x + 1) / 2;
+	vertexNDC.y = (vertexScreen.y - 1) / -2;
+	vertexRaster.x = vertexNDC.x * render->width - 0.5;
+	vertexRaster.y = vertexNDC.y * render->height - 0.5;
+	return (vertexRaster);
+}
+
+void	load_bounds(t_object *triangle, t_camera *camera, t_options *options)
+{
+	t_vector3	s0;
+	t_vector3	s1;
+	t_vector3	s2;
+
+	s0 = convert_to_raster(render, camera, triangle->data.triangle.p1);
+	s1 = convert_to_raster(render, camera, triangle->data.triangle.p2);
+	s2 = convert_to_raster(render, camera, triangle->data.triangle.p3);
+	triangle->data.triangle.min_raster.x
+		= floorf(fminf(s0.x, fminf(s1.x, s2.x)));
+	triangle->data.triangle.min_raster.y
+		= floorf(fminf(s0.y, fminf(s1.y, s2.y)));
+	triangle->data.triangle.max_raster.x
+		= floorf(fmaxf(s0.x, fmaxf(s1.x, s2.x)));
+	triangle->data.triangle.max_raster.y
+		= floorf(fmaxf(s0.y, fmaxf(s1.y, s2.y)));
+}
+
 static int	collides_triangle(t_object *object, t_ray *ray)
 {
 	t_vector3 pvec = (t_vector3) { 0,0,0 };
@@ -58,20 +108,21 @@ static int	collides_triangle(t_object *object, t_ray *ray)
 
 t_object	*new_triangle(t_vector3 p1, t_vector3 p2, t_vector3 p3, t_color col)
 {
-	t_object	*plan;
+	t_object	*triangle;
 	t_vector3	edge1;
 	t_vector3	edge2;
 
 	edge1 = vec3_subv(p2, p1);
 	edge2 = vec3_subv(p3, p1);
-	plan = new_default_object(p1, vec3_crossv(edge1, edge2), col,
+	triangle = new_default_object(p1, vec3_crossv(edge1, edge2), col,
 			(t_bipre)collides_triangle);
-	if (!plan)
+	if (!triangle)
 		return (NULL);
-	plan->data.triangle.p1 = p1;
-	plan->data.triangle.p2 = p2;
-	plan->data.triangle.p3 = p3;
-	plan->data.triangle.edge1 = edge1;
-	plan->data.triangle.edge2 = edge2;
-	return (plan);
+	triangle->data.triangle.p1 = p1;
+	triangle->data.triangle.p2 = p2;
+	triangle->data.triangle.p3 = p3;
+	triangle->data.triangle.edge1 = edge1;
+	triangle->data.triangle.edge2 = edge2;
+	triangle->pre_collision = pre_collision;
+	return (triangle);
 }
