@@ -55,7 +55,8 @@ struct s_object
 	t_vector3		rotation;
 	int				is_plane;
 	t_color			color;
-	int				(*pre_collision)(t_object *, float pixel_x, float pixel_y);
+	void			(*load_pre_collision)(t_object *, t_camera *, t_options *);
+	int				(*pre_collision)(t_object *, float, float);
 	union u_object_data
 	{
 		t_square		square;

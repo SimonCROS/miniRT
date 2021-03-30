@@ -23,7 +23,7 @@ t_object	*parse_triangle(t_list *data, t_vector3 origin)
 	return (new_triangle(p1, p2, p3, color));
 }
 
-int	pre_collision(t_object *triangle, float x, float y)
+static int	pre_collision(t_object *triangle, float x, float y)
 {
 	if (x < triangle->data.triangle.min_raster.x
 		|| x > triangle->data.triangle.max_raster.x
@@ -54,15 +54,15 @@ static t_vector3	convert_to_raster(t_options *render, t_camera *camera,
 	return (vertexRaster);
 }
 
-void	load_bounds(t_object *triangle, t_camera *camera, t_options *options)
+static void	load_bounds(t_object *triangle, t_camera *camera, t_options *options)
 {
 	t_vector3	s0;
 	t_vector3	s1;
 	t_vector3	s2;
 
-	s0 = convert_to_raster(render, camera, triangle->data.triangle.p1);
-	s1 = convert_to_raster(render, camera, triangle->data.triangle.p2);
-	s2 = convert_to_raster(render, camera, triangle->data.triangle.p3);
+	s0 = convert_to_raster(options, camera, triangle->data.triangle.p1);
+	s1 = convert_to_raster(options, camera, triangle->data.triangle.p2);
+	s2 = convert_to_raster(options, camera, triangle->data.triangle.p3);
 	triangle->data.triangle.min_raster.x
 		= floorf(fminf(s0.x, fminf(s1.x, s2.x)));
 	triangle->data.triangle.min_raster.y
@@ -71,6 +71,7 @@ void	load_bounds(t_object *triangle, t_camera *camera, t_options *options)
 		= floorf(fmaxf(s0.x, fmaxf(s1.x, s2.x)));
 	triangle->data.triangle.max_raster.y
 		= floorf(fmaxf(s0.y, fmaxf(s1.y, s2.y)));
+	triangle->pre_collision = pre_collision;
 }
 
 static int	collides_triangle(t_object *object, t_ray *ray)
@@ -123,6 +124,6 @@ t_object	*new_triangle(t_vector3 p1, t_vector3 p2, t_vector3 p3, t_color col)
 	triangle->data.triangle.p3 = p3;
 	triangle->data.triangle.edge1 = edge1;
 	triangle->data.triangle.edge2 = edge2;
-	triangle->pre_collision = pre_collision;
+	triangle->load_pre_collision = load_bounds;
 	return (triangle);
 }

@@ -63,8 +63,8 @@ static void	render_pixel(t_thread_data *data, t_scene *scene, size_t x,
 	{
 		obj_test = iterator_next(&obj_iterator);
 		obj_ray = ray;
-		if (object->pre_collision && !object->pre_collision(scene->render,
-				data->camera, obj_test, vec3_new(x, y, 0)))
+		if (object->pre_collision && !object->pre_collision(obj_test,
+				x, y))
 			continue ;
 		if (collision(obj_test, &obj_ray) && obj_ray.length < ray.length)
 		{

@@ -5,12 +5,27 @@
 
 #include "tpool.h"
 
+static void	load_all_pre_collisions(t_camera *camera, t_scene *scene)
+{
+	t_iterator	obj_iterator;
+	t_object	*obj_test;
+
+	obj_iterator = iterator_new(scene->objects);
+	while (iterator_has_next(&obj_iterator))
+	{
+		obj_test = iterator_next(&obj_iterator);
+		if (obj_test->load_pre_collision)
+			obj_test->load_pre_collision(obj_test, camera, scene->render);
+	}
+}
+
 static void	render3(t_vars *vars, t_tpool *pool, t_thread_data *data,
 	size_t *chunks)
 {
 	size_t			chunk;
 
 	chunk = 0;
+	load_all_pre_collisions(data->camera, data->scene);
 	vars->on_refresh(vars, data->image);
 	pthread_mutex_init(&(data->mutex_flush), NULL);
 	while (chunk < data->chunks)
