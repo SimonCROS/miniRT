@@ -54,24 +54,21 @@ static t_vector3	convert_to_raster(t_options *render, t_camera *camera,
 	return (vertexRaster);
 }
 
-static void	load_bounds(t_object *triangle, t_camera *camera, t_options *options)
+void	project(t_object *triangle, t_scene *scene, t_camera camera)
 {
 	t_vector3	s0;
 	t_vector3	s1;
 	t_vector3	s2;
+	t_vector3	min_raster;
+	t_vector3	max_raster;
 
 	s0 = convert_to_raster(options, camera, triangle->data.triangle.p1);
 	s1 = convert_to_raster(options, camera, triangle->data.triangle.p2);
 	s2 = convert_to_raster(options, camera, triangle->data.triangle.p3);
-	triangle->data.triangle.min_raster.x
-		= floorf(fminf(s0.x, fminf(s1.x, s2.x)));
-	triangle->data.triangle.min_raster.y
-		= floorf(fminf(s0.y, fminf(s1.y, s2.y)));
-	triangle->data.triangle.max_raster.x
-		= floorf(fmaxf(s0.x, fmaxf(s1.x, s2.x)));
-	triangle->data.triangle.max_raster.y
-		= floorf(fmaxf(s0.y, fmaxf(s1.y, s2.y)));
-	triangle->pre_collision = pre_collision;
+	min_raster.x = floorf(fminf(s0.x, fminf(s1.x, s2.x)));
+	min_raster.y = floorf(fminf(s0.y, fminf(s1.y, s2.y)));
+	max_raster.x = floorf(fmaxf(s0.x, fmaxf(s1.x, s2.x)));
+	max_raster.y = floorf(fmaxf(s0.y, fmaxf(s1.y, s2.y)));
 }
 
 static int	collides_triangle(t_object *object, t_ray *ray)

@@ -44,8 +44,6 @@ typedef struct s_triangle
 	t_vector3		p3;
 	t_vector3		edge1;
 	t_vector3		edge2;
-	t_vector3		min_raster;
-	t_vector3		max_raster;
 }	t_triangle;
 
 struct s_object
@@ -55,8 +53,6 @@ struct s_object
 	t_vector3		rotation;
 	int				is_plane;
 	t_color			color;
-	void			(*load_pre_collision)(t_object *, t_camera *, t_options *);
-	int				(*pre_collision)(t_object *, float, float);
 	union u_object_data
 	{
 		t_square		square;
@@ -64,7 +60,7 @@ struct s_object
 		t_circle		circle;
 		t_cylinder		cylinder;
 		t_triangle		triangle;
-	}	data;
+	}				data;
 };
 
 t_object	*new_sphere(float diametre, t_vector3 position, t_color color);
