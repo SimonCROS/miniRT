@@ -86,7 +86,7 @@ int	render(t_vars *vars)
 	{
 		render2(vars, camera, scene);
 		vars->on_finished(vars, camera);
-		log_msg(INFO, "Image successfully rendered");
+		log_msg(DEBUG, "Image successfully rendered");
 	}
 	return (0);
 }

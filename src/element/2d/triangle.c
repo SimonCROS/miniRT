@@ -24,48 +24,28 @@ t_object	*parse_triangle(t_list *data, t_vector3 origin)
 	return (new_triangle(p1, p2, p3, color));
 }
 
-static t_vector3	convert_to_raster(t_options *render, t_camera *camera,
-	t_vector3 vertexWorld)
-{
-	t_vector3		vertexView;
-	t_vector3		vertexCamera;
-	t_vector3		vertexScreen;
-	t_vector3		vertexNDC;
-	t_vector3		vertexRaster;
-
-	vertexView = vec3_normalize(vec3_subv(camera->position, vertexWorld));
-	vertexCamera = mat44_mul_vec(camera->w2c, vertexView);
-	vertexScreen.x = -vertexCamera.x / camera->hlen
-		/ (render->width / (float) render->height) / vertexCamera.z;
-	vertexScreen.y = -vertexCamera.y / camera->hlen / vertexCamera.z;
-	vertexNDC.x = (vertexScreen.x + 1) / 2;
-	vertexNDC.y = (vertexScreen.y - 1) / -2;
-	vertexRaster.x = vertexNDC.x * render->width - 0.5;
-	vertexRaster.y = vertexNDC.y * render->height - 0.5;
-	return (vertexRaster);
-}
-
 static int	collides_triangle(t_object *object, t_ray *ray)
 {
 	t_vector3 pvec = (t_vector3) { 0,0,0 };
 	t_vector3 tvec = (t_vector3) { 0,0,0 };
 	t_vector3 qvec = (t_vector3) { 0,0,0 };
 	float det, invdet, u, v;
+	t_triangle	triangle = object->data.triangle;
 
-	pvec = vec3_crossv(ray->direction, object->data.triangle.edge2);
-	det = vec3_dotv(object->data.triangle.edge1, pvec);
+	pvec = vec3_crossv(ray->direction, triangle.edge2);
+	det = vec3_dotv(triangle.edge1, pvec);
 	if (det > -__FLT_EPSILON__ && det < __FLT_EPSILON__)
 		return (FALSE);
 	invdet = 1 / det;
-	tvec = vec3_subv(ray->origin, object->data.triangle.p1);
+	tvec = vec3_subv(ray->origin, triangle.p1);
 	u = invdet * vec3_dotv(tvec, pvec);
 	if (u < 0 || u > 1)
 		return (FALSE);
-	qvec = vec3_crossv(tvec, object->data.triangle.edge1);
+	qvec = vec3_crossv(tvec, triangle.edge1);
 	v = invdet * vec3_dotv(ray->direction, qvec);
 	if (v < 0 || u + v > 1)
 		return (FALSE);
-	float t = invdet * vec3_dotv(object->data.triangle.edge2, qvec);
+	float t = invdet * vec3_dotv(triangle.edge2, qvec);
 	if (t > __FLT_EPSILON__)
 	{
 		ray->length = t;
@@ -78,6 +58,29 @@ static int	collides_triangle(t_object *object, t_ray *ray)
 	return (FALSE);
 }
 
+static t_vector3	convert_to_raster(t_options *render, t_camera *camera,
+	t_vector3 vertexWorld)
+{
+	t_vector3		vertexView;
+	t_vector3		vertexCamera;
+	t_vector3		vertexScreen;
+	t_vector3		vertexNDC;
+	t_vector3		vertexRaster;
+
+	vertexView = vec3_normalize(vec3_subv(camera->position, vertexWorld));
+	vertexCamera = mat44_mul_vec(camera->w2c, vertexView);
+	vertexCamera.z = fabsf(vertexCamera.z);
+	// printf("%.2f %.2f %.2f %.2f\n", vertexCamera.x, vertexCamera.y, vertexCamera.z, 0.0f);
+	vertexScreen.x = -vertexCamera.x / camera->hlen
+		/ (render->width / (float) render->height) / vertexCamera.z;
+	vertexScreen.y = -vertexCamera.y / camera->hlen / vertexCamera.z;
+	vertexNDC.x = (vertexScreen.x + 1) * 0.5;
+	vertexNDC.y = (vertexScreen.y - 1) * -0.5;
+	vertexRaster.x = vertexNDC.x * render->width - 0.5;
+	vertexRaster.y = vertexNDC.y * render->height - 0.5;
+	return (vertexRaster);
+}
+
 void	project(t_vars *vars, t_object *triangle, t_scene *scene,
 	t_camera *camera)
 {
@@ -87,17 +90,19 @@ void	project(t_vars *vars, t_object *triangle, t_scene *scene,
 	t_vector3	min_raster;
 	t_vector3	max_raster;
 
+	// printf("\n");
 	s0 = convert_to_raster(scene->render, camera, triangle->data.triangle.p1);
+	// printf("\n");
 	s1 = convert_to_raster(scene->render, camera, triangle->data.triangle.p2);
 	s2 = convert_to_raster(scene->render, camera, triangle->data.triangle.p3);
 	min_raster.x = floorf(fminf(s0.x, fminf(s1.x, s2.x)));
 	min_raster.y = floorf(fminf(s0.y, fminf(s1.y, s2.y)));
 	max_raster.x = ceilf(fmaxf(s0.x, fmaxf(s1.x, s2.x)));
 	max_raster.y = ceilf(fmaxf(s0.y, fmaxf(s1.y, s2.y)));
-	min_raster.x = fmaxf(min_raster.x, 0);
-	min_raster.y = fmaxf(min_raster.y, 0);
-	max_raster.x = fminf(max_raster.x, scene->render->width - 1);
-	max_raster.y = fminf(max_raster.y, scene->render->height - 1);
+	min_raster.x = 0;
+	min_raster.y = 0;
+	max_raster.x = scene->render->width - 1;
+	max_raster.y = scene->render->height - 1;
 
 	size_t	x;
 	size_t	y;

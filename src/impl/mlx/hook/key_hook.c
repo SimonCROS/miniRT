@@ -17,19 +17,20 @@ int	key_pressed_hook(int i, t_vars *vars)
 	}
 	else if (started)
 	{
-		if (scene->cameras->size > 1 && (i == K_LEFT || i == K_RIGHT
-				|| i == K_UP || i == K_DOWN))
+		if (scene->cameras->size > 1 && (i == K_O || i == K_P))
 		{
-			if (i == K_LEFT || i == K_DOWN)
+			if (i == K_O)
 				scene->index--;
-			if (i == K_RIGHT || i == K_UP)
+			if (i == K_P)
 				scene->index++;
 			scene->index %= scene->cameras->size;
 			if (scene->index < 0)
 				scene->index = scene->cameras->size + scene->index;
 			return (on_change_camera(vars));
 		}
-		else if (i == K_W || i == K_S || i == K_A || i == K_D || i == K_CTRL || i == K_ESP)
+		else if (i == K_UP || i == K_DOWN || i == K_LEFT || i == K_RIGHT
+			|| i == K_W || i == K_S || i == K_A || i == K_D
+			|| i == K_CTRL || i == K_ESP)
 		{
 			if (i == K_W)
 				vars->forward = 1;
@@ -39,10 +40,18 @@ int	key_pressed_hook(int i, t_vars *vars)
 				vars->left = 1;
 			if (i == K_D)
 				vars->right = 1;
-			if (i == K_CTRL)
-				vars->down = 1;
 			if (i == K_ESP)
 				vars->up = 1;
+			if (i == K_CTRL)
+				vars->down = 1;
+			if (i == K_UP)
+				vars->cam_up = 1;
+			if (i == K_DOWN)
+				vars->cam_down = 1;
+			if (i == K_LEFT)
+				vars->cam_left = 1;
+			if (i == K_RIGHT)
+				vars->cam_right = 1;
 			return (1);
 		}
 	}
@@ -51,7 +60,9 @@ int	key_pressed_hook(int i, t_vars *vars)
 
 int	key_released_hook(int i, t_vars *vars)
 {
-	if (i == K_W || i == K_S || i == K_A || i == K_D || i == K_CTRL || i == K_ESP)
+	if (i == K_UP || i == K_DOWN || i == K_LEFT || i == K_RIGHT
+		|| i == K_W || i == K_S || i == K_A || i == K_D
+		|| i == K_CTRL || i == K_ESP)
 	{
 		if (i == K_W)
 			vars->forward = 0;
@@ -61,10 +72,18 @@ int	key_released_hook(int i, t_vars *vars)
 			vars->left = 0;
 		if (i == K_D)
 			vars->right = 0;
-		if (i == K_CTRL)
-			vars->down = 0;
 		if (i == K_ESP)
 			vars->up = 0;
+		if (i == K_CTRL)
+			vars->down = 0;
+		if (i == K_UP)
+			vars->cam_up = 0;
+		if (i == K_DOWN)
+			vars->cam_down = 0;
+		if (i == K_LEFT)
+			vars->cam_left = 0;
+		if (i == K_RIGHT)
+			vars->cam_right = 0;
 		return (1);
 	}
 	return (0);

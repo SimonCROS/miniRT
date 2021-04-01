@@ -20,14 +20,15 @@
 #  define K_UP 126
 #  define K_ESC 53
 #  define K_ENTER 36
-#  define K_M 46
 #  define K_W 13
 #  define K_S 1
 #  define K_A 0
 #  define K_D 2
-#  define K_CTRL 256
 #  define K_F 3
+#  define K_O 111
+#  define K_P 112
 #  define K_ESP 49
+#  define K_CTRL 256
 # else
 #  define K_LEFT 65361
 #  define K_RIGHT 65363
@@ -35,14 +36,15 @@
 #  define K_UP 65362
 #  define K_ESC 65307
 #  define K_ENTER 65293
-#  define K_M 109
 #  define K_W 122
 #  define K_S 115
 #  define K_A 113
 #  define K_D 100
-#  define K_CTRL 65507
+#  define K_O 111
+#  define K_P 112
 #  define K_F 102
 #  define K_ESP 32
+#  define K_CTRL 65507
 # endif
 
 /*** Types ********************************************************************/
@@ -109,6 +111,10 @@ struct s_vars
 	int				right;
 	int				up;
 	int				down;
+	int				cam_left;
+	int				cam_right;
+	int				cam_up;
+	int				cam_down;
 };
 
 void		exit_minirt(t_vars *vars, t_tpool *pool, void *other, int __status);
@@ -145,6 +151,7 @@ struct s_camera
 
 t_camera	*parse_camera(t_list *data, t_vector3 origin);
 t_camera	*new_camera(t_vector3 position, t_vector3 direction, float fov);
+void		reload_camera(t_camera *camera);
 
 /*** Logs utils ***************************************************************/
 

@@ -79,7 +79,10 @@ static void	render_pixel(t_thread_data *data, t_scene *scene, size_t x,
 		}
 	}
 	if (ray.length == INFINITY)
+	{
 		ray.color = *(scene->background);
+		data->vars->set_pixel(data->camera->render, x, y, ray.color);
+	}
 	else if (object)
 	{
 		render_light(scene, object, &ray);

@@ -1,6 +1,7 @@
 #include "mlx.h"
 
 #include "minirt.h"
+#include <math.h>
 
 #if defined __APPLE__
 
@@ -73,8 +74,11 @@ int	loop(t_vars *vars)
 	static t_vector3	up = (t_vector3){0, 1, 0};
 	t_camera			*camera;
 	t_vector3			flat_direction;
+	t_vector3			right_direction;
 
-	if (!vars->forward && !vars->backward && !vars->left && !vars->right && !vars->up && !vars->down)
+	if (!vars->forward && !vars->backward && !vars->left && !vars->right
+		&& !vars->up && !vars->down && !vars->cam_left
+		&& !vars->cam_right && !vars->cam_down && !vars->cam_up)
 		return (0);
 	camera = lst_get(get_scene()->cameras, get_scene()->index);
 
@@ -88,8 +92,11 @@ int	loop(t_vars *vars)
 	flat_direction = camera->direction;
 	flat_direction.y = 0;
 	flat_direction = vec3_normalize(flat_direction);
+	right_direction = vec3_crossv(up, flat_direction);
 	if (!vec3_length_squared(flat_direction))
 		flat_direction = vec3_new(0, 0, 1);
+	if (!vec3_length_squared(right_direction))
+		right_direction = vec3_new(1, 0, 0);
 	if (vars->forward)
 		camera->position = vec3_addv(camera->position, vec3_muld(flat_direction, 2));
 	if (vars->backward)
@@ -102,6 +109,16 @@ int	loop(t_vars *vars)
 		camera->position = vec3_addv(camera->position, vec3_muld(up, 2));
 	if (vars->down)
 		camera->position = vec3_subv(camera->position, vec3_muld(up, 2));
+	if (vars->cam_left)
+		camera->direction = vec3_rotate_y(camera->direction, M_PI / 30);
+	if (vars->cam_right)
+		camera->direction = vec3_rotate_y(camera->direction, -M_PI / 30);
+	if (vars->cam_up)
+		camera->direction = vec3_rotate_axis(camera->direction, right_direction, -M_PI / 30);
+	if (vars->cam_down)
+		camera->direction = vec3_rotate_axis(camera->direction, right_direction, M_PI / 30);
+	if (vars->cam_left || vars->cam_right || vars->cam_up || vars->cam_down)
+		reload_camera(camera);
 	return (render(vars));
 }
 
@@ -123,6 +140,10 @@ void	init_window(char *file, t_scene *scene)
 	vars.right = 0;
 	vars.up = 0;
 	vars.down = 0;
+	vars.cam_left = 0;
+	vars.cam_right = 0;
+	vars.cam_up = 0;
+	vars.cam_down = 0;
 	vars.init_image = (t_bifun)mlx_init_image;
 	vars.set_pixel = (t_pixel_writer)mlx_set_pixel;
 	vars.on_refresh = (t_bicon)force_put_image;

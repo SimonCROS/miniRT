@@ -46,6 +46,12 @@ static t_matrix44	look_at(t_vector3 from, t_vector3 to)
 	return (camToWorld);
 }
 
+void		reload_camera(t_camera *camera)
+{
+	camera->c2w = look_at(vec3_new(0, 0, 0), camera->direction);
+	camera->w2c = mat44_inverse(camera->c2w);
+}
+
 t_camera	*new_camera(t_vector3 position, t_vector3 direction, float fov)
 {
 	t_camera	*camera;
