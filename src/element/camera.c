@@ -57,6 +57,7 @@ t_camera	*new_camera(t_vector3 position, t_vector3 direction, float fov)
 	camera->direction = vec3_normalize(direction);
 	camera->hlen = tan(fov / 2 * M_PI / 180);
 	camera->c2w = look_at(vec3_new(0, 0, 0), camera->direction);
+	camera->w2c = mat44_inverse(camera->c2w);
 	camera->render = NULL;
 	return (camera);
 }

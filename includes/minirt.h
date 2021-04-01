@@ -116,6 +116,7 @@ struct s_camera
 	t_vector3	position;
 	t_vector3	direction;
 	t_matrix44	c2w;
+	t_matrix44	w2c;
 	void		*render;
 	float		*z_buffer;
 	float		hlen;

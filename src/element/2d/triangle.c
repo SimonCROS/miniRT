@@ -34,7 +34,7 @@ static t_vector3	convert_to_raster(t_options *render, t_camera *camera,
 	t_vector3		vertexRaster;
 
 	vertexView = vec3_normalize(vec3_subv(camera->position, vertexWorld));
-	vertexCamera = mat44_mul_vec(mat44_inverse(camera->c2w), vertexView);
+	vertexCamera = mat44_mul_vec(camera->w2c, vertexView);
 	vertexScreen.x = -vertexCamera.x / camera->hlen
 		/ (render->width / (float) render->height) / vertexCamera.z;
 	vertexScreen.y = -vertexCamera.y / camera->hlen / vertexCamera.z;
