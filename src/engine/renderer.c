@@ -17,10 +17,18 @@ static int	in_light(t_scene *scene, t_object *object, float light_dist2,
 			&& ray->length * ray->length <= light_dist2)
 			return (FALSE);
 	}
+	obj_iterator = iterator_new(scene->triangles);
+	while (iterator_has_next(&obj_iterator))
+	{
+		obj_test = iterator_next(&obj_iterator);
+		if (obj_test != object && collision(obj_test, ray)
+			&& ray->length * ray->length <= light_dist2)
+			return (FALSE);
+	}
 	return (TRUE);
 }
 
-static void	render_light(t_scene *scene, t_object *object, t_ray *ray)
+void	render_light(t_scene *scene, t_object *object, t_ray *ray)
 {
 	t_light		*light;
 	t_iterator	lightIterator;
@@ -63,20 +71,19 @@ static void	render_pixel(t_thread_data *data, t_scene *scene, size_t x,
 	{
 		obj_test = iterator_next(&obj_iterator);
 		obj_ray = ray;
-		if (obj_test->pre_collision && !obj_test->pre_collision(obj_test,
-				x, y))
-			continue ;
 		if (collision(obj_test, &obj_ray) && obj_ray.length < ray.length)
 		{
 			ray = obj_ray;
 			object = obj_test;
 		}
 	}
-	if (!object)
+	if (ray.length == INFINITY)
 		ray.color = *(scene->background);
-	else
+	else if (object)
+	{
 		render_light(scene, object, &ray);
-	data->vars->set_pixel(data->image, x, y, ray.color);
+		data->vars->set_pixel(data->camera->render, x, y, ray.color);
+	}
 }
 
 static void	render_chunk(t_thread_data *data, size_t start_x, size_t start_y)
@@ -117,7 +124,7 @@ void	*render_thread(t_thread_data *data, int *chunk)
 		printf("Rendering chunk (%d,%d)...", chunk_x, chunk_y);
 		log_nl();
 	}
-	data->vars->on_refresh(data->vars, data->image);
+	data->vars->on_refresh(data->vars, data->camera->render);
 	pthread_mutex_unlock(&(data->mutex_flush));
 	return (NULL);
 }

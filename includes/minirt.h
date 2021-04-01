@@ -117,7 +117,7 @@ struct s_camera
 	t_vector3	direction;
 	t_matrix44	c2w;
 	void		*render;
-	void		*z_buffer;
+	float		*z_buffer;
 	float		hlen;
 };
 
@@ -158,7 +158,7 @@ struct s_scene
 	t_list		*cameras;
 	t_list		*lights;
 	t_list		*objects;
-	t_light		*triangles;
+	t_list		*triangles;
 	t_color		*ambiant;
 	t_color		*background;
 	int			index;

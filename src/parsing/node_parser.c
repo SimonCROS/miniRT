@@ -23,7 +23,7 @@ static int	parse_node_min(t_list *line, t_scene *scene, int depth,
 	else if (ft_strcmp(lst_first(line), "l") == 0)
 		return (!!lst_push(scene->lights, parse_light(line, origin)));
 	else if (ft_strcmp(lst_first(line), "tr") == 0)
-		return (!!lst_push(scene->objects, parse_triangle(line, origin)));
+		return (!!lst_push(scene->triangles, parse_triangle(line, origin)));
 	else if (ft_strcmp(lst_first(line), "pl") == 0)
 		return (!!lst_push(scene->objects, parse_plane(line, origin)));
 	else if (ft_strcmp(lst_first(line), "sq") == 0)

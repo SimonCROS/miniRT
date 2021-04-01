@@ -5,18 +5,13 @@
 
 #include "tpool.h"
 
-static void	load_all_pre_collisions(t_camera *camera, t_scene *scene)
+static void	load_triangles(t_vars *vars, t_camera *camera, t_scene *scene)
 {
 	t_iterator	obj_iterator;
-	t_object	*obj_test;
 
-	obj_iterator = iterator_new(scene->objects);
+	obj_iterator = iterator_new(scene->triangles);
 	while (iterator_has_next(&obj_iterator))
-	{
-		obj_test = iterator_next(&obj_iterator);
-		if (obj_test->load_pre_collision)
-			obj_test->load_pre_collision(obj_test, camera, scene->render);
-	}
+		project(vars, iterator_next(&obj_iterator), scene, camera);
 }
 
 static void	render3(t_vars *vars, t_tpool *pool, t_thread_data *data,
@@ -25,8 +20,8 @@ static void	render3(t_vars *vars, t_tpool *pool, t_thread_data *data,
 	size_t			chunk;
 
 	chunk = 0;
-	load_all_pre_collisions(data->camera, data->scene);
-	vars->on_refresh(vars, data->image);
+	load_triangles(vars, data->camera, data->scene);
+	vars->on_refresh(vars, data->camera->render);
 	pthread_mutex_init(&(data->mutex_flush), NULL);
 	while (chunk < data->chunks)
 	{
@@ -58,20 +53,20 @@ static void	render2(t_vars *vars, t_camera *camera, t_scene *scene)
 	data.height = params->height;
 	data.camera = camera;
 	data.scene = scene;
-	data.image = vars->init_image(vars, params);
+	camera->render = vars->init_image(vars, params);
 	data.chunks = ceilf(params->width / (float)params->chunk_width)
 		* ceilf(params->height / (float)params->chunk_height);
 	pool = tpool_new(params->threads);
+	// TO protect
+	camera->z_buffer = malloc(params->width * params->height * sizeof(float));
 	chunks = malloc(data.chunks * sizeof(size_t));
-	if (!data.image || !pool || !chunks)
+	if (!camera->render || !pool || !chunks)
 	{
-		if (data.image)
-			vars->free_image(data.image, vars);
 		perror("Error\nAn error occurred while starting rendering");
 		exit_minirt(vars, pool, chunks, EXIT_FAILURE);
 	}
+	fill_z_buff(camera->z_buffer, params->width * params->height);
 	render3(vars, pool, &data, chunks);
-	camera->render = data.image;
 }
 
 int	render(t_vars *vars)

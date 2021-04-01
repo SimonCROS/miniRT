@@ -105,6 +105,7 @@ t_scene	*parse(char *file)
 	scene->cameras = lst_new(&free);
 	scene->lights = lst_new(&free);
 	scene->objects = lst_new(&free);
+	scene->triangles = lst_new(&free);
 	if (!scene->cameras || !scene->lights || !scene->objects
 		|| !parse_file(scene, file, 0, vec3_new(0, 0, 0))
 		|| !is_scene_valid(scene))

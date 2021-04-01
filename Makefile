@@ -1,5 +1,5 @@
 NAME					:= miniRT
-LINUX					:= 1
+LINUX					:= 0
 
 override HEADERS		:= includes/minirt.h
 
@@ -44,6 +44,7 @@ override SRCS	:=									\
 				element/3d/cylinder.c				\
 				element/3d/cylinder2.c				\
 				engine/ray.c						\
+				engine/z_buffer.c					\
 				engine/renderer.c					\
 				engine/collision.c					\
 				engine/engine_manager.c				\

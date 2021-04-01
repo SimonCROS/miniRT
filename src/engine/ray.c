@@ -1,6 +1,7 @@
 #include <math.h>
 
 #include "minirt.h"
+#include "renderer.h"
 
 t_ray	compute_ray(t_options *render, t_camera *camera, float x, float y)
 {
@@ -18,6 +19,6 @@ t_ray	compute_ray(t_options *render, t_camera *camera, float x, float y)
 	ray.color = color_new(0, 0, 0);
 	ray.light = 1;
 	ray.origin = camera->position;
-	ray.length = INFINITY;
+	ray.length = *get_z_buffer_value(camera->z_buffer, x, y, render->width);
 	return (ray);
 }

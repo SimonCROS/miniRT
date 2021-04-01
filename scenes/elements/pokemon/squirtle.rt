@@ -1,2 +1,2 @@
-ob      5,0,0              "scenes/elements/pokemon/squirtle/body.rt"
-ob      5,0,0              "scenes/elements/pokemon/squirtle/shell.rt"
+ob      -3,0,0              "scenes/elements/pokemon/squirtle/body.rt"
+ob      -3,0,0              "scenes/elements/pokemon/squirtle/shell.rt"
