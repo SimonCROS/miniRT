@@ -9,7 +9,7 @@ l       -400,400,0                       0.7                  255,255,255
 l       -30,30,50                        0.8                  255,255,255
 l       -15,100,0                        0.6                  255,255,255
 
-pl      0,0,0              0,1,0                              0,255,0
+# pl      0,0,0              0,1,0                              0,255,0
 
 ob      -30,0,0                "scenes/elements/pokemon/charmander.rt"
 ob       30,0,0                "scenes/elements/pokemon/squirtle.rt"

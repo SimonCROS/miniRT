@@ -25,6 +25,8 @@
 #  define K_S 1
 #  define K_A 0
 #  define K_D 2
+#  define K_CTRL 256
+#  define K_F 3
 #  define K_ESP 49
 # else
 #  define K_LEFT 65361
@@ -98,6 +100,8 @@ struct s_vars
 	int				backward;
 	int				left;
 	int				right;
+	int				up;
+	int				down;
 };
 
 void		exit_minirt(t_vars *vars, t_tpool *pool, void *other, int __status);

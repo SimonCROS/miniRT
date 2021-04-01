@@ -10,6 +10,7 @@ static int	in_light(t_scene *scene, t_object *object, float light_dist2,
 	t_object	*obj_test;
 
 	obj_iterator = iterator_new(scene->objects);
+	// TODO key to enable shadows
 	while (0 && iterator_has_next(&obj_iterator))
 	{
 		obj_test = iterator_next(&obj_iterator);

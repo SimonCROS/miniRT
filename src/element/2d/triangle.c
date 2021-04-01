@@ -94,6 +94,8 @@ void	project(t_vars *vars, t_object *triangle, t_scene *scene,
 	min_raster.y = floorf(fminf(s0.y, fminf(s1.y, s2.y)));
 	max_raster.x = ceilf(fmaxf(s0.x, fmaxf(s1.x, s2.x)));
 	max_raster.y = ceilf(fmaxf(s0.y, fmaxf(s1.y, s2.y)));
+	min_raster.x = fmaxf(min_raster.x, 0);
+	min_raster.y = fmaxf(min_raster.y, 0);
 	max_raster.x = fminf(max_raster.x, scene->render->width - 1);
 	max_raster.y = fminf(max_raster.y, scene->render->height - 1);
 

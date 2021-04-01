@@ -5,11 +5,10 @@ int	key_pressed_hook(int i, t_vars *vars)
 	static int			started;
 	t_scene				*scene;
 
-	printf("%d\n", i);
 	scene = get_scene();
 	if (i == K_ESC)
 		exit_minirt(vars, NULL, NULL, EXIT_SUCCESS);
-	else if (i == K_ESP)
+	else if (i == K_F)
 		set_debug(!is_debug_enabled());
 	else if (!started && (i == K_ENTER))
 	{
@@ -30,7 +29,7 @@ int	key_pressed_hook(int i, t_vars *vars)
 				scene->index = scene->cameras->size + scene->index;
 			return (on_change_camera(vars));
 		}
-		else if (i == K_W || i == K_S || i == K_A || i == K_D)
+		else if (i == K_W || i == K_S || i == K_A || i == K_D || i == K_CTRL || i == K_ESP)
 		{
 			if (i == K_W)
 				vars->forward = 1;
@@ -40,6 +39,10 @@ int	key_pressed_hook(int i, t_vars *vars)
 				vars->left = 1;
 			if (i == K_D)
 				vars->right = 1;
+			if (i == K_CTRL)
+				vars->down = 1;
+			if (i == K_ESP)
+				vars->up = 1;
 			return (1);
 		}
 	}
@@ -48,7 +51,7 @@ int	key_pressed_hook(int i, t_vars *vars)
 
 int	key_released_hook(int i, t_vars *vars)
 {
-	if (i == K_W || i == K_S || i == K_A || i == K_D)
+	if (i == K_W || i == K_S || i == K_A || i == K_D || i == K_CTRL || i == K_ESP)
 	{
 		if (i == K_W)
 			vars->forward = 0;
@@ -58,6 +61,10 @@ int	key_released_hook(int i, t_vars *vars)
 			vars->left = 0;
 		if (i == K_D)
 			vars->right = 0;
+		if (i == K_CTRL)
+			vars->down = 0;
+		if (i == K_ESP)
+			vars->up = 0;
 		return (1);
 	}
 	return (0);

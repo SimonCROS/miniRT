@@ -74,7 +74,7 @@ int	loop(t_vars *vars)
 	t_camera			*camera;
 	t_vector3			flat_direction;
 
-	if (!vars->forward && !vars->backward && !vars->left && !vars->right)
+	if (!vars->forward && !vars->backward && !vars->left && !vars->right && !vars->up && !vars->down)
 		return (0);
 	camera = lst_get(get_scene()->cameras, get_scene()->index);
 
@@ -91,13 +91,17 @@ int	loop(t_vars *vars)
 	if (!vec3_length_squared(flat_direction))
 		flat_direction = vec3_new(0, 0, 1);
 	if (vars->forward)
-		camera->position = vec3_addv(camera->position, flat_direction);
+		camera->position = vec3_addv(camera->position, vec3_muld(flat_direction, 2));
 	if (vars->backward)
-		camera->position = vec3_subv(camera->position, flat_direction);
+		camera->position = vec3_subv(camera->position, vec3_muld(flat_direction, 2));
 	if (vars->left)
-		camera->position = vec3_subv(camera->position, vec3_crossv(flat_direction, up));
+		camera->position = vec3_subv(camera->position, vec3_muld(vec3_crossv(flat_direction, up), 2));
 	if (vars->right)
-		camera->position = vec3_addv(camera->position, vec3_crossv(flat_direction, up));
+		camera->position = vec3_addv(camera->position, vec3_muld(vec3_crossv(flat_direction, up), 2));
+	if (vars->up)
+		camera->position = vec3_addv(camera->position, vec3_muld(up, 2));
+	if (vars->down)
+		camera->position = vec3_subv(camera->position, vec3_muld(up, 2));
 	return (render(vars));
 }
 
@@ -117,6 +121,8 @@ void	init_window(char *file, t_scene *scene)
 	vars.backward = 0;
 	vars.left = 0;
 	vars.right = 0;
+	vars.up = 0;
+	vars.down = 0;
 	vars.init_image = (t_bifun)mlx_init_image;
 	vars.set_pixel = (t_pixel_writer)mlx_set_pixel;
 	vars.on_refresh = (t_bicon)force_put_image;
