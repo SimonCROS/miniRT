@@ -62,10 +62,43 @@ static int	init_mlx(t_vars *vars, char *file, t_scene *scene)
 	if (!vars->win)
 		return (FALSE);
 	mlx_string_put(vars->mlx, vars->win, 0, 50, ~0, "Press 'enter' to start");
-	mlx_string_put(vars->mlx, vars->win, 0, 70, ~0, "Press 'd' to start in \
-debug mode");
+	mlx_string_put(vars->mlx, vars->win, 0, 70, ~0, "Press 'f' to \
+enable/disable debug mode");
 	mlx_string_put(vars->mlx, vars->win, 0, 90, ~0, "Press 'esc' to exit");
 	return (TRUE);
+}
+
+int	loop(t_vars *vars)
+{
+	static t_vector3	up = (t_vector3){0, 1, 0};
+	t_camera			*camera;
+	t_vector3			flat_direction;
+
+	if (!vars->forward && !vars->backward && !vars->left && !vars->right)
+		return (0);
+	camera = lst_get(get_scene()->cameras, get_scene()->index);
+
+	// SEE later
+	if (camera->render)
+		vars->free_image(camera->render, vars);
+	free(camera->z_buffer);
+	camera->z_buffer = NULL;
+	camera->render = NULL;
+
+	flat_direction = camera->direction;
+	flat_direction.y = 0;
+	flat_direction = vec3_normalize(flat_direction);
+	if (!vec3_length_squared(flat_direction))
+		flat_direction = vec3_new(0, 0, 1);
+	if (vars->forward)
+		camera->position = vec3_addv(camera->position, flat_direction);
+	if (vars->backward)
+		camera->position = vec3_subv(camera->position, flat_direction);
+	if (vars->left)
+		camera->position = vec3_subv(camera->position, vec3_crossv(flat_direction, up));
+	if (vars->right)
+		camera->position = vec3_addv(camera->position, vec3_crossv(flat_direction, up));
+	return (render(vars));
 }
 
 void	init_window(char *file, t_scene *scene)
@@ -80,12 +113,18 @@ void	init_window(char *file, t_scene *scene)
 		exit_minirt(&vars, NULL, NULL, EXIT_FAILURE);
 		return ;
 	}
+	vars.forward = 0;
+	vars.backward = 0;
+	vars.left = 0;
+	vars.right = 0;
 	vars.init_image = (t_bifun)mlx_init_image;
 	vars.set_pixel = (t_pixel_writer)mlx_set_pixel;
 	vars.on_refresh = (t_bicon)force_put_image;
 	vars.on_finished = null_biconsumer();
 	vars.free_image = (t_bicon)mlx_free_image;
-	mlx_hook(vars.win, 17, 0L, &close_hook, &vars);
-	mlx_key_hook(vars.win, &key_hook, &vars);
+	mlx_hook(vars.win, 17, 0L, close_hook, &vars);
+	mlx_hook(vars.win, 2, 1L << 0, key_pressed_hook, &vars);
+	mlx_hook(vars.win, 3, 1L << 1, key_released_hook, &vars);
+	mlx_loop_hook(vars.mlx, (t_bipre)loop, &vars);
 	mlx_loop(vars.mlx);
 }

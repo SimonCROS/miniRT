@@ -20,7 +20,12 @@
 #  define K_UP 126
 #  define K_ESC 53
 #  define K_ENTER 36
+#  define K_M 46
+#  define K_W 13
+#  define K_S 1
+#  define K_A 0
 #  define K_D 2
+#  define K_ESP 49
 # else
 #  define K_LEFT 65361
 #  define K_RIGHT 65363
@@ -66,7 +71,8 @@ void		init_window(char *file, t_scene *scene);
 
 void		mlx_free_image(t_image *image, t_vars *vars);
 
-int			key_hook(int key, t_vars *vars);
+int			key_pressed_hook(int key, t_vars *vars);
+int			key_released_hook(int key, t_vars *vars);
 int			close_hook(t_vars *vars);
 
 int			on_change_camera(t_vars *vars);
@@ -88,6 +94,10 @@ struct s_vars
 	t_biconsumer	on_finished;
 	t_biconsumer	free_image;
 	t_consumer		on_exit;
+	int				forward;
+	int				backward;
+	int				left;
+	int				right;
 };
 
 void		exit_minirt(t_vars *vars, t_tpool *pool, void *other, int __status);

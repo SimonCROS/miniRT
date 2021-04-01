@@ -20,7 +20,7 @@ static void	render3(t_vars *vars, t_tpool *pool, t_thread_data *data,
 	size_t			chunk;
 
 	chunk = 0;
-	vars->on_refresh(vars, data->camera->render);
+	// vars->on_refresh(vars, data->camera->render);
 	load_triangles(vars, data->camera, data->scene);
 	vars->on_refresh(vars, data->camera->render);
 	pthread_mutex_init(&(data->mutex_flush), NULL);

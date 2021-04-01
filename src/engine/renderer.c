@@ -10,7 +10,7 @@ static int	in_light(t_scene *scene, t_object *object, float light_dist2,
 	t_object	*obj_test;
 
 	obj_iterator = iterator_new(scene->objects);
-	while (iterator_has_next(&obj_iterator))
+	while (0 && iterator_has_next(&obj_iterator))
 	{
 		obj_test = iterator_next(&obj_iterator);
 		if (obj_test != object && collision(obj_test, ray)
@@ -18,7 +18,7 @@ static int	in_light(t_scene *scene, t_object *object, float light_dist2,
 			return (FALSE);
 	}
 	obj_iterator = iterator_new(scene->triangles);
-	while (iterator_has_next(&obj_iterator))
+	while (0 && iterator_has_next(&obj_iterator))
 	{
 		obj_test = iterator_next(&obj_iterator);
 		if (obj_test != object && collision(obj_test, ray)

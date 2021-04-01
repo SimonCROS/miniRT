@@ -29,6 +29,11 @@ int	dir_deserialize(const char *str, t_vector3 *direction)
 			"Unable to parse the following part into a direction \"%s\"", str);
 		return (0);
 	}
+	if (!vec3_length_squared(dir))
+	{
+		log_msg_arg(ERROR, "Direction vector can't be null \"%s\"", str);
+		return (0);
+	}
 	*direction = vec3_normalize(dir);
 	return (1);
 }
