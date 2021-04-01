@@ -35,7 +35,14 @@
 #  define K_UP 65362
 #  define K_ESC 65307
 #  define K_ENTER 65293
+#  define K_M 109
+#  define K_W 122
+#  define K_S 115
+#  define K_A 113
 #  define K_D 100
+#  define K_CTRL 65507
+#  define K_F 102
+#  define K_ESP 32
 # endif
 
 /*** Types ********************************************************************/
