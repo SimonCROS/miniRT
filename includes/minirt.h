@@ -25,10 +25,10 @@
 #  define K_A 0
 #  define K_D 2
 #  define K_F 3
-#  define K_O 111
-#  define K_P 112
+#  define K_O 31
+#  define K_P 35
 #  define K_ESP 49
-#  define K_CTRL 256
+#  define K_LSHIFT 257
 # else
 #  define K_LEFT 65361
 #  define K_RIGHT 65363
@@ -44,7 +44,7 @@
 #  define K_P 112
 #  define K_F 102
 #  define K_ESP 32
-#  define K_CTRL 65507
+#  define K_LSHIFT 65507
 # endif
 
 /*** Types ********************************************************************/

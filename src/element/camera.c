@@ -48,6 +48,7 @@ static t_matrix44	look_at(t_vector3 from, t_vector3 to)
 
 void		reload_camera(t_camera *camera)
 {
+	camera->direction = vec3_normalize(camera->direction);
 	camera->c2w = look_at(vec3_new(0, 0, 0), camera->direction);
 	camera->w2c = mat44_inverse(camera->c2w);
 }

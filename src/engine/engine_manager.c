@@ -24,20 +24,21 @@ static void	render3(t_vars *vars, t_tpool *pool, t_thread_data *data,
 	load_triangles(vars, data->camera, data->scene);
 	vars->on_refresh(vars, data->camera->render);
 	pthread_mutex_init(&(data->mutex_flush), NULL);
-	while (chunk < data->chunks)
-	{
-		chunks[chunk] = chunk;
-		if (!tpool_add_work(pool, (t_bifun)render_thread, data, chunks + chunk))
-		{
-			perror("Error\nAn error occurred while starting rendering");
-			exit_minirt(vars, pool, chunks, EXIT_FAILURE);
-		}
-		chunk++;
-	}
-	tpool_set_name(pool, "CHUNK_WORKER");
-	tpool_start(pool);
-	tpool_wait(pool);
-	tpool_destroy(pool);
+	(void)pool;
+	// while (chunk < data->chunks)
+	// {
+	// 	chunks[chunk] = chunk;
+	// 	if (!tpool_add_work(pool, (t_bifun)render_thread, data, chunks + chunk))
+	// 	{
+	// 		perror("Error\nAn error occurred while starting rendering");
+	// 		exit_minirt(vars, pool, chunks, EXIT_FAILURE);
+	// 	}
+	// 	chunk++;
+	// }
+	// tpool_set_name(pool, "CHUNK_WORKER");
+	// tpool_start(pool);
+	// tpool_wait(pool);
+	// tpool_destroy(pool);
 	free(chunks);
 }
 

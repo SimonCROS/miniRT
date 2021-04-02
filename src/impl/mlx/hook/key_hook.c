@@ -30,7 +30,7 @@ int	key_pressed_hook(int i, t_vars *vars)
 		}
 		else if (i == K_UP || i == K_DOWN || i == K_LEFT || i == K_RIGHT
 			|| i == K_W || i == K_S || i == K_A || i == K_D
-			|| i == K_CTRL || i == K_ESP)
+			|| i == K_LSHIFT || i == K_ESP)
 		{
 			if (i == K_W)
 				vars->forward = 1;
@@ -42,7 +42,7 @@ int	key_pressed_hook(int i, t_vars *vars)
 				vars->right = 1;
 			if (i == K_ESP)
 				vars->up = 1;
-			if (i == K_CTRL)
+			if (i == K_LSHIFT)
 				vars->down = 1;
 			if (i == K_UP)
 				vars->cam_up = 1;
@@ -62,7 +62,7 @@ int	key_released_hook(int i, t_vars *vars)
 {
 	if (i == K_UP || i == K_DOWN || i == K_LEFT || i == K_RIGHT
 		|| i == K_W || i == K_S || i == K_A || i == K_D
-		|| i == K_CTRL || i == K_ESP)
+		|| i == K_LSHIFT || i == K_ESP)
 	{
 		if (i == K_W)
 			vars->forward = 0;
@@ -74,7 +74,7 @@ int	key_released_hook(int i, t_vars *vars)
 			vars->right = 0;
 		if (i == K_ESP)
 			vars->up = 0;
-		if (i == K_CTRL)
+		if (i == K_LSHIFT)
 			vars->down = 0;
 		if (i == K_UP)
 			vars->cam_up = 0;
