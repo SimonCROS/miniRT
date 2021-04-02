@@ -119,6 +119,13 @@ int	loop(t_vars *vars)
 		camera->direction = vec3_rotate_axis(camera->direction, right_direction, M_PI / 30);
 	if (vars->cam_left || vars->cam_right || vars->cam_up || vars->cam_down)
 		reload_camera(camera);
+	if (log_msg(DEBUG, NULL))
+	{
+		printf("Camera position set to %.2f %.2f %.2f, direction set to \
+%.2f %.2f %.2f", camera->position.x, camera->position.y, camera->position.z,
+			camera->direction.x, camera->direction.y, camera->direction.z);
+		log_nl();
+	}
 	return (render(vars));
 }
 
