@@ -114,9 +114,9 @@ int	loop(t_vars *vars)
 	if (vars->cam_right)
 		camera->direction = vec3_rotate_y(camera->direction, -M_PI / 30);
 	if (vars->cam_up)
-		camera->direction = vec3_rotate_axis(camera->direction, right_direction, -M_PI / 30);
+		camera->direction = vec3_rotate_axis(camera->direction, right_direction, -M_PI / 15);
 	if (vars->cam_down)
-		camera->direction = vec3_rotate_axis(camera->direction, right_direction, M_PI / 30);
+		camera->direction = vec3_rotate_axis(camera->direction, right_direction, M_PI / 15);
 	if (vars->cam_left || vars->cam_right || vars->cam_up || vars->cam_down)
 		reload_camera(camera);
 	if (log_msg(DEBUG, NULL))

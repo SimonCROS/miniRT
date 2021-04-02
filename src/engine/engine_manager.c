@@ -17,9 +17,9 @@ static void	load_triangles(t_vars *vars, t_camera *camera, t_scene *scene)
 static void	render3(t_vars *vars, t_tpool *pool, t_thread_data *data,
 	size_t *chunks)
 {
-	size_t			chunk;
+	// size_t			chunk;
 
-	chunk = 0;
+	// chunk = 0;
 	// vars->on_refresh(vars, data->camera->render);
 	load_triangles(vars, data->camera, data->scene);
 	vars->on_refresh(vars, data->camera->render);

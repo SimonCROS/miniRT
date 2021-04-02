@@ -44,7 +44,7 @@
 #  define K_P 112
 #  define K_F 102
 #  define K_ESP 32
-#  define K_LSHIFT 65507
+#  define K_LSHIFT 65505
 # endif
 
 /*** Types ********************************************************************/

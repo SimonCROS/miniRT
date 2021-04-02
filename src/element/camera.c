@@ -26,7 +26,7 @@ static t_matrix44	look_at(t_vector3 from, t_vector3 to)
 
 	camToWorld = mat44_null();
 	forward = vec3_normalize(vec3_subv(from, to));
-	right = vec3_crossv(tmp, forward);
+	right = vec3_normalize(vec3_crossv(tmp, forward));
 	if (vec3_length_squared(right) == 0)
 		right = vec3_new(1, 0, 0);
 	up = vec3_crossv(forward, right);
