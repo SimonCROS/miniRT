@@ -19,21 +19,21 @@ static int	parse_node_min(t_list *line, t_scene *scene, int depth,
 	t_vector3 origin)
 {
 	if (ft_strcmp(lst_first(line), "c") == 0)
-		return (!!lst_push(scene->cameras, parse_camera(line, origin)));
+		return (!!lst_unshift(scene->cameras, parse_camera(line, origin)));
 	else if (ft_strcmp(lst_first(line), "l") == 0)
-		return (!!lst_push(scene->lights, parse_light(line, origin)));
+		return (!!lst_unshift(scene->lights, parse_light(line, origin)));
 	else if (ft_strcmp(lst_first(line), "tr") == 0)
-		return (!!lst_push(scene->triangles, parse_triangle(line, origin)));
+		return (!!lst_unshift(scene->triangles, parse_triangle(line, origin)));
 	else if (ft_strcmp(lst_first(line), "pl") == 0)
-		return (!!lst_push(scene->objects, parse_plane(line, origin)));
+		return (!!lst_unshift(scene->objects, parse_plane(line, origin)));
 	else if (ft_strcmp(lst_first(line), "sq") == 0)
-		return (!!lst_push(scene->objects, parse_square(line, origin)));
+		return (!!lst_unshift(scene->objects, parse_square(line, origin)));
 	else if (ft_strcmp(lst_first(line), "sp") == 0)
-		return (!!lst_push(scene->objects, parse_sphere(line, origin)));
+		return (!!lst_unshift(scene->objects, parse_sphere(line, origin)));
 	else if (ft_strcmp(lst_first(line), "cy") == 0)
-		return (!!lst_push(scene->objects, parse_cylinder(line, origin)));
+		return (!!lst_unshift(scene->objects, parse_cylinder(line, origin)));
 	else if (ft_strcmp(lst_first(line), "ci") == 0)
-		return (!!lst_push(scene->objects, parse_circle(line, origin)));
+		return (!!lst_unshift(scene->objects, parse_circle(line, origin)));
 	else if (ft_strcmp(lst_first(line), "ob") == 0)
 		return (parse_object(scene, line, depth, origin));
 	return (unknown_type(lst_first(line)));
@@ -41,6 +41,8 @@ static int	parse_node_min(t_list *line, t_scene *scene, int depth,
 
 int	parse_node(t_list *line, t_scene *scene, int depth, t_vector3 origin)
 {
+	if (lst_is_empty(line))
+		return (1);
 	if (ft_strcmp(lst_first(line), "R") == 0)
 	{
 		if (scene->render)

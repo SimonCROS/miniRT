@@ -7,11 +7,15 @@ static int	parse_lines(t_list *nodes, int fd)
 {
 	int		result;
 	char	*buffer;
+	int		reading;
 
 	buffer = NULL;
 	result = 1;
+	reading = 0;
 	while (result > 0)
 	{
+		reading++;
+		printf("Reading lines... %d\r", reading);
 		result = get_next_line(fd, &buffer);
 		if (result < 0)
 			break ;
@@ -20,12 +24,13 @@ static int	parse_lines(t_list *nodes, int fd)
 			free(buffer);
 			continue ;
 		}
-		if (!lst_push(nodes, as_listf((void **)ft_splitf(buffer, ' '), free)))
+		if (!lst_unshift(nodes, as_listf((void **)ft_splitf(buffer, ' '), free)))
 		{
 			errno = -1;
 			return (0);
 		}
 	}
+	printf("Reading lines... %d\n", reading);
 	return (result != -1);
 }
 
@@ -43,6 +48,7 @@ int	parse_file(t_scene *scene, char *file, int depth, t_vector3 origin)
 	t_iterator	iterator;
 	int			success;
 	int			fd;
+	int			parsing;
 
 	if (++depth == 5)
 		return (max_depth_file());
@@ -57,11 +63,16 @@ int	parse_file(t_scene *scene, char *file, int depth, t_vector3 origin)
 		return (FALSE);
 	}
 	close(fd);
-	lst_filter_in(nodes, (t_pre)lst_not_empty);
 	iterator = iterator_new(nodes);
 	success = 1;
+	parsing = 0;
 	while (success && iterator_has_next(&iterator))
+	{
+		parsing++;
+		printf("Parsing lines... %d\r", parsing);
 		success = parse_node(iterator_next(&iterator), scene, depth, origin);
+	}
+	printf("Parsing lines... %d\n", parsing);
 	lst_destroy(nodes);
 	return (success);
 }
@@ -98,6 +109,7 @@ t_scene	*parse(char *file)
 	scene = malloc(sizeof(t_scene));
 	if (!scene)
 		return (NULL);
+	setbuf(stdout, NULL);
 	scene->index = 0;
 	scene->render = NULL;
 	scene->ambiant = NULL;

@@ -121,8 +121,8 @@ int	loop(t_vars *vars)
 		reload_camera(camera);
 	if (log_msg(DEBUG, NULL))
 	{
-		printf("Camera position set to %.2f %.2f %.2f, direction set to \
-%.2f %.2f %.2f", camera->position.x, camera->position.y, camera->position.z,
+		printf("Camera position set to %.2f,%.2f,%.2f, direction set to \
+%.2f,%.2f,%.2f", camera->position.x, camera->position.y, camera->position.z,
 			camera->direction.x, camera->direction.y, camera->direction.z);
 		log_nl();
 	}
