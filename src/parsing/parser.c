@@ -3,7 +3,7 @@
 #include "minirt.h"
 #include "object.h"
 
-static int	parse_lines(t_list *nodes, int fd)
+static int	parse_lines(t_list *nodes, char *file, int fd)
 {
 	int		result;
 	char	*buffer;
@@ -15,7 +15,12 @@ static int	parse_lines(t_list *nodes, int fd)
 	while (result > 0)
 	{
 		reading++;
-		printf("Reading lines... %d\r", reading);
+		if (!(reading % 1000))
+		{
+			log_msg(INFO, NULL);
+			printf("\033[33m< Reading\033[0m %s... \033[33m%d", file, reading);
+			log_cr();
+		}
 		result = get_next_line(fd, &buffer);
 		if (result < 0)
 			break ;
@@ -30,7 +35,9 @@ static int	parse_lines(t_list *nodes, int fd)
 			return (0);
 		}
 	}
-	printf("Reading lines... %d\n", reading);
+	log_msg(INFO, NULL);
+	printf("\033[33m< Reading\033[0m %s... \033[33m%d", file, reading);
+	log_nl();
 	return (result != -1);
 }
 
@@ -56,7 +63,7 @@ int	parse_file(t_scene *scene, char *file, int depth, t_vector3 origin)
 	if (!nodes)
 		return (FALSE);
 	fd = open(file, O_RDONLY);
-	if (fd < 0 || !parse_lines(nodes, fd))
+	if (fd < 0 || !parse_lines(nodes, file, fd))
 	{
 		lst_destroy(nodes);
 		close(fd);
@@ -69,10 +76,19 @@ int	parse_file(t_scene *scene, char *file, int depth, t_vector3 origin)
 	while (success && iterator_has_next(&iterator))
 	{
 		parsing++;
-		printf("Parsing lines... %d\r", parsing);
+		if (!(parsing % 1000))
+		{
+			log_msg(INFO, NULL);
+			printf("\033[32m> Parsing\033[0m %s... \033[32m%d%%", file,
+				parsing * 100 / nodes->size);
+			log_cr();
+		}
 		success = parse_node(iterator_next(&iterator), scene, depth, origin);
 	}
-	printf("Parsing lines... %d\n", parsing);
+	log_msg(INFO, NULL);
+	printf("\033[32m> Parsing\033[0m %s... \033[32m%d%%", file,
+		parsing * 100 / nodes->size);
+	log_nl();
 	lst_destroy(nodes);
 	return (success);
 }

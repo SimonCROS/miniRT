@@ -1,5 +1,10 @@
 #include "minirt.h"
 
+int	log_cr(void)
+{
+	return (printf("\033[0m\r"));
+}
+
 int	log_nl(void)
 {
 	return (printf("\033[0m\n"));
