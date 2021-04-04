@@ -4,8 +4,11 @@
 
 void	mlx_free_image(t_image *image, t_vars *vars)
 {
-	mlx_destroy_image(vars->mlx, image->img);
-	free(image);
+	if (image)
+	{
+		mlx_destroy_image(vars->mlx, image->img);
+		free(image);
+	}
 }
 
 void	mlx_set_pixel(t_image *data, int x, int y, t_color color)

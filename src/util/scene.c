@@ -6,6 +6,7 @@ void	*free_scene(t_scene *scene)
 		return (NULL);
 	free(scene->render);
 	free(scene->ambiant);
+	lst_destroy(scene->triangles);
 	lst_destroy(scene->cameras);
 	lst_destroy(scene->lights);
 	lst_destroy(scene->objects);

@@ -82,9 +82,7 @@ int	loop(t_vars *vars)
 		return (0);
 	camera = lst_get(get_scene()->cameras, get_scene()->index);
 
-	// SEE later
-	if (camera->render)
-		vars->free_image(camera->render, vars);
+	vars->free_image(camera->render, vars);
 	free(camera->z_buffer);
 	camera->z_buffer = NULL;
 	camera->render = NULL;

@@ -8,9 +8,12 @@ static t_bitmap	*bmp_init_image(t_vars *vars, t_options *params)
 
 static void	bmp_free_image(t_bitmap *image, t_vars *vars)
 {
-	(void)vars;
-	free(image->body);
-	free(image);
+	if (image)
+	{
+		(void)vars;
+		free(image->body);
+		free(image);
+	}
 }
 
 static void	bmp_finished(t_vars *vars, t_camera *camera)
