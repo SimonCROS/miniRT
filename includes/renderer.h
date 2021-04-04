@@ -1,7 +1,8 @@
 #ifndef RENDERER_H
 # define RENDERER_H
 
-# include <minirt.h>
+# include "minirt.h"
+
 # include <pthread.h>
 
 /*** Definitions **************************************************************/

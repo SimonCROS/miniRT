@@ -95,6 +95,6 @@ int			collides_caps(t_object *obj, t_ray *ray, t_vector3 base, int coll);
 void		project(t_vars *vars, t_object *triangle, t_scene *scene,
 				t_camera *camera);
 
-void		render_light(t_scene *scene, t_object *object, t_ray *ray);
+void		render_light(t_scene *sc, t_vars *vars, t_object *obj, t_ray *ray);
 
 #endif

@@ -43,6 +43,7 @@
 #  define K_O 111
 #  define K_P 112
 #  define K_F 102
+#  define K_M 109
 #  define K_ESP 32
 #  define K_LSHIFT 65505
 # endif
@@ -87,6 +88,7 @@ int			key_released_hook(int key, t_vars *vars);
 int			close_hook(t_vars *vars);
 
 int			on_change_camera(t_vars *vars);
+void		reset_keys(t_vars *vars);
 int			on_close(t_vars *vars);
 
 /*** Bmp implementation *******************************************************/
@@ -115,7 +117,7 @@ struct s_vars
 	int				cam_right;
 	int				cam_up;
 	int				cam_down;
-	int				clear;
+	int				shadows;
 };
 
 void		exit_minirt(t_vars *vars, t_tpool *pool, void *other, int __status);

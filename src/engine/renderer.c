@@ -10,8 +10,7 @@ static int	in_light(t_scene *scene, t_object *object, float light_dist2,
 	t_object	*obj_test;
 
 	obj_iterator = iterator_new(scene->objects);
-	// TODO key to enable shadows
-	while (0 && iterator_has_next(&obj_iterator))
+	while (iterator_has_next(&obj_iterator))
 	{
 		obj_test = iterator_next(&obj_iterator);
 		if (obj_test != object && collision(obj_test, ray)
@@ -19,7 +18,7 @@ static int	in_light(t_scene *scene, t_object *object, float light_dist2,
 			return (FALSE);
 	}
 	obj_iterator = iterator_new(scene->triangles);
-	while (0 && iterator_has_next(&obj_iterator))
+	while (iterator_has_next(&obj_iterator))
 	{
 		obj_test = iterator_next(&obj_iterator);
 		if (obj_test != object && collision(obj_test, ray)
@@ -29,14 +28,16 @@ static int	in_light(t_scene *scene, t_object *object, float light_dist2,
 	return (TRUE);
 }
 
-void	render_light(t_scene *scene, t_object *object, t_ray *ray)
+void	render_light(t_scene *scene, t_vars *vars, t_object *object, t_ray *ray)
 {
 	t_light		*light;
 	t_iterator	lightIterator;
 	t_ray		light_ray;
 	t_vector3	lightDir;
+	int			illuminated;
 	float		light_distance2;
 
+	scene = get_scene();
 	ray->color = color_mul(object->color, *(scene->ambiant));
 	lightIterator = iterator_new(scene->lights);
 	while (iterator_has_next(&lightIterator))
@@ -48,10 +49,11 @@ void	render_light(t_scene *scene, t_object *object, t_ray *ray)
 		light_ray.origin = ray->phit;
 		light_ray.direction = lightDir;
 		light_ray.length = INFINITY;
+		illuminated = !vars->shadows
+			|| in_light(scene, object, light_distance2, &light_ray);
 		ray->color = color_add(ray->color, color_mul(object->color,
 					color_mulf(color_mulf(light->color, light->brightness),
-						in_light(scene, object, light_distance2, &light_ray)
-						* light->brightness
+						illuminated * light->brightness
 						* fmaxf(0, vec3_dotv(lightDir, ray->nhit)))));
 	}
 }
@@ -85,7 +87,7 @@ static void	render_pixel(t_thread_data *data, t_scene *scene, size_t x,
 	}
 	else if (object)
 	{
-		render_light(scene, object, &ray);
+		render_light(scene, data->vars, object, &ray);
 		data->vars->set_pixel(data->camera->render, x, y, ray.color);
 	}
 }
