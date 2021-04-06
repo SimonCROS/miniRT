@@ -20,26 +20,44 @@ static void	render3(t_vars *vars, t_tpool *pool, t_thread_data *data,
 	size_t			chunk;
 
 	chunk = 0;
-	if (vars->shadows)
+	if (data->camera->shadows)
 		vars->on_refresh(vars, data->camera->render);
 	load_triangles(vars, data->camera, data->scene);
 	vars->on_refresh(vars, data->camera->render);
-	pthread_mutex_init(&(data->mutex_flush), NULL);
-	while (chunk < data->chunks)
+	if (data->scene->objects->size)
 	{
-		chunks[chunk] = chunk;
-		if (!tpool_add_work(pool, (t_bifun)render_thread, data, chunks + chunk))
+		pthread_mutex_init(&(data->mutex_flush), NULL);
+		while (chunk < data->chunks)
 		{
-			perror("Error\nAn error occurred while starting rendering");
-			exit_minirt(vars, pool, chunks, EXIT_FAILURE);
+			chunks[chunk] = chunk;
+			if (!tpool_add_work(pool, (t_bifun)render_thread, data, chunks + chunk))
+			{
+				perror("Error\nAn error occurred while starting rendering");
+				exit_minirt(vars, pool, chunks, EXIT_FAILURE);
+			}
+			chunk++;
 		}
-		chunk++;
+		tpool_set_name(pool, "CHUNK_WORKER");
+		tpool_start(pool);
+		tpool_wait(pool);
 	}
-	tpool_set_name(pool, "CHUNK_WORKER");
-	tpool_start(pool);
-	tpool_wait(pool);
 	tpool_destroy(pool);
 	free(chunks);
+}
+
+static void	fill_background(t_vars *vars, t_camera *camera, t_scene *scene)
+{
+	size_t		x;
+	size_t		y;
+
+	x = 0;
+	while (x < scene->render->width)
+	{
+		y = 0;
+		while (y < scene->render->height)
+			vars->set_pixel(camera->render, x, y++, *(scene->background));
+		x++;
+	}
 }
 
 static void	render2(t_vars *vars, t_camera *camera, t_scene *scene)
@@ -68,6 +86,7 @@ static void	render2(t_vars *vars, t_camera *camera, t_scene *scene)
 		exit_minirt(vars, pool, chunks, EXIT_FAILURE);
 	}
 	fill_z_buff(camera->z_buffer, params->width * params->height);
+	fill_background(vars, camera, scene);
 	render3(vars, pool, &data, chunks);
 }
 

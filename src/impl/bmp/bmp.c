@@ -38,13 +38,13 @@ void	init_bmp_image(char *file, t_scene *scene)
 
 	(void)file;
 	(void)scene;
-	vars.shadows = 1;
 	vars.init_image = (t_bifun)bmp_init_image;
 	vars.set_pixel = (t_pixel_writer)bmp_set_pixel;
 	vars.on_refresh = null_biconsumer();
 	vars.on_finished = (t_bicon)bmp_finished;
 	vars.free_image = (t_bicon)bmp_free_image;
 	vars.on_exit = null_consumer();
+	((t_camera *)scene->cameras->first)->shadows = 1;
 	render(&vars);
 	exit_minirt(&vars, NULL, NULL, EXIT_SUCCESS);
 }

@@ -18,11 +18,11 @@ int	key_pressed_hook(int i, t_vars *vars)
 	}
 	else if (started)
 	{
+		camera = lst_get(scene->cameras, scene->index);
 		if (i == K_M)
 		{
 			reset_keys(vars);
-			camera = lst_get(scene->cameras, scene->index);
-			vars->shadows = !vars->shadows;
+			camera->shadows = !camera->shadows;
 			vars->free_image(camera->render, vars);
 			free(camera->z_buffer);
 			camera->z_buffer = NULL;
@@ -40,7 +40,7 @@ int	key_pressed_hook(int i, t_vars *vars)
 				scene->index = scene->cameras->size + scene->index;
 			return (on_change_camera(vars));
 		}
-		else if (!vars->shadows && (i == K_UP || i == K_DOWN || i == K_LEFT
+		else if (!camera->shadows && (i == K_UP || i == K_DOWN || i == K_LEFT
 				|| i == K_RIGHT || i == K_W || i == K_S || i == K_A || i == K_D
 				|| i == K_LSHIFT || i == K_ESP))
 		{

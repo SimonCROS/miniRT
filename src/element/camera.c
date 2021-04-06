@@ -60,6 +60,7 @@ t_camera	*new_camera(t_vector3 position, t_vector3 direction, float fov)
 	camera = malloc(sizeof(t_camera));
 	if (!camera)
 		return (NULL);
+	camera->shadows = 0;
 	camera->position = position;
 	camera->direction = vec3_normalize(direction);
 	camera->hlen = tan(fov / 2 * M_PI / 180);

@@ -27,6 +27,7 @@
 #  define K_F 3
 #  define K_O 31
 #  define K_P 35
+#  define K_M 46
 #  define K_ESP 49
 #  define K_LSHIFT 257
 # else
@@ -117,7 +118,6 @@ struct s_vars
 	int				cam_right;
 	int				cam_up;
 	int				cam_down;
-	int				shadows;
 };
 
 void		exit_minirt(t_vars *vars, t_tpool *pool, void *other, int __status);
@@ -150,6 +150,7 @@ struct s_camera
 	void		*render;
 	float		*z_buffer;
 	float		hlen;
+	int			shadows;
 };
 
 t_camera	*parse_camera(t_list *data, t_vector3 origin);

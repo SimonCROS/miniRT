@@ -28,7 +28,8 @@ static int	in_light(t_scene *scene, t_object *object, float light_dist2,
 	return (TRUE);
 }
 
-void	render_light(t_scene *scene, t_vars *vars, t_object *object, t_ray *ray)
+void	render_light(t_scene *scene, t_camera *camera, t_object *object,
+	t_ray *ray)
 {
 	t_light		*light;
 	t_iterator	lightIterator;
@@ -49,7 +50,7 @@ void	render_light(t_scene *scene, t_vars *vars, t_object *object, t_ray *ray)
 		light_ray.origin = ray->phit;
 		light_ray.direction = lightDir;
 		light_ray.length = INFINITY;
-		illuminated = !vars->shadows
+		illuminated = !camera->shadows
 			|| in_light(scene, object, light_distance2, &light_ray);
 		ray->color = color_add(ray->color, color_mul(object->color,
 					color_mulf(color_mulf(light->color, light->brightness),
@@ -81,15 +82,9 @@ static void	render_pixel(t_thread_data *data, t_scene *scene, size_t x,
 		}
 	}
 	if (ray.length == INFINITY)
-	{
-		ray.color = *(scene->background);
-		data->vars->set_pixel(data->camera->render, x, y, ray.color);
-	}
-	else if (object)
-	{
-		render_light(scene, data->vars, object, &ray);
-		data->vars->set_pixel(data->camera->render, x, y, ray.color);
-	}
+		return ;
+	render_light(scene, data->camera, object, &ray);
+	data->vars->set_pixel(data->camera->render, x, y, ray.color);
 }
 
 static void	render_chunk(t_thread_data *data, size_t start_x, size_t start_y)

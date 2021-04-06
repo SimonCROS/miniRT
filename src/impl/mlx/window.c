@@ -99,8 +99,8 @@ int	loop(t_vars *vars)
 	camera = lst_get(get_scene()->cameras, get_scene()->index);
 	vars->free_image(camera->render, vars);
 	free(camera->z_buffer);
-	camera->z_buffer = NULL;
 	camera->render = NULL;
+	camera->z_buffer = NULL;
 	flat_direction = camera->direction;
 	flat_direction.y = 0;
 	flat_direction = vec3_normalize(flat_direction);
@@ -158,7 +158,6 @@ void	init_window(char *file, t_scene *scene)
 	vars.on_refresh = (t_bicon)force_put_image;
 	vars.on_finished = null_biconsumer();
 	vars.free_image = (t_bicon)mlx_free_image;
-	vars.shadows = 0;
 	reset_keys(&vars);
 	mlx_hook(vars.win, 17, 0L, close_hook, &vars);
 	mlx_hook(vars.win, 2, 1L << 0, key_pressed_hook, &vars);

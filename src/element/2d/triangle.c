@@ -120,7 +120,7 @@ void	project(t_vars *vars, t_object *triangle, t_scene *scene,
 			if (collides_triangle(triangle, &ray) && ray.length < *buf_z)
 			{
 				*buf_z = ray.length;
-				render_light(scene, vars, triangle, &ray);
+				render_light(scene, camera, triangle, &ray);
 				vars->set_pixel(camera->render, x, y, ray.color);
 			}
 			y++;
