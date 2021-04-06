@@ -2,7 +2,7 @@
 
 cd $(dirname "$0")/..
 TIMEFORMAT="Time : %Rs"
-for entry in "scenes"/lite/*.rt "scenes"/crash/*.rt
+for entry in  scenes/lite/*.rt scenes/crash/*.rt scenes/crash/*.notrt
 do
 	printf "\033[1;94mTesting %s...\033[0m\n" $entry
 	if command -v valgrind &> /dev/null

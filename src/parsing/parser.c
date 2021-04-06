@@ -57,6 +57,12 @@ int	parse_file(t_scene *scene, char *file, int depth, t_vector3 origin)
 	int			fd;
 	int			parsing;
 
+	if (!ft_ends_with(file, ".rt"))
+	{
+		errno = -1;
+		log_msg(ERROR, "File is not a \".rt\" file.");
+		return (FALSE);
+	}
 	if (++depth == 5)
 		return (max_depth_file());
 	nodes = lst_new((t_con)lst_destroy);
@@ -75,14 +81,14 @@ int	parse_file(t_scene *scene, char *file, int depth, t_vector3 origin)
 	parsing = 0;
 	while (success && iterator_has_next(&iterator))
 	{
-		parsing++;
-		if (!(parsing % 1000))
+		if (!(parsing % (int)(nodes->size / 100 + 1)))
 		{
 			log_msg(INFO, NULL);
 			printf("\033[32m> Parsing\033[0m %s... \033[32m%d%%", file,
 				parsing * 100 / nodes->size);
 			log_cr();
 		}
+		parsing++;
 		success = parse_node(iterator_next(&iterator), scene, depth, origin);
 	}
 	log_msg(INFO, NULL);

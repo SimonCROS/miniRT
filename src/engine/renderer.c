@@ -81,7 +81,7 @@ static void	render_pixel(t_thread_data *data, t_scene *scene, size_t x,
 			object = obj_test;
 		}
 	}
-	if (ray.length == INFINITY)
+	if (ray.length == INFINITY || !object)
 		return ;
 	render_light(scene, data->camera, object, &ray);
 	data->vars->set_pixel(data->camera->render, x, y, ray.color);
