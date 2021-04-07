@@ -86,6 +86,8 @@ void		mlx_free_image(t_image *image, t_vars *vars);
 
 int			key_pressed_hook(int key, t_vars *vars);
 int			key_released_hook(int key, t_vars *vars);
+int			mouse_pressed_hook(int button, t_vars *vars);
+int			mouse_released_hook(int button, t_vars *vars);
 int			close_hook(t_vars *vars);
 
 int			on_change_camera(t_vars *vars);

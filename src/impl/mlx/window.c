@@ -160,8 +160,10 @@ void	init_window(char *file, t_scene *scene)
 	vars.free_image = (t_bicon)mlx_free_image;
 	reset_keys(&vars);
 	mlx_hook(vars.win, 17, 0L, close_hook, &vars);
-	mlx_hook(vars.win, 2, 1L << 0, key_pressed_hook, &vars);
-	mlx_hook(vars.win, 3, 1L << 1, key_released_hook, &vars);
+	mlx_hook(vars.win, 2, 0L, key_pressed_hook, &vars);
+	mlx_hook(vars.win, 3, 0L, key_released_hook, &vars);
+	mlx_hook(vars.win, 4, 0L, mouse_pressed_hook, &vars);
+	mlx_hook(vars.win, 5, 0L, mouse_released_hook, &vars);
 	mlx_loop_hook(vars.mlx, (t_pre)loop, &vars);
 	mlx_loop(vars.mlx);
 }
