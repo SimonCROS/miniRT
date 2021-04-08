@@ -61,7 +61,6 @@ typedef struct s_scene		t_scene;
 typedef struct s_options	t_options;
 
 typedef struct s_image		t_image;
-typedef enum e_move_type	t_move_type;
 typedef enum e_click_type	t_click_type;
 typedef void				(*t_pixel_writer)(void *, int, int, t_color);
 
@@ -79,16 +78,6 @@ struct s_image
 	int		bits_per_pixel;
 	int		line_length;
 	int		endian;
-};
-
-enum e_move_type
-{
-	UP,
-	DOWN,
-	FORWARD,
-	BACKWARD,
-	LEFT,
-	RIGHT
 };
 
 enum e_click_type
@@ -121,7 +110,6 @@ int			close_hook(t_vars *vars);
 
 int			on_close(t_vars *vars);
 int			on_scroll(t_vars *vars, int direction);
-int			on_move(t_vars *vars, t_move_type type);
 int			on_drag(t_vars *vars, t_click_type type);
 int			on_click(t_vars *vars, t_click_type type);
 int			on_change_camera(t_vars *vars);
@@ -157,6 +145,10 @@ struct s_vars
 	int				mouse_x_from;
 	int				mouse_y_from;
 	int				click_type;
+	int				cam_left;
+	int				cam_right;
+	int				cam_up;
+	int				cam_down;
 };
 
 void		exit_minirt(t_vars *vars, t_tpool *pool, void *other, int __status);

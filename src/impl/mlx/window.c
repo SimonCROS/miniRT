@@ -87,18 +87,38 @@ enable/disable debug mode");
 
 void	launch_move_events(t_vars *vars)
 {
+	static t_vector3	up = (t_vector3){0, 1, 0};
+	t_camera			*c;
+
+	c = vars->camera;
 	if (vars->up)
-		on_move(vars, UP);
+		c->position = vec3_addv(c->position, vec3_muld(up, 2));
 	if (vars->down)
-		on_move(vars, DOWN);
+		c->position = vec3_subv(c->position, vec3_muld(up, 2));
 	if (vars->forward)
-		on_move(vars, FORWARD);
+		c->position = vec3_addv(c->position, vec3_muld(c->flat, 2));
 	if (vars->backward)
-		on_move(vars, BACKWARD);
+		c->position = vec3_subv(c->position, vec3_muld(c->flat, 2));
 	if (vars->left)
-		on_move(vars, LEFT);
+		c->position = vec3_subv(c->position,
+				vec3_muld(vec3_crossv(c->flat, up), 2));
 	if (vars->right)
-		on_move(vars, RIGHT);
+		c->position = vec3_addv(c->position,
+				vec3_muld(vec3_crossv(c->flat, up), 2));
+	if (vars->cam_left)
+		c->direction = vec3_rotate_y(c->direction, M_PI / 30);
+	if (vars->cam_right)
+		c->direction = vec3_rotate_y(c->direction, -M_PI / 30);
+	if (vars->cam_up)
+		c->direction = vec3_rotate_axis(c->direction, c->right, -M_PI / 15);
+	if (vars->cam_down)
+		c->direction = vec3_rotate_axis(c->direction, c->right, M_PI / 15);
+	if (vars->cam_left || vars->cam_right || vars->cam_up || vars->cam_down)
+		reload_camera(c);
+	if (vars->up || vars->down || vars->left || vars->right || vars->forward
+		|| vars->backward || vars->cam_left || vars->cam_right
+		|| vars->cam_up || vars->cam_down)
+		vars->flush = 1;
 }
 
 int	loop(t_vars *vars)
