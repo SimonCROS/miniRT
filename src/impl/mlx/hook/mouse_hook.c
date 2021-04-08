@@ -2,7 +2,7 @@
 
 int	mouse_pressed_hook(int b, int x, int y, t_vars *vars)
 {
-	if (!vars->camera)
+	if (!vars->camera || vars->camera->shadows)
 		return (0);
 	if (b < 4 && vars->click_type == CLICK_NONE)
 	{
@@ -29,7 +29,7 @@ int	mouse_pressed_hook(int b, int x, int y, t_vars *vars)
 
 int	mouse_moved_hook(int x, int y, t_vars *vars)
 {
-	if (!vars->camera)
+	if (!vars->camera || vars->camera->shadows)
 		return (0);
 	vars->mouse_x = x;
 	vars->mouse_y = y;
@@ -40,7 +40,7 @@ int	mouse_moved_hook(int x, int y, t_vars *vars)
 
 int	mouse_released_hook(int b, int x, int y, t_vars *vars)
 {
-	if (!vars->camera)
+	if (!vars->camera || vars->camera->shadows)
 		return (0);
 	(void)x;
 	(void)y;
