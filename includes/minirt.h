@@ -46,7 +46,7 @@
 #  define K_P 112
 #  define K_F 102
 #  define K_M 109
-#  define K_M 110
+#  define K_N 110
 #  define K_ESP 32
 #  define K_LSHIFT 65505
 # endif

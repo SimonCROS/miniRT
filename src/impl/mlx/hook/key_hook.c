@@ -58,7 +58,8 @@ triangle mode.");
 			return (on_change_camera(vars));
 		}
 		else if (i == K_W || i == K_S || i == K_A || i == K_D || i == K_ESP
-			|| i == K_LSHIFT)
+			|| i == K_LSHIFT || i == K_LEFT || i == K_RIGHT || i == K_UP
+			|| i == K_DOWN)
 		{
 			if (camera->shadows)
 			{
@@ -77,6 +78,14 @@ triangle mode.");
 				vars->up = 1;
 			else if (i == K_LSHIFT)
 				vars->down = 1;
+			else if (i == K_LEFT)
+				vars->cam_left = 1;
+			else if (i == K_RIGHT)
+				vars->cam_right = 1;
+			else if (i == K_UP)
+				vars->cam_up = 1;
+			else if (i == K_DOWN)
+				vars->cam_down = 1;
 		}
 	}
 	return (0);
@@ -96,5 +105,13 @@ int	key_released_hook(int i, t_vars *vars)
 		vars->up = 0;
 	else if (i == K_LSHIFT)
 		vars->down = 0;
+	else if (i == K_LEFT)
+		vars->cam_left = 0;
+	else if (i == K_RIGHT)
+		vars->cam_right = 0;
+	else if (i == K_UP)
+		vars->cam_up = 0;
+	else if (i == K_DOWN)
+		vars->cam_down = 0;
 	return (0);
 }

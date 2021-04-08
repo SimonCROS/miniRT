@@ -47,12 +47,16 @@ static void	init_window_size(t_vars *vars, t_scene *scene)
 
 void	reset_keys(t_vars *vars)
 {
-	vars->forward = 0;
-	vars->backward = 0;
-	vars->left = 0;
-	vars->right = 0;
 	vars->up = 0;
 	vars->down = 0;
+	vars->left = 0;
+	vars->right = 0;
+	vars->cam_up = 0;
+	vars->forward = 0;
+	vars->backward = 0;
+	vars->cam_down = 0;
+	vars->cam_left = 0;
+	vars->cam_right = 0;
 	vars->scroll_direction = 0;
 	vars->click_type = CLICK_NONE;
 }
@@ -110,9 +114,9 @@ void	launch_move_events(t_vars *vars)
 	if (vars->cam_right)
 		c->direction = vec3_rotate_y(c->direction, -M_PI / 30);
 	if (vars->cam_up)
-		c->direction = vec3_rotate_axis(c->direction, c->right, -M_PI / 15);
-	if (vars->cam_down)
 		c->direction = vec3_rotate_axis(c->direction, c->right, M_PI / 15);
+	if (vars->cam_down)
+		c->direction = vec3_rotate_axis(c->direction, c->right, -M_PI / 15);
 	if (vars->cam_left || vars->cam_right || vars->cam_up || vars->cam_down)
 		reload_camera(c);
 	if (vars->up || vars->down || vars->left || vars->right || vars->forward
@@ -161,14 +165,15 @@ void	init_window(char *file, t_scene *scene)
 	vars.on_refresh = (t_bicon)force_put_image;
 	vars.on_finished = null_biconsumer();
 	vars.free_image = (t_bicon)mlx_free_image;
+	vars.flush = 0;
 	vars.camera = NULL;
 	reset_keys(&vars);
 	mlx_hook(vars.win, 17, 0L, close_hook, &vars);
-	mlx_hook(vars.win, 2, 0L, key_pressed_hook, &vars);
-	mlx_hook(vars.win, 3, 0L, key_released_hook, &vars);
-	mlx_hook(vars.win, 4, 0L, mouse_pressed_hook, &vars);
-	mlx_hook(vars.win, 5, 0L, mouse_released_hook, &vars);
-	mlx_hook(vars.win, 6, 0L, mouse_moved_hook, &vars);
+	mlx_hook(vars.win, 2, 1L << 0, key_pressed_hook, &vars);
+	mlx_hook(vars.win, 3, 1L << 1, key_released_hook, &vars);
+	mlx_hook(vars.win, 4, 1L << 2, mouse_pressed_hook, &vars);
+	mlx_hook(vars.win, 5, 1L << 3, mouse_released_hook, &vars);
+	mlx_hook(vars.win, 6, 1L << 6, mouse_moved_hook, &vars);
 	mlx_loop_hook(vars.mlx, (t_pre)loop, &vars);
 	mlx_loop(vars.mlx);
 }
