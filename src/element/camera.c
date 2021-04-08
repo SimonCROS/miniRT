@@ -80,5 +80,6 @@ t_camera	*new_camera(t_vector3 position, t_vector3 direction, float fov)
 	camera->hlen = tan(fov * 0.5 * M_PI / 180);
 	camera->render = NULL;
 	camera->z_buffer = NULL;
+	camera->show_triangles = FALSE;
 	return (camera);
 }

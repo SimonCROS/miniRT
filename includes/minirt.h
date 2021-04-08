@@ -28,6 +28,7 @@
 #  define K_O 31
 #  define K_P 35
 #  define K_M 46
+#  define K_N 45
 #  define K_ESP 49
 #  define K_LSHIFT 257
 # else
@@ -45,6 +46,7 @@
 #  define K_P 112
 #  define K_F 102
 #  define K_M 109
+#  define K_M 110
 #  define K_ESP 32
 #  define K_LSHIFT 65505
 # endif
@@ -173,6 +175,7 @@ struct s_ray
 };
 
 int			render(t_vars *vars);
+void		draw_line(t_vars *vars, int x0, int y0, int x1, int y1, t_color co);
 t_ray		compute_ray(t_options *render, t_camera *camera, float x, float y);
 int			intersect_plane(t_vector3 position, t_vector3 rotation, t_ray *ray);
 
@@ -191,6 +194,7 @@ struct s_camera
 	float		*z_buffer;
 	float		hlen;
 	int			shadows;
+	int			show_triangles;
 };
 
 t_camera	*parse_camera(t_list *data, t_vector3 origin);

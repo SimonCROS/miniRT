@@ -69,8 +69,8 @@ static t_vector3	convert_to_raster(t_options *render, t_camera *camera,
 
 	vertexView = vec3_normalize(vec3_subv(camera->position, vertexWorld));
 	vertexCamera = mat44_mul_vec(camera->w2c, vertexView);
+	vertexRaster.z = vertexCamera.z;
 	vertexCamera.z = fabsf(vertexCamera.z);
-	// printf("%.2f %.2f %.2f %.2f\n", vertexCamera.x, vertexCamera.y, vertexCamera.z, 0.0f);
 	vertexScreen.x = -vertexCamera.x / camera->hlen
 		/ (render->width / (float) render->height) / vertexCamera.z;
 	vertexScreen.y = -vertexCamera.y / camera->hlen / vertexCamera.z;
@@ -87,45 +87,63 @@ void	project(t_vars *vars, t_object *triangle, t_scene *scene,
 	t_vector3	s0;
 	t_vector3	s1;
 	t_vector3	s2;
-	t_vector3	min_raster;
-	t_vector3	max_raster;
 
-	// printf("\n");
 	s0 = convert_to_raster(scene->render, camera, triangle->data.triangle.p1);
-	// printf("\n");
 	s1 = convert_to_raster(scene->render, camera, triangle->data.triangle.p2);
 	s2 = convert_to_raster(scene->render, camera, triangle->data.triangle.p3);
-	min_raster.x = floorf(fminf(s0.x, fminf(s1.x, s2.x)));
-	min_raster.y = floorf(fminf(s0.y, fminf(s1.y, s2.y)));
-	max_raster.x = ceilf(fmaxf(s0.x, fmaxf(s1.x, s2.x)));
-	max_raster.y = ceilf(fmaxf(s0.y, fmaxf(s1.y, s2.y)));
-	min_raster.x = fmaxf(min_raster.x, 0);
-	min_raster.y = fmaxf(min_raster.y, 0);
-	max_raster.x = fminf(max_raster.x, scene->render->width - 1);
-	max_raster.y = fminf(max_raster.y, scene->render->height - 1);
+	if (s0.z < 0 && s1.z < 0 && s2.z < 0)
+		return ;
 
-	size_t	x;
-	size_t	y;
-	t_ray	ray;
-	float	*buf_z;
-
-	x = min_raster.x;
-	while (x <= max_raster.x)
+	if (camera->show_triangles)
 	{
-		y = min_raster.y;
-		while (y <= max_raster.y)
+		int	w;
+		int	h;
+
+		w = scene->render->width - 1;
+		h = scene->render->height - 1;
+		if (s0.x < 0 || s1.x < 0 || s2.x < 0 || s0.y < 0 || s1.y < 0 || s2.y < 0
+		|| s0.x > w || s1.x > w || s2.x > w || s0.y > h || s1.y > h || s2.y > h)
+			return ;
+		draw_line(vars, s0.x, s0.y, s1.x, s1.y, color_new(224, 211, 25));
+		draw_line(vars, s1.x, s1.y, s2.x, s2.y, color_new(224, 211, 25));
+		draw_line(vars, s2.x, s2.y, s0.x, s0.y, color_new(224, 211, 25));
+	}
+	else
+	{	
+		size_t		x;
+		size_t		y;
+		t_ray		ray;
+		float		*buf_z;
+		t_vector3	min_raster;
+		t_vector3	max_raster;
+
+		min_raster.x = floorf(fminf(s0.x, fminf(s1.x, s2.x)));
+		min_raster.y = floorf(fminf(s0.y, fminf(s1.y, s2.y)));
+		max_raster.x = ceilf(fmaxf(s0.x, fmaxf(s1.x, s2.x)));
+		max_raster.y = ceilf(fmaxf(s0.y, fmaxf(s1.y, s2.y)));
+		min_raster.x = fmaxf(min_raster.x, 0);
+		min_raster.y = fmaxf(min_raster.y, 0);
+		max_raster.x = fminf(max_raster.x, scene->render->width - 1);
+		max_raster.y = fminf(max_raster.y, scene->render->height - 1);
+
+		x = min_raster.x;
+		while (x <= max_raster.x)
 		{
-			buf_z = get_z_buffer_value(camera->z_buffer, x, y, scene->render->width);
-			ray = compute_ray(scene->render, camera, x, y);
-			if (collides_triangle(triangle, &ray) && ray.length < *buf_z)
+			y = min_raster.y;
+			while (y <= max_raster.y)
 			{
-				*buf_z = ray.length;
-				render_light(scene, camera, triangle, &ray);
-				vars->set_pixel(camera->render, x, y, ray.color);
+				buf_z = get_z_buffer_value(camera->z_buffer, x, y, scene->render->width);
+				ray = compute_ray(scene->render, camera, x, y);
+				if (collides_triangle(triangle, &ray) && ray.length < *buf_z)
+				{
+					*buf_z = ray.length;
+					render_light(scene, camera, triangle, &ray);
+					vars->set_pixel(camera->render, x, y, ray.color);
+				}
+				y++;
 			}
-			y++;
+			x++;
 		}
-		x++;
 	}
 }
 

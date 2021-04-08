@@ -77,9 +77,11 @@ static int	init_mlx(t_vars *vars, char *file, t_scene *scene)
 	mlx_string_put(vars->mlx, vars->win, 0, 50, ~0, "Press 'enter' to start");
 	mlx_string_put(vars->mlx, vars->win, 0, 70, ~0, "Press 'm' to \
 enable/disable shadows");
-	mlx_string_put(vars->mlx, vars->win, 0, 90, ~0, "Press 'f' to \
+	mlx_string_put(vars->mlx, vars->win, 0, 90, ~0, "Press 'm' to \
+enable/disable the triangle mode");
+	mlx_string_put(vars->mlx, vars->win, 0, 110, ~0, "Press 'f' to \
 enable/disable debug mode");
-	mlx_string_put(vars->mlx, vars->win, 0, 110, ~0, "Press 'esc' to exit");
+	mlx_string_put(vars->mlx, vars->win, 0, 130, ~0, "Press 'esc' to exit");
 	return (TRUE);
 }
 

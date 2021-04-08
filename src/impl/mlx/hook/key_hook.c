@@ -22,12 +22,27 @@ int	key_pressed_hook(int i, t_vars *vars)
 		camera = vars->camera;
 		if (i == K_M)
 		{
+			if (camera->show_triangles)
+			{
+				log_msg(ERROR, "You must disable the triangle mode to enable \
+shadows.");
+				return (0);
+			}
 			reset_keys(vars);
 			camera->shadows = !camera->shadows;
-			vars->free_image(camera->render, vars);
-			free(camera->z_buffer);
-			camera->z_buffer = NULL;
-			camera->render = NULL;
+			vars->flush = 1;
+			return (render(vars));
+		}
+		else if (i == K_N)
+		{
+			if (camera->shadows)
+			{
+				log_msg(ERROR, "You must disable shadows to enable the \
+triangle mode.");
+				return (0);
+			}
+			camera->show_triangles = !camera->show_triangles;
+			vars->flush = 1;
 			return (render(vars));
 		}
 		else if (scene->cameras->size > 1 && (i == K_O || i == K_P))
@@ -42,8 +57,14 @@ int	key_pressed_hook(int i, t_vars *vars)
 			vars->camera = (t_camera*)lst_get(scene->cameras, scene->index);
 			return (on_change_camera(vars));
 		}
-		else if (!camera->shadows)
+		else if (i == K_W || i == K_S || i == K_A || i == K_D || i == K_ESP
+			|| i == K_LSHIFT)
 		{
+			if (camera->shadows)
+			{
+				log_msg(ERROR, "You must disable shadows to move.");
+				return (0);
+			}
 			if (i == K_W)
 				vars->forward = 1;
 			else if (i == K_S)

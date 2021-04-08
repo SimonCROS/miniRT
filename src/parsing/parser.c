@@ -131,7 +131,6 @@ t_scene	*parse(char *file)
 	scene = malloc(sizeof(t_scene));
 	if (!scene)
 		return (NULL);
-	setbuf(stdout, NULL);
 	scene->index = 0;
 	scene->render = NULL;
 	scene->ambiant = NULL;
