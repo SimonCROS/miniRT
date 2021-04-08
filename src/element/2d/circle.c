@@ -40,6 +40,6 @@ t_object	*new_circle(float diametre, t_vector3 position, t_vector3 rotation,
 			(t_bipre)collides_circle);
 	if (!plan)
 		return (NULL);
-	plan->data.circle.radius = diametre / 2;
+	plan->data.circle.radius = diametre * 0.5;
 	return (plan);
 }

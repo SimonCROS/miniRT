@@ -55,6 +55,10 @@ override SRCS	:=									\
 				impl/mlx/hook/key_hook.c			\
 				impl/mlx/hook/mouse_hook.c			\
 				impl/mlx/hook/close_hook.c			\
+				impl/mlx/event/on_move.c			\
+				impl/mlx/event/on_drag.c			\
+				impl/mlx/event/on_click.c			\
+				impl/mlx/event/on_scroll.c			\
 				impl/mlx/event/on_change_camera.c	\
 				provider/scene_provider.c			\
 				provider/debug_mode_provider.c		\

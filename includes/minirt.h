@@ -59,6 +59,8 @@ typedef struct s_scene		t_scene;
 typedef struct s_options	t_options;
 
 typedef struct s_image		t_image;
+typedef enum e_move_type	t_move_type;
+typedef enum e_click_type	t_click_type;
 typedef void				(*t_pixel_writer)(void *, int, int, t_color);
 
 typedef struct s_ray		t_ray;
@@ -77,6 +79,24 @@ struct s_image
 	int		endian;
 };
 
+enum e_move_type
+{
+	UP,
+	DOWN,
+	FORWARD,
+	BACKWARD,
+	LEFT,
+	RIGHT
+};
+
+enum e_click_type
+{
+	CLICK_NONE,
+	CLICK_LEFT,
+	CLICK_RIGHT,
+	CLICK_MIDDLE
+};
+
 t_image		*mlx_init_image(t_vars *vars, t_options *params);
 void		mlx_set_pixel(t_image *image, int x, int y, t_color color);
 void		force_put_image(t_vars *vars, t_image *image);
@@ -84,15 +104,25 @@ void		init_window(char *file, t_scene *scene);
 
 void		mlx_free_image(t_image *image, t_vars *vars);
 
+void		reset_keys(t_vars *vars);
+
+/*== Hooks ==*/
+
 int			key_pressed_hook(int key, t_vars *vars);
 int			key_released_hook(int key, t_vars *vars);
-int			mouse_pressed_hook(int button, t_vars *vars);
-int			mouse_released_hook(int button, t_vars *vars);
+int			mouse_pressed_hook(int button, int x, int y, t_vars *vars);
+int			mouse_released_hook(int button, int x, int y, t_vars *vars);
+int			mouse_moved_hook(int x, int y, t_vars *vars);
 int			close_hook(t_vars *vars);
 
-int			on_change_camera(t_vars *vars);
-void		reset_keys(t_vars *vars);
+/*== Events ==*/
+
 int			on_close(t_vars *vars);
+int			on_move(t_vars *vars, t_move_type type);
+int			on_drag(t_vars *vars, t_click_type type);
+int			on_click(t_vars *vars, t_click_type type);
+int			on_change_camera(t_vars *vars);
+int			on_release_click(t_vars *vars, t_click_type type);
 
 /*** Bmp implementation *******************************************************/
 
@@ -104,22 +134,26 @@ struct s_vars
 {
 	void			*mlx;
 	void			*win;
+	t_camera		*camera;
 	t_bifunction	init_image;
 	t_pixel_writer	set_pixel;
 	t_biconsumer	on_refresh;
 	t_biconsumer	on_finished;
 	t_biconsumer	free_image;
 	t_consumer		on_exit;
+	int				flush;
 	int				forward;
 	int				backward;
 	int				left;
 	int				right;
 	int				up;
 	int				down;
-	int				cam_left;
-	int				cam_right;
-	int				cam_up;
-	int				cam_down;
+	int				scroll_direction;
+	int				mouse_x;
+	int				mouse_y;
+	int				mouse_x_from;
+	int				mouse_y_from;
+	int				click_type;
 };
 
 void		exit_minirt(t_vars *vars, t_tpool *pool, void *other, int __status);
@@ -147,6 +181,9 @@ struct s_camera
 {
 	t_vector3	position;
 	t_vector3	direction;
+	t_vector3	flat;
+	t_vector3	right;
+	t_vector3	up;
 	t_matrix44	c2w;
 	t_matrix44	w2c;
 	void		*render;

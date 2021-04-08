@@ -59,7 +59,7 @@ t_object	*new_square(float width, t_vector3 position, t_vector3 rotation,
 			(t_bipre)collides_square);
 	if (!plan)
 		return (NULL);
-	mid = (width * sqrtf(2)) / 2;
+	mid = (width * sqrtf(2)) * 0.5;
 	diagonal = vec3_crossv(rotation, vec3_new(1, 0, 0));
 	if (vec3_length(diagonal) == 0)
 		diagonal = vec3_new(0, 1, 0);

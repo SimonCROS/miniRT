@@ -53,10 +53,8 @@ void	reset_keys(t_vars *vars)
 	vars->right = 0;
 	vars->up = 0;
 	vars->down = 0;
-	vars->cam_left = 0;
-	vars->cam_right = 0;
-	vars->cam_up = 0;
-	vars->cam_down = 0;
+	vars->scroll_direction = 0;
+	vars->click_type = CLICK_NONE;
 }
 
 static int	init_mlx(t_vars *vars, char *file, t_scene *scene)
@@ -85,52 +83,34 @@ enable/disable debug mode");
 	return (TRUE);
 }
 
+void	launch_move_events(t_vars *vars)
+{
+	if (vars->up)
+		on_move(vars, UP);
+	if (vars->down)
+		on_move(vars, DOWN);
+	if (vars->forward)
+		on_move(vars, FORWARD);
+	if (vars->backward)
+		on_move(vars, BACKWARD);
+	if (vars->left)
+		on_move(vars, LEFT);
+	if (vars->right)
+		on_move(vars, RIGHT);
+}
+
 int	loop(t_vars *vars)
 {
-	static t_vector3	up = (t_vector3){0, 1, 0};
 	t_camera			*camera;
-	t_vector3			flat_direction;
-	t_vector3			right_direction;
 
-	if (!vars->forward && !vars->backward && !vars->left && !vars->right
-		&& !vars->up && !vars->down && !vars->cam_left
-		&& !vars->cam_right && !vars->cam_down && !vars->cam_up)
+	camera = vars->camera;
+	launch_move_events(vars);
+	if (!vars->flush)
 		return (0);
-	camera = lst_get(get_scene()->cameras, get_scene()->index);
 	vars->free_image(camera->render, vars);
 	free(camera->z_buffer);
 	camera->render = NULL;
 	camera->z_buffer = NULL;
-	flat_direction = camera->direction;
-	flat_direction.y = 0;
-	flat_direction = vec3_normalize(flat_direction);
-	right_direction = vec3_crossv(up, flat_direction);
-	if (!vec3_length_squared(flat_direction))
-		flat_direction = vec3_new(0, 0, 1);
-	if (!vec3_length_squared(right_direction))
-		right_direction = vec3_new(1, 0, 0);
-	if (vars->forward)
-		camera->position = vec3_addv(camera->position, vec3_muld(flat_direction, 2));
-	if (vars->backward)
-		camera->position = vec3_subv(camera->position, vec3_muld(flat_direction, 2));
-	if (vars->left)
-		camera->position = vec3_subv(camera->position, vec3_muld(vec3_crossv(flat_direction, up), 2));
-	if (vars->right)
-		camera->position = vec3_addv(camera->position, vec3_muld(vec3_crossv(flat_direction, up), 2));
-	if (vars->up)
-		camera->position = vec3_addv(camera->position, vec3_muld(up, 2));
-	if (vars->down)
-		camera->position = vec3_subv(camera->position, vec3_muld(up, 2));
-	if (vars->cam_left)
-		camera->direction = vec3_rotate_y(camera->direction, M_PI / 30);
-	if (vars->cam_right)
-		camera->direction = vec3_rotate_y(camera->direction, -M_PI / 30);
-	if (vars->cam_up)
-		camera->direction = vec3_rotate_axis(camera->direction, right_direction, -M_PI / 15);
-	if (vars->cam_down)
-		camera->direction = vec3_rotate_axis(camera->direction, right_direction, M_PI / 15);
-	if (vars->cam_left || vars->cam_right || vars->cam_up || vars->cam_down)
-		reload_camera(camera);
 	if (log_msg(DEBUG, NULL))
 	{
 		printf("Camera position set to %.2f,%.2f,%.2f, direction set to \
@@ -138,6 +118,7 @@ int	loop(t_vars *vars)
 			camera->direction.x, camera->direction.y, camera->direction.z);
 		log_nl();
 	}
+	vars->flush = 0;
 	return (render(vars));
 }
 
@@ -158,12 +139,14 @@ void	init_window(char *file, t_scene *scene)
 	vars.on_refresh = (t_bicon)force_put_image;
 	vars.on_finished = null_biconsumer();
 	vars.free_image = (t_bicon)mlx_free_image;
+	vars.camera = NULL;
 	reset_keys(&vars);
 	mlx_hook(vars.win, 17, 0L, close_hook, &vars);
 	mlx_hook(vars.win, 2, 0L, key_pressed_hook, &vars);
 	mlx_hook(vars.win, 3, 0L, key_released_hook, &vars);
 	mlx_hook(vars.win, 4, 0L, mouse_pressed_hook, &vars);
 	mlx_hook(vars.win, 5, 0L, mouse_released_hook, &vars);
+	mlx_hook(vars.win, 6, 0L, mouse_moved_hook, &vars);
 	mlx_loop_hook(vars.mlx, (t_pre)loop, &vars);
 	mlx_loop(vars.mlx);
 }

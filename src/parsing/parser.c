@@ -14,13 +14,13 @@ static int	parse_lines(t_list *nodes, char *file, int fd)
 	reading = 0;
 	while (result > 0)
 	{
-		reading++;
 		if (!(reading % 1000))
 		{
 			log_msg(INFO, NULL);
 			printf("\033[33m< Reading\033[0m %s... \033[33m%d", file, reading);
 			log_cr();
 		}
+		reading++;
 		result = get_next_line(fd, &buffer);
 		if (result < 0)
 			break ;

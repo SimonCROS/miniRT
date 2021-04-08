@@ -46,8 +46,21 @@ static t_matrix44	look_at(t_vector3 from, t_vector3 to)
 	return (camToWorld);
 }
 
-void		reload_camera(t_camera *camera)
+void	reload_camera(t_camera *camera)
 {
+	static t_vector3	up = (t_vector3){0, 1, 0};
+
+	camera->right = vec3_crossv(camera->direction, up);
+	camera->flat = camera->direction;
+	camera->flat.y = 0;
+	camera->flat = vec3_normalize(camera->flat);
+	if (!vec3_length_squared(camera->right))
+		camera->right = vec3_new(1, 0, 0);
+	camera->up = vec3_crossv(camera->direction, camera->right);
+	if (!vec3_length_squared(camera->up))
+		camera->up = vec3_new(1, 0, 0);
+	if (!vec3_length_squared(camera->flat))
+		camera->flat = vec3_new(0, 0, 1);
 	camera->direction = vec3_normalize(camera->direction);
 	camera->c2w = look_at(vec3_new(0, 0, 0), camera->direction);
 	camera->w2c = mat44_inverse(camera->c2w);
@@ -62,10 +75,9 @@ t_camera	*new_camera(t_vector3 position, t_vector3 direction, float fov)
 		return (NULL);
 	camera->shadows = 0;
 	camera->position = position;
-	camera->direction = vec3_normalize(direction);
-	camera->hlen = tan(fov / 2 * M_PI / 180);
-	camera->c2w = look_at(vec3_new(0, 0, 0), camera->direction);
-	camera->w2c = mat44_inverse(camera->c2w);
+	camera->direction = direction;
+	reload_camera(camera);
+	camera->hlen = tan(fov * 0.5 * M_PI / 180);
 	camera->render = NULL;
 	camera->z_buffer = NULL;
 	return (camera);

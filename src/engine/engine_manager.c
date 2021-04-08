@@ -96,7 +96,7 @@ int	render(t_vars *vars)
 	t_camera	*camera;
 
 	scene = get_scene();
-	camera = lst_get(scene->cameras, scene->index);
+	camera = vars->camera;
 	if (camera->render)
 	{
 		vars->on_refresh(vars, camera->render);

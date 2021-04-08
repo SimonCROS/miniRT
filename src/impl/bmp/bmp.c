@@ -43,8 +43,9 @@ void	init_bmp_image(char *file, t_scene *scene)
 	vars.on_refresh = null_biconsumer();
 	vars.on_finished = (t_bicon)bmp_finished;
 	vars.free_image = (t_bicon)bmp_free_image;
+	vars.camera = (t_camera *)lst_first(scene->cameras);
 	vars.on_exit = null_consumer();
-	((t_camera *)scene->cameras->first)->shadows = 1;
+	vars.camera->shadows = 1;
 	render(&vars);
 	exit_minirt(&vars, NULL, NULL, EXIT_SUCCESS);
 }

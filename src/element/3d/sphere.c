@@ -71,6 +71,6 @@ t_object	*new_sphere(float diametre, t_vector3 position, t_color color)
 			(t_bipre)collides_sphere);
 	if (!object)
 		return (NULL);
-	object->data.sphere.radius = diametre / 2;
+	object->data.sphere.radius = diametre * 0.5;
 	return (object);
 }

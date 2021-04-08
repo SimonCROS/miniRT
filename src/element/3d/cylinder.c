@@ -83,12 +83,12 @@ t_object	*new_cylinder(float *attrs, t_vector3 pos, t_vector3 rot,
 	t_vector3	pos2;
 	t_object	*object;
 
-	pos1 = vec3_subv(pos, vec3_muld(rot, attrs[1] / 2));
-	pos2 = vec3_addv(pos, vec3_muld(rot, attrs[1] / 2));
+	pos1 = vec3_subv(pos, vec3_muld(rot, attrs[1] * 0.5));
+	pos2 = vec3_addv(pos, vec3_muld(rot, attrs[1] * 0.5));
 	object = new_default_object(pos1, rot, color, (t_bipre)collides_cylinder);
 	if (!object)
 		return (NULL);
-	object->data.cylinder.radius = attrs[0] / 2;
+	object->data.cylinder.radius = attrs[0] * 0.5;
 	object->data.cylinder.position2 = pos2;
 	return (object);
 }
