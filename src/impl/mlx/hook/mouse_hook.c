@@ -22,7 +22,7 @@ int	mouse_pressed_hook(int b, int x, int y, t_vars *vars)
 			vars->scroll_direction = -1;
 		else if (b == 5)
 			vars->scroll_direction = 1;
-		// TODO onscroll
+		on_scroll(vars, vars->scroll_direction);
 	}
 	return (1);
 }

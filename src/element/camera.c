@@ -50,17 +50,17 @@ void	reload_camera(t_camera *camera)
 {
 	static t_vector3	up = (t_vector3){0, 1, 0};
 
-	camera->right = vec3_crossv(camera->direction, up);
 	camera->flat = camera->direction;
 	camera->flat.y = 0;
 	camera->flat = vec3_normalize(camera->flat);
-	if (!vec3_length_squared(camera->right))
-		camera->right = vec3_new(1, 0, 0);
-	camera->up = vec3_crossv(camera->direction, camera->right);
-	if (!vec3_length_squared(camera->up))
-		camera->up = vec3_new(1, 0, 0);
 	if (!vec3_length_squared(camera->flat))
 		camera->flat = vec3_new(0, 0, 1);
+	camera->right = vec3_normalize(vec3_crossv(camera->direction, up));
+	if (!vec3_length_squared(camera->right))
+		camera->right = vec3_new(1, 0, 0);
+	camera->up = vec3_normalize(vec3_crossv(camera->direction, camera->right));
+	if (!vec3_length_squared(camera->up))
+		camera->up = vec3_new(1, 0, 0);
 	camera->direction = vec3_normalize(camera->direction);
 	camera->c2w = look_at(vec3_new(0, 0, 0), camera->direction);
 	camera->w2c = mat44_inverse(camera->c2w);

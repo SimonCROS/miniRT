@@ -118,6 +118,7 @@ int			close_hook(t_vars *vars);
 /*== Events ==*/
 
 int			on_close(t_vars *vars);
+int			on_scroll(t_vars *vars, int direction);
 int			on_move(t_vars *vars, t_move_type type);
 int			on_drag(t_vars *vars, t_click_type type);
 int			on_click(t_vars *vars, t_click_type type);
