@@ -5,13 +5,33 @@
 
 #include "tpool.h"
 
-static void	load_triangles(t_vars *vars, t_camera *camera, t_scene *scene)
+static void	render_triangles(t_vars *vars, t_scene *scene, t_vector3 start,
+	t_vector3 end)
 {
 	t_iterator	obj_iterator;
 
 	obj_iterator = iterator_new(scene->triangles);
 	while (iterator_has_next(&obj_iterator))
-		project(vars, iterator_next(&obj_iterator), scene, camera);
+		project(vars, iterator_next(&obj_iterator), scene, start, end);
+}
+
+static void	*triangle_thread(t_thread_data *data, int *chunk)
+{
+	t_options	*params;
+	int			chunk_x;
+	int			chunk_y;
+	int			ratio;
+
+	params = data->scene->render;
+	ratio = (int)ceilf(params->width / (float)params->chunk_width);
+	chunk_x = *chunk % ratio * params->chunk_width;
+	chunk_y = *chunk / ratio * params->chunk_height;
+	render_triangles(data->vars, data->scene, vec3_new(chunk_x, chunk_y, 0),
+		vec3_new(
+			fminf(chunk_x + params->chunk_width, params->width),
+			fminf(chunk_y + params->chunk_height, params->height), 0)
+		);
+	return (NULL);
 }
 
 static void	render3(t_vars *vars, t_tpool *pool, t_thread_data *data,
@@ -22,8 +42,31 @@ static void	render3(t_vars *vars, t_tpool *pool, t_thread_data *data,
 	chunk = 0;
 	if (data->camera->shadows)
 		vars->on_refresh(vars, data->camera->render);
-	load_triangles(vars, data->camera, data->scene);
-	vars->on_refresh(vars, data->camera->render);
+	if (data->scene->triangles->size)
+	{
+		if (data->camera->show_triangles)
+			render_triangles(vars, data->scene,
+				vec3_new(0, 0, 0),
+				vec3_new(data->scene->render->width,
+					data->scene->render->height, 0));
+		else
+		{
+			pthread_mutex_init(&(data->mutex_flush), NULL);
+			while (chunk < data->chunks)
+			{
+				chunks[chunk] = chunk;
+				if (!tpool_add_work(pool, (t_bifun)triangle_thread, data, chunks + chunk))
+				{
+					perror("Error\nAn error occurred while starting rendering");
+					exit_minirt(vars, pool, chunks, EXIT_FAILURE);
+				}
+				chunk++;
+			}
+			tpool_set_name(pool, "CHUNK_WORKER");
+			tpool_start(pool);
+			tpool_wait(pool);
+		}
+	}
 	if (data->scene->objects->size)
 	{
 		pthread_mutex_init(&(data->mutex_flush), NULL);
@@ -41,6 +84,7 @@ static void	render3(t_vars *vars, t_tpool *pool, t_thread_data *data,
 		tpool_start(pool);
 		tpool_wait(pool);
 	}
+	vars->on_refresh(vars, data->camera->render);
 	tpool_destroy(pool);
 	free(chunks);
 }

@@ -38,7 +38,6 @@ void	render_light(t_scene *scene, t_camera *camera, t_object *object,
 	int			illuminated;
 	float		light_distance2;
 
-	scene = get_scene();
 	ray->color = color_mul(object->color, *(scene->ambiant));
 	lightIterator = iterator_new(scene->lights);
 	while (iterator_has_next(&lightIterator))

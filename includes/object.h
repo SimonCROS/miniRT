@@ -93,7 +93,7 @@ int			collision(t_object *object, t_ray *ray);
 int			collides_caps(t_object *obj, t_ray *ray, t_vector3 base, int coll);
 
 void		project(t_vars *vars, t_object *triangle, t_scene *scene,
-				t_camera *camera);
+				t_vector3 min, t_vector3 max);
 
 void		render_light(t_scene *sc, t_camera *cam, t_object *obj, t_ray *ray);
 
