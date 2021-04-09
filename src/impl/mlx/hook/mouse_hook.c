@@ -4,23 +4,18 @@ int	mouse_pressed_hook(int b, int x, int y, t_vars *vars)
 {
 	if (!vars->camera || vars->camera->shadows)
 		return (0);
-	if (b < 4 && vars->click_type == CLICK_NONE)
+	if (b > 0 && b < 4 && vars->click_type == CLICK_NONE)
 	{
-		if (b == 1)
-			vars->click_type = CLICK_LEFT;
-		else if (b == 2)
-			vars->click_type = CLICK_RIGHT;
-		else if (b == 3)
-			vars->click_type = CLICK_MIDDLE;
+		vars->click_type = b;
 		vars->mouse_x_from = x;
 		vars->mouse_y_from = y;
 		on_click(vars, vars->click_type);
 	}
 	else
 	{
-		if (b == 4)
+		if (b == SCROLL_DOWN)
 			vars->scroll_direction = -1;
-		else if (b == 5)
+		else if (b == SCROLL_UP)
 			vars->scroll_direction = 1;
 		on_scroll(vars, vars->scroll_direction);
 	}
@@ -44,9 +39,7 @@ int	mouse_released_hook(int b, int x, int y, t_vars *vars)
 		return (0);
 	(void)x;
 	(void)y;
-	if ((b == 1 && vars->click_type == CLICK_LEFT)
-		|| (b == 2 && vars->click_type == CLICK_RIGHT)
-		|| (b == 3 && vars->click_type == CLICK_MIDDLE))
+	if (b > 0 && b < 4 && b == vars->click_type)
 	{
 		on_release_click(vars, vars->click_type);
 		vars->mouse_x_from = 0;

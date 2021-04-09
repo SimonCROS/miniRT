@@ -80,6 +80,11 @@ struct s_image
 	int		endian;
 };
 
+# ifdef __APPLE__
+
+#  define SCROLL_UP 5
+#  define SCROLL_DOWN 4
+
 enum e_click_type
 {
 	CLICK_NONE,
@@ -87,6 +92,19 @@ enum e_click_type
 	CLICK_RIGHT,
 	CLICK_MIDDLE
 };
+# else
+
+#  define SCROLL_UP 4
+#  define SCROLL_DOWN 5
+
+enum e_click_type
+{
+	CLICK_NONE,
+	CLICK_LEFT,
+	CLICK_MIDDLE,
+	CLICK_RIGHT
+};
+# endif
 
 t_image		*mlx_init_image(t_vars *vars, t_options *params);
 void		mlx_set_pixel(t_image *image, int x, int y, t_color color);
