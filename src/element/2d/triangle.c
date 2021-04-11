@@ -104,7 +104,6 @@ void	project(t_vars *vars, t_object *triangle, t_scene *scene, t_vector3 min, t_
 	s2 = convert_to_raster(scene->render, camera, triangle->data.triangle.p3);
 	if (s0.z < 0 && s1.z < 0 && s2.z < 0)
 		return ;
-
 	if (camera->show_triangles)
 	{
 		int	w;
@@ -135,14 +134,14 @@ void	project(t_vars *vars, t_object *triangle, t_scene *scene, t_vector3 min, t_
 		max_raster.y = ceilf(fmaxf3(s0.y, s1.y, s2.y));
 		min_raster.x = fmaxf(min_raster.x, min.x);
 		min_raster.y = fmaxf(min_raster.y, min.y);
-		max_raster.x = fminf(max_raster.x, max.x - 1);
-		max_raster.y = fminf(max_raster.y, max.y - 1);
+		max_raster.x = fminf(max_raster.x, max.x);
+		max_raster.y = fminf(max_raster.y, max.y);
 
 		x = min_raster.x;
-		while (x <= max_raster.x)
+		while (x <= max_raster.x - 1)
 		{
 			y = min_raster.y;
-			while (y <= max_raster.y)
+			while (y <= max_raster.y - 1)
 			{
 				buf_z = get_z_buffer_value(camera->z_buffer, x, y, scene->render->width);
 				ray = compute_ray(scene->render, camera, x, y);

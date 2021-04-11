@@ -21,9 +21,9 @@ int	on_drag(t_vars *vars, t_click_type type)
 	if (type == CLICK_LEFT)
 	{
 		camera->direction = vec3_rotate_axis(camera->direction, camera->up,
-				M_PI / 300 * move_x);
+				M_PI / 800 * -move_x);
 		camera->direction = vec3_rotate_axis(camera->direction, camera->right,
-				M_PI / 300 * -move_y);
+				M_PI / 800 * move_y);
 		reload_camera(camera);
 	}
 	vars->mouse_x_from = vars->mouse_x;
