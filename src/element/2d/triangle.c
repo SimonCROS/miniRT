@@ -67,19 +67,17 @@ static t_vector3	convert_to_raster(t_options *render, t_camera *camera,
 	t_vector3	vertexNDC;
 	t_vector3	vertexRaster;
 
+	printf("% .2f % .2f % .2f\n", vertexWorld.x, vertexWorld.y, vertexWorld.z);
 	vertexView = vec3_normalize(vec3_subv(camera->position, vertexWorld));
-	printf("% .2f % .2f % .2f\n", vertexView.x, vertexView.y, vertexView.z);
 	vertexCamera = mat44_mul_vec(camera->w2c, vertexView);
 	printf("% .2f % .2f % .2f\n", vertexCamera.x, vertexCamera.y, vertexCamera.z);
-	vertexView = mat44_mul_vec(camera->c2w, vertexCamera);
-	printf("% .2f % .2f % .2f\n", vertexView.x, vertexView.y, vertexView.z);
 	vertexRaster.z = vertexCamera.z;
 	vertexCamera.z = fabsf(vertexCamera.z);
 	vertexScreen.x = -vertexCamera.x / camera->hlen / (render->width / (float) render->height) / vertexCamera.z;
 	vertexScreen.y = -vertexCamera.y / camera->hlen / vertexCamera.z;
-	printf("% .2f % .2f\n", vertexScreen.x, vertexScreen.y);
 	vertexNDC.x = (vertexScreen.x + 1) * 0.5;
 	vertexNDC.y = (vertexScreen.y - 1) * -0.5;
+	printf("% .2f % .2f\n", vertexNDC.x, vertexNDC.y);
 	vertexRaster.x = vertexNDC.x * render->width - 0.5;
 	vertexRaster.y = vertexNDC.y * render->height - 0.5;
 	return (vertexRaster);

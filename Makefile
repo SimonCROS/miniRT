@@ -1,5 +1,5 @@
 NAME					:= miniRT
-LINUX					:= 0
+LINUX					:= 1
 
 override HEADERS		:= includes/minirt.h
 
