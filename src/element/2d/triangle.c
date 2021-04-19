@@ -61,19 +61,23 @@ static int	collides_triangle(t_object *object, t_ray *ray)
 static t_vector3	convert_to_raster(t_options *render, t_camera *camera,
 	t_vector3 vertexWorld)
 {
-	t_vector3		vertexView;
-	t_vector3		vertexCamera;
-	t_vector3		vertexScreen;
-	t_vector3		vertexNDC;
-	t_vector3		vertexRaster;
+	t_vector3	vertexView;
+	t_vector3	vertexCamera;
+	t_vector3	vertexScreen;
+	t_vector3	vertexNDC;
+	t_vector3	vertexRaster;
 
 	vertexView = vec3_normalize(vec3_subv(camera->position, vertexWorld));
+	printf("% .2f % .2f % .2f\n", vertexView.x, vertexView.y, vertexView.z);
 	vertexCamera = mat44_mul_vec(camera->w2c, vertexView);
+	printf("% .2f % .2f % .2f\n", vertexCamera.x, vertexCamera.y, vertexCamera.z);
+	vertexView = mat44_mul_vec(camera->c2w, vertexCamera);
+	printf("% .2f % .2f % .2f\n", vertexView.x, vertexView.y, vertexView.z);
 	vertexRaster.z = vertexCamera.z;
 	vertexCamera.z = fabsf(vertexCamera.z);
-	vertexScreen.x = -vertexCamera.x / camera->hlen
-		/ (render->width / (float) render->height) / vertexCamera.z;
+	vertexScreen.x = -vertexCamera.x / camera->hlen / (render->width / (float) render->height) / vertexCamera.z;
 	vertexScreen.y = -vertexCamera.y / camera->hlen / vertexCamera.z;
+	printf("% .2f % .2f\n", vertexScreen.x, vertexScreen.y);
 	vertexNDC.x = (vertexScreen.x + 1) * 0.5;
 	vertexNDC.y = (vertexScreen.y - 1) * -0.5;
 	vertexRaster.x = vertexNDC.x * render->width - 0.5;
@@ -100,8 +104,11 @@ void	project(t_vars *vars, t_object *triangle, t_scene *scene, t_vector3 min, t_
 
 	camera = vars->camera;
 	s0 = convert_to_raster(scene->render, camera, triangle->data.triangle.p1);
+	printf("---\n");
 	s1 = convert_to_raster(scene->render, camera, triangle->data.triangle.p2);
+	printf("---\n");
 	s2 = convert_to_raster(scene->render, camera, triangle->data.triangle.p3);
+	printf("===\n");
 	if (s0.z < 0 && s1.z < 0 && s2.z < 0)
 		return ;
 	if (camera->show_triangles)
