@@ -69,7 +69,6 @@ static t_vector3	convert_to_raster(t_options *render, t_camera *camera,
 
 	vertexView = vec3_normalize(vec3_subv(camera->position, vertexWorld));
 	vertexCamera = mat44_mul_vec(camera->w2c, vertexView);
-	vertexView = mat44_mul_vec(camera->c2w, vertexCamera);
 	vertexRaster.z = vertexCamera.z;
 	vertexCamera.z = fabsf(vertexCamera.z);
 	vertexScreen.x = -vertexCamera.x / camera->hlen / (render->width / (float) render->height) / vertexCamera.z;
