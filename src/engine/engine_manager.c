@@ -5,6 +5,8 @@
 
 #include "tpool.h"
 
+extern int num;
+
 static void	render_triangles(t_vars *vars, t_scene *scene, t_vector3 start,
 	t_vector3 end)
 {
@@ -14,6 +16,7 @@ static void	render_triangles(t_vars *vars, t_scene *scene, t_vector3 start,
 	while (iterator_has_next(&obj_iterator))
 		project(vars, iterator_next(&obj_iterator), scene, start, end);
 }
+
 
 static void	*triangle_thread(t_thread_data *data, int *chunk)
 {

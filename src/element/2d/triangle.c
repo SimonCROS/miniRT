@@ -128,23 +128,19 @@ void	project(t_vars *vars, t_object *triangle, t_scene *scene, t_vector3 min, t_
 		t_vector3	min_raster;
 		t_vector3	max_raster;
 
-		if (s0.z < 0 || s1.z < 0 || s2.z < 0)
+		min_raster.x = fminf3(s0.x, s1.x, s2.x);
+		min_raster.y = fminf3(s0.y, s1.y, s2.y);
+		max_raster.x = ceilf(fmaxf3(s0.x, s1.x, s2.x));
+		max_raster.y = ceilf(fmaxf3(s0.y, s1.y, s2.y));
+		min_raster.x = fmaxf(min_raster.x, min.x);
+		min_raster.y = fmaxf(min_raster.y, min.y);
+		max_raster.x = fminf(max_raster.x, max.x);
+		max_raster.y = fminf(max_raster.y, max.y);
+		if ((s0.z < 0 || s1.z < 0 || s2.z < 0) && camera->shadows)
 		{
 			min_raster = min;
 			max_raster = max;
 		}
-		else
-		{
-			min_raster.x = fminf3(s0.x, s1.x, s2.x);
-			min_raster.y = fminf3(s0.y, s1.y, s2.y);
-			max_raster.x = ceilf(fmaxf3(s0.x, s1.x, s2.x));
-			max_raster.y = ceilf(fmaxf3(s0.y, s1.y, s2.y));
-			min_raster.x = fmaxf(min_raster.x, min.x);
-			min_raster.y = fmaxf(min_raster.y, min.y);
-			max_raster.x = fminf(max_raster.x, max.x);
-			max_raster.y = fminf(max_raster.y, max.y);
-		}
-
 		x = min_raster.x;
 		while (x <= max_raster.x - 1)
 		{
