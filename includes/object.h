@@ -20,6 +20,7 @@ typedef struct s_circle
 typedef struct s_sphere
 {
 	float			radius;
+	t_quadric		quadric;
 }	t_sphere;
 
 typedef struct s_cylinder
