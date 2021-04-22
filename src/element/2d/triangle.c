@@ -68,16 +68,12 @@ static t_vector3	convert_to_raster(t_options *render, t_camera *camera,
 	t_vector3	vertexRaster;
 
 	vertexView = vec3_normalize(vec3_subv(camera->position, vertexWorld));
-	printf("% .2f % .2f % .2f\n", vertexView.x, vertexView.y, vertexView.z);
 	vertexCamera = mat44_mul_vec(camera->w2c, vertexView);
-	printf("% .2f % .2f % .2f\n", vertexCamera.x, vertexCamera.y, vertexCamera.z);
 	vertexView = mat44_mul_vec(camera->c2w, vertexCamera);
-	printf("% .2f % .2f % .2f\n", vertexView.x, vertexView.y, vertexView.z);
 	vertexRaster.z = vertexCamera.z;
 	vertexCamera.z = fabsf(vertexCamera.z);
 	vertexScreen.x = -vertexCamera.x / camera->hlen / (render->width / (float) render->height) / vertexCamera.z;
 	vertexScreen.y = -vertexCamera.y / camera->hlen / vertexCamera.z;
-	printf("% .2f % .2f\n", vertexScreen.x, vertexScreen.y);
 	vertexNDC.x = (vertexScreen.x + 1) * 0.5;
 	vertexNDC.y = (vertexScreen.y - 1) * -0.5;
 	vertexRaster.x = vertexNDC.x * render->width - 0.5;
@@ -104,11 +100,8 @@ void	project(t_vars *vars, t_object *triangle, t_scene *scene, t_vector3 min, t_
 
 	camera = vars->camera;
 	s0 = convert_to_raster(scene->render, camera, triangle->data.triangle.p1);
-	printf("---\n");
 	s1 = convert_to_raster(scene->render, camera, triangle->data.triangle.p2);
-	printf("---\n");
 	s2 = convert_to_raster(scene->render, camera, triangle->data.triangle.p3);
-	printf("===\n");
 	if (s0.z < 0 && s1.z < 0 && s2.z < 0)
 		return ;
 	if (camera->show_triangles)
@@ -135,14 +128,22 @@ void	project(t_vars *vars, t_object *triangle, t_scene *scene, t_vector3 min, t_
 		t_vector3	min_raster;
 		t_vector3	max_raster;
 
-		min_raster.x = fminf3(s0.x, s1.x, s2.x);
-		min_raster.y = fminf3(s0.y, s1.y, s2.y);
-		max_raster.x = ceilf(fmaxf3(s0.x, s1.x, s2.x));
-		max_raster.y = ceilf(fmaxf3(s0.y, s1.y, s2.y));
-		min_raster.x = fmaxf(min_raster.x, min.x);
-		min_raster.y = fmaxf(min_raster.y, min.y);
-		max_raster.x = fminf(max_raster.x, max.x);
-		max_raster.y = fminf(max_raster.y, max.y);
+		if (s0.z < 0 || s1.z < 0 || s2.z < 0)
+		{
+			min_raster = min;
+			max_raster = max;
+		}
+		else
+		{
+			min_raster.x = fminf3(s0.x, s1.x, s2.x);
+			min_raster.y = fminf3(s0.y, s1.y, s2.y);
+			max_raster.x = ceilf(fmaxf3(s0.x, s1.x, s2.x));
+			max_raster.y = ceilf(fmaxf3(s0.y, s1.y, s2.y));
+			min_raster.x = fmaxf(min_raster.x, min.x);
+			min_raster.y = fmaxf(min_raster.y, min.y);
+			max_raster.x = fminf(max_raster.x, max.x);
+			max_raster.y = fminf(max_raster.y, max.y);
+		}
 
 		x = min_raster.x;
 		while (x <= max_raster.x - 1)
