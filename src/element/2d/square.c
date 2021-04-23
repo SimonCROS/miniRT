@@ -26,11 +26,9 @@ static int	orient(t_vector3 a, t_vector3 b, t_vector3 c, t_vector3 n)
 	int	result;
 
 	result = vec3_dotv(vec3_crossv(vec3_subv(b, a), vec3_subv(c, a)), n);
-	if (result > 0)
-		return (1);
 	if (result < 0)
 		return (-1);
-	return (0);
+	return (result > 0);
 }
 
 int	collides_square(t_object *plan, t_ray *ray)
