@@ -64,7 +64,7 @@ static int	intersect_side(t_object *obj, t_ray *ray)
 	return (TRUE);
 }
 
-static int	collides_cylinder(t_object *obj, t_ray *ray)
+int	collides_cylinder(t_object *obj, t_ray *ray)
 {
 	int			ret;
 
@@ -79,16 +79,36 @@ static int	collides_cylinder(t_object *obj, t_ray *ray)
 t_object	*new_cylinder(float *attrs, t_vector3 pos, t_vector3 rot,
 	t_color color)
 {
-	t_vector3	pos1;
-	t_vector3	pos2;
+	// t_vector3	pos1;
+	// t_vector3	pos2;
 	t_object	*object;
+	float		b;
+	float		c;
 
-	pos1 = vec3_subv(pos, vec3_muld(rot, attrs[1] * 0.5));
-	pos2 = vec3_addv(pos, vec3_muld(rot, attrs[1] * 0.5));
-	object = new_default_object(pos1, rot, color, (t_bipre)collides_cylinder);
+	// pos1 = vec3_subv(pos, vec3_muld(rot, attrs[1] * 0.5));
+	// pos2 = vec3_addv(pos, vec3_muld(rot, attrs[1] * 0.5));
+	object = new_default_quadric(color);
 	if (!object)
 		return (NULL);
-	object->data.cylinder.radius = attrs[0] * 0.5;
-	object->data.cylinder.position2 = pos2;
+	b = pow(rot.x, 2) + pow(rot.y, 2);
+	c = pow(rot.x, 2) + pow(rot.z, 2);
+	object->data.quadric = (t_quadric){
+		.a = pow(rot.z, 2) + pow(rot.y, 2),
+		.b = b,
+		.c = c,
+		.d = -1 * rot.z * rot.y,
+		.e = -1 * rot.x * rot.y,
+		.f = -1 * rot.x * rot.z,
+		.g = 2 * (rot.x * rot.z * pos.z - b * pos.x + rot.x * rot.y * pos.y),
+		.h = 2 * (rot.x * rot.z * pos.x - b * pos.z + rot.z * rot.y * pos.y),
+		.i = 2 * (rot.x * rot.y * pos.x + rot.z * rot.y * pos.z - c * pos.y),
+		.j = (pow(pos.z, 2) + pow(pos.y, 2))
+		* pow(rot.x, 2) + (pow(pos.x, 2) + pow(pos.y, 2))
+		* pow(rot.z, 2) + (pow(pos.x, 2) + pow(pos.z, 2))
+		* pow(rot.y, 2) - 2 * (rot.z * rot.y * pos.z
+			* pos.y + rot.x * rot.y * pos.x
+			* pos.y + rot.x * rot.z * pos.x
+			* pos.z) - pow(attrs[0] * 0.5, 2),
+	};
 	return (object);
 }

@@ -12,21 +12,11 @@ typedef struct s_light
 	t_color		color;
 }	t_light;
 
-typedef struct s_circle
-{
-	float			radius;
-}	t_circle;
-
-typedef struct s_sphere
-{
-	float			radius;
-	t_quadric		quadric;
-}	t_sphere;
-
 typedef struct s_cylinder
 {
 	t_vector3		position2;
 	float			radius;
+	t_quadric		quadric;
 }	t_cylinder;
 
 typedef struct s_square
@@ -57,8 +47,7 @@ struct s_object
 	union u_object_data
 	{
 		t_square		square;
-		t_sphere		sphere;
-		t_circle		circle;
+		t_quadric		quadric;
 		t_cylinder		cylinder;
 		t_triangle		triangle;
 	}				data;
@@ -74,6 +63,7 @@ t_object	*new_circle(float diametre, t_vector3 position, t_vector3 rotation,
 				t_color color);
 t_object	*new_cylinder(float *attrs, t_vector3 position, t_vector3 rotation,
 				t_color color);
+t_object	*new_default_quadric(t_color color);
 t_object	*new_default_plane(t_vector3 position, t_vector3 rotation,
 				t_color color, t_bipredicate collides);
 t_object	*new_default_object(t_vector3 position, t_vector3 rotation,
@@ -97,5 +87,7 @@ void		project(t_vars *vars, t_object *triangle, t_scene *scene,
 				t_vector3 min, t_vector3 max);
 
 void		render_light(t_scene *sc, t_camera *cam, t_object *obj, t_ray *ray);
+
+int			collides_quadric(t_object *object, t_ray *ray);
 
 #endif
