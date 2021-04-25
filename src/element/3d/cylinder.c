@@ -76,39 +76,63 @@ int	collides_cylinder(t_object *obj, t_ray *ray)
 	return (ret);
 }
 
-t_object	*new_cylinder(float *attrs, t_vector3 pos, t_vector3 rot,
-	t_color color)
+void	a(t_object *cp, t_ray *r, float *current_z)
+{
+	t_vector3	eye;
+	float		a[3];
+	float		t[2];
+	float		delta;
+
+	eye = vec3_subv(r->origin, cp->position);
+	a[0] = vec3_dotv(r->direction, r->direction)
+		- pow(vec3_dotv(r->direction, cp->rotation), 2);
+	a[1] = 2 * (vec3_dotv(r->direction, eye) - vec3_dotv(r->direction,
+				cp->rotation) * vec3_dotv(eye, cp->rotation));
+	a[2] = vec3_dotv(eye, eye) - pow(vec3_dotv(eye, cp->rotation), 2)
+		- cp->data.cylinder.radius * cp->data.cylinder.radius;
+	delta = sqrt((a[1] * a[1]) - (4 * a[0] * a[2]));
+}
+
+t_object	*new_cylinder(float *attrs, t_vector3 p, t_vector3 r, t_color color)
 {
 	// t_vector3	pos1;
 	// t_vector3	pos2;
 	t_object	*object;
-	float		b;
-	float		c;
+	// float		b;
+	// float		c;
 
 	// pos1 = vec3_subv(pos, vec3_muld(rot, attrs[1] * 0.5));
 	// pos2 = vec3_addv(pos, vec3_muld(rot, attrs[1] * 0.5));
 	object = new_default_quadric(color);
+	(void)r;
 	if (!object)
 		return (NULL);
-	b = pow(rot.x, 2) + pow(rot.y, 2);
-	c = pow(rot.x, 2) + pow(rot.z, 2);
 	object->data.quadric = (t_quadric){
-		.a = pow(rot.z, 2) + pow(rot.y, 2),
-		.b = b,
-		.c = c,
-		.d = -1 * rot.z * rot.y,
-		.e = -1 * rot.x * rot.y,
-		.f = -1 * rot.x * rot.z,
-		.g = 2 * (rot.x * rot.z * pos.z - b * pos.x + rot.x * rot.y * pos.y),
-		.h = 2 * (rot.x * rot.z * pos.x - b * pos.z + rot.z * rot.y * pos.y),
-		.i = 2 * (rot.x * rot.y * pos.x + rot.z * rot.y * pos.z - c * pos.y),
-		.j = (pow(pos.z, 2) + pow(pos.y, 2))
-		* pow(rot.x, 2) + (pow(pos.x, 2) + pow(pos.y, 2))
-		* pow(rot.z, 2) + (pow(pos.x, 2) + pow(pos.z, 2))
-		* pow(rot.y, 2) - 2 * (rot.z * rot.y * pos.z
-			* pos.y + rot.x * rot.y * pos.x
-			* pos.y + rot.x * rot.z * pos.x
-			* pos.z) - pow(attrs[0] * 0.5, 2),
+		.a = 1,
+		.c = 1,
+		.g = -2 * p.x,
+		.i = -2 * p.z,
+		.j = pow(p.x, 2) + pow(p.z, 2) - pow(attrs[0] * 0.5, 2)
 	};
+	// b = pow(rot.x, 2) + pow(rot.y, 2);
+	// c = pow(rot.x, 2) + pow(rot.z, 2);
+	// object->data.quadric = (t_quadric){
+	// 	.a = pow(rot.z, 2) + pow(rot.y, 2),
+	// 	.b = b,
+	// 	.c = c,
+	// 	.d = -1 * rot.z * rot.y,
+	// 	.e = -1 * rot.x * rot.y,
+	// 	.f = -1 * rot.x * rot.z,
+	// 	.g = 2 * (rot.x * rot.z * pos.z - b * pos.x + rot.x * rot.y * pos.y),
+	// 	.h = 2 * (rot.x * rot.z * pos.x - b * pos.z + rot.z * rot.y * pos.y),
+	// 	.i = 2 * (rot.x * rot.y * pos.x + rot.z * rot.y * pos.z - c * pos.y),
+	// 	.j = (pow(pos.z, 2) + pow(pos.y, 2))
+	// 	* pow(rot.x, 2) + (pow(pos.x, 2) + pow(pos.y, 2))
+	// 	* pow(rot.z, 2) + (pow(pos.x, 2) + pow(pos.z, 2))
+	// 	* pow(rot.y, 2) - 2 * (rot.z * rot.y * pos.z
+	// 		* pos.y + rot.x * rot.y * pos.x
+	// 		* pos.y + rot.x * rot.z * pos.x
+	// 		* pos.z) - pow(attrs[0] * 0.5, 2),
+	// };
 	return (object);
 }
