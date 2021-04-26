@@ -1,6 +1,17 @@
 #include "minirt.h"
 #include "object.h"
 
+int	collides_quadric(t_object *object, t_ray *ray)
+{
+	ray->length = resolve_quad(&object->quadric, ray->origin,
+			ray->direction);
+	if (!ray->length)
+		return (FALSE);
+	ray->phit = vec3_addv(ray->origin, vec3_muld(ray->direction, ray->length));
+	ray->nhit = resolve_quad_norm(&object->quadric, ray->phit);
+	return (TRUE);
+}
+
 int	intersect_plane(t_vector3 pos, t_vector3 rot, t_ray *ray)
 {
 	float		dot;
@@ -13,15 +24,23 @@ int	intersect_plane(t_vector3 pos, t_vector3 rot, t_ray *ray)
 		ray->length = vec3_dotv(p0l0, rot) / dot;
 		return (ray->length >= 0);
 	}
-	return (0);
+	return (FALSE);
 }
 
 int	collision(t_object *object, t_ray *ray)
 {
 	t_vector3	p;
 
-	if (!object->is_plane)
+	if (!object->is_plane && !object->is_quadric)
 		return (object->collides(object, ray));
+	else if (object->is_quadric)
+	{
+		if (!collides_quadric(object, ray))
+			return (FALSE);
+		if (!object->collides)
+			return (TRUE);
+		return (object->collides(object, ray));
+	}
 	else if (intersect_plane(object->position, object->rotation, ray))
 	{
 		p = vec3_muld(ray->direction, ray->length);
@@ -31,8 +50,8 @@ int	collision(t_object *object, t_ray *ray)
 		if (vec3_dotv(object->rotation, ray->direction) > 0)
 			ray->nhit = vec3_negate(ray->nhit);
 		if (!object->collides)
-			return (1);
+			return (TRUE);
 		return (object->collides(object, ray));
 	}
-	return (0);
+	return (FALSE);
 }

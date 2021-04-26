@@ -18,32 +18,9 @@ t_object	*parse_cylinder(t_list *data, t_vector3 origin)
 		|| !float_deserialize((char *)lst_get(data, 4), &(attr[1]))
 		|| !col_deserialize((char *)lst_get(data, 5), &color))
 		return (NULL);
-	attr[0] = fabsf(attr[0]);
+	attr[0] = fabsf(attr[0]) * 0.5;
 	attr[1] = fabsf(attr[1]);
 	return (new_cylinder(attr, vec3_addv(pos, origin), rot, color));
-}
-
-static int	intersect_cylinder(t_object *cp, t_ray *r, float *current_z)
-{
-	t_vector3	eye;
-	float		a[3];
-	float		t[2];
-	float		delta;
-
-	eye = vec3_subv(r->origin, cp->position);
-	a[0] = vec3_dotv(r->direction, r->direction)
-		- pow(vec3_dotv(r->direction, cp->rotation), 2);
-	a[1] = 2 * (vec3_dotv(r->direction, eye) - vec3_dotv(r->direction,
-				cp->rotation) * vec3_dotv(eye, cp->rotation));
-	a[2] = vec3_dotv(eye, eye) - pow(vec3_dotv(eye, cp->rotation), 2)
-		- cp->data.cylinder.radius * cp->data.cylinder.radius;
-	delta = sqrt((a[1] * a[1]) - (4 * a[0] * a[2]));
-	if (delta < 0)
-		return (0);
-	t[0] = (-a[1] - (delta)) / (2 * a[0]);
-	t[1] = (-a[1] + (delta)) / (2 * a[0]);
-	*(current_z) = fminf(t[0], t[1]);
-	return (*current_z > 0);
 }
 
 static int	intersect_side(t_object *obj, t_ray *ray)
@@ -64,75 +41,40 @@ static int	intersect_side(t_object *obj, t_ray *ray)
 	return (TRUE);
 }
 
-int	collides_cylinder(t_object *obj, t_ray *ray)
+static int	collides_cylinder(t_object *obj, t_ray *ray)
 {
 	int			ret;
 
-	if (!intersect_cylinder(obj, ray, &(ray->length)))
-		return (FALSE);
 	ret = intersect_side(obj, ray);
 	ret = collides_caps(obj, ray, obj->position, ret) || ret;
 	ret = collides_caps(obj, ray, obj->data.cylinder.position2, ret) || ret;
 	return (ret);
 }
 
-void	a(t_object *cp, t_ray *r, float *current_z)
+t_object	*new_cylinder(float *s, t_vector3 p, t_vector3 v, t_color color)
 {
-	t_vector3	eye;
-	float		a[3];
-	float		t[2];
-	float		delta;
-
-	eye = vec3_subv(r->origin, cp->position);
-	a[0] = vec3_dotv(r->direction, r->direction)
-		- pow(vec3_dotv(r->direction, cp->rotation), 2);
-	a[1] = 2 * (vec3_dotv(r->direction, eye) - vec3_dotv(r->direction,
-				cp->rotation) * vec3_dotv(eye, cp->rotation));
-	a[2] = vec3_dotv(eye, eye) - pow(vec3_dotv(eye, cp->rotation), 2)
-		- cp->data.cylinder.radius * cp->data.cylinder.radius;
-	delta = sqrt((a[1] * a[1]) - (4 * a[0] * a[2]));
-}
-
-t_object	*new_cylinder(float *attrs, t_vector3 p, t_vector3 r, t_color color)
-{
-	// t_vector3	pos1;
-	// t_vector3	pos2;
 	t_object	*object;
-	// float		b;
-	// float		c;
 
-	// pos1 = vec3_subv(pos, vec3_muld(rot, attrs[1] * 0.5));
-	// pos2 = vec3_addv(pos, vec3_muld(rot, attrs[1] * 0.5));
-	object = new_default_quadric(color);
-	(void)r;
+	object = new_default_quadric(vec3_subv(p, vec3_muld(v, s[1] * 0.5)), v,
+			color, (t_bipre)collides_cylinder);
 	if (!object)
 		return (NULL);
-	object->data.quadric = (t_quadric){
-		.a = 1,
-		.c = 1,
-		.g = -2 * p.x,
-		.i = -2 * p.z,
-		.j = pow(p.x, 2) + pow(p.z, 2) - pow(attrs[0] * 0.5, 2)
+	object->data.cylinder.radius = s[0];
+	object->data.cylinder.position2 = vec3_addv(p, vec3_muld(v, s[1] * 0.5));
+	object->quadric = (t_quadric){
+		.a = v.y * v.y + v.z * v.z,
+		.b = v.x * v.x + v.z * v.z,
+		.c = v.y * v.y + v.x * v.x,
+		.d = -2 * v.x * v.y, .e = -2 * v.x * v.z, .f = -2 * v.y * v.z,
+		.g = 2 * (v.z * (v.x * p.z - v.z * p.x) + v.y * (v.x * p.y - v.y * p.x)
+			),
+		.h = 2 * (v.x * (v.y * p.x - v.x * p.y) + v.z * (v.y * p.z - v.z * p.y)
+			),
+		.i = 2 * (v.x * (v.z * p.x - v.x * p.z) + v.y * (v.z * p.y - v.y * p.z)
+			),
+		.j = v.x * v.x * (p.y * p.y + p.z * p.z) + v.y * v.y * (p.x * p.x + p.z
+			* p.z) + v.z * v.z * (p.x * p.x + p.y * p.y) - 2 * (v.x * v.y * p.x
+			* p.y + v.x * v.z * p.x * p.z + v.y * v.z * p.y * p.z) - s[0] * s[0]
 	};
-	// b = pow(rot.x, 2) + pow(rot.y, 2);
-	// c = pow(rot.x, 2) + pow(rot.z, 2);
-	// object->data.quadric = (t_quadric){
-	// 	.a = pow(rot.z, 2) + pow(rot.y, 2),
-	// 	.b = b,
-	// 	.c = c,
-	// 	.d = -1 * rot.z * rot.y,
-	// 	.e = -1 * rot.x * rot.y,
-	// 	.f = -1 * rot.x * rot.z,
-	// 	.g = 2 * (rot.x * rot.z * pos.z - b * pos.x + rot.x * rot.y * pos.y),
-	// 	.h = 2 * (rot.x * rot.z * pos.x - b * pos.z + rot.z * rot.y * pos.y),
-	// 	.i = 2 * (rot.x * rot.y * pos.x + rot.z * rot.y * pos.z - c * pos.y),
-	// 	.j = (pow(pos.z, 2) + pow(pos.y, 2))
-	// 	* pow(rot.x, 2) + (pow(pos.x, 2) + pow(pos.y, 2))
-	// 	* pow(rot.z, 2) + (pow(pos.x, 2) + pow(pos.z, 2))
-	// 	* pow(rot.y, 2) - 2 * (rot.z * rot.y * pos.z
-	// 		* pos.y + rot.x * rot.y * pos.x
-	// 		* pos.y + rot.x * rot.z * pos.x
-	// 		* pos.z) - pow(attrs[0] * 0.5, 2),
-	// };
 	return (object);
 }

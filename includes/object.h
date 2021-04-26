@@ -12,11 +12,15 @@ typedef struct s_light
 	t_color		color;
 }	t_light;
 
+typedef struct s_circle
+{
+	float			radius;
+}	t_circle;
+
 typedef struct s_cylinder
 {
 	t_vector3		position2;
 	float			radius;
-	t_quadric		quadric;
 }	t_cylinder;
 
 typedef struct s_square
@@ -43,11 +47,13 @@ struct s_object
 	t_vector3		position;
 	t_vector3		rotation;
 	int				is_plane;
+	int				is_quadric;
 	t_color			color;
+	t_quadric		quadric;
 	union u_object_data
 	{
+		t_circle		circle;
 		t_square		square;
-		t_quadric		quadric;
 		t_cylinder		cylinder;
 		t_triangle		triangle;
 	}				data;
@@ -59,11 +65,12 @@ t_object	*new_triangle(t_vector3 p1, t_vector3 p2, t_vector3 p3,
 				t_color color);
 t_object	*new_square(float width, t_vector3 position, t_vector3 rotation,
 				t_color color);
-t_object	*new_circle(float diametre, t_vector3 position, t_vector3 rotation,
+t_object	*new_circle(float radius, t_vector3 position, t_vector3 rotation,
 				t_color color);
 t_object	*new_cylinder(float *attrs, t_vector3 position, t_vector3 rotation,
 				t_color color);
-t_object	*new_default_quadric(t_color color);
+t_object	*new_default_quadric(t_vector3 pos, t_vector3 rot, t_color col,
+				t_bipredicate collides);
 t_object	*new_default_plane(t_vector3 position, t_vector3 rotation,
 				t_color color, t_bipredicate collides);
 t_object	*new_default_object(t_vector3 position, t_vector3 rotation,

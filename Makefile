@@ -1,5 +1,5 @@
 NAME					:= miniRT
-LINUX					:= 1
+LINUX					:= 0
 
 override HEADERS		:= includes/minirt.h
 
@@ -36,7 +36,6 @@ override SRCS	:=									\
 				parsing/gnl/get_next_line_utils.c	\
 				element/light.c						\
 				element/camera.c					\
-				element/quadric.c					\
 				element/2d/plane.c					\
 				element/3d/sphere.c					\
 				element/2d/square.c					\
