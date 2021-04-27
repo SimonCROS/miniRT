@@ -7,7 +7,7 @@ t_object	*parse_cylinder(t_list *data, t_vector3 origin)
 {
 	t_vector3	pos;
 	t_vector3	rot;
-	float		attr[3];
+	float		attr[2];
 	t_color		color;
 
 	if (!args_size(lst_first(data), data->size, 6))
@@ -18,34 +18,54 @@ t_object	*parse_cylinder(t_list *data, t_vector3 origin)
 		|| !float_deserialize((char *)lst_get(data, 4), &(attr[1]))
 		|| !col_deserialize((char *)lst_get(data, 5), &color))
 		return (NULL);
-	attr[0] = fabsf(attr[0]) * 0.5;
-	attr[1] = fabsf(attr[1]);
+	attr[0] *= 0.5;
 	return (new_cylinder(attr, vec3_addv(pos, origin), rot, color));
 }
 
-static int	intersect_side(t_object *obj, t_ray *ray)
+static int	intersect_base(t_vector3 pos, t_vector3 rot, t_ray *ray, float rad)
 {
-	t_ray		to_bot;
-	t_vector3	point;
+	t_vector3	v;
+	float		d2;
+	t_vector3	p;
 
-	ray->phit = vec3_addv(vec3_muld(ray->direction, ray->length), ray->origin);
-	to_bot.direction = obj->rotation;
-	to_bot.origin = ray->phit;
-	if (!intersect_plane(obj->data.cylinder.position2, obj->rotation, &to_bot))
-		return (FALSE);
-	to_bot.direction = vec3_negate(to_bot.direction);
-	if (!intersect_plane(obj->position, obj->rotation, &to_bot))
-		return (FALSE);
-	point = vec3_addv(vec3_muld(obj->rotation, to_bot.length), obj->position);
-	ray->nhit = vec3_normalize(vec3_subv(ray->phit, point));
-	return (TRUE);
+	if (intersect_plane(pos, rot, ray))
+	{
+		p = vec3_muld(ray->direction, ray->length);
+		p = vec3_addv(p, ray->origin);
+		ray->phit = p;
+		ray->nhit = rot;
+		if (vec3_dotv(rot, ray->direction) > 0)
+			ray->nhit = vec3_negate(ray->nhit);
+		v = vec3_subv(ray->phit, pos);
+		d2 = vec3_length_squared(v);
+		if (d2 <= rad * rad)
+			return (TRUE);
+	}
+	return (FALSE);
+}
+
+static int	collides_caps(t_object *obj, t_ray *ray, t_vector3 base, int collides)
+{
+	t_ray		tmp;
+
+	tmp = *ray;
+	tmp.length = INFINITY;
+	if (intersect_base(base, obj->rotation, &tmp, obj->data.cylinder.radius)
+		&& (!collides || tmp.length < ray->length))
+	{
+		*ray = tmp;
+		return (TRUE);
+	}
+	return (FALSE);
 }
 
 static int	collides_cylinder(t_object *obj, t_ray *ray)
 {
 	int			ret;
 
-	ret = intersect_side(obj, ray);
+// TO patch
+	ret = intersect_side(obj->position, obj->data.cylinder.position2,
+			obj->rotation, ray);
 	ret = collides_caps(obj, ray, obj->position, ret) || ret;
 	ret = collides_caps(obj, ray, obj->data.cylinder.position2, ret) || ret;
 	return (ret);

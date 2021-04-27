@@ -1,6 +1,20 @@
 #include "minirt.h"
 #include "object.h"
 
+int	intersect_side(t_vector3 top, t_vector3 bot, t_vector3 rot, t_ray *ray)
+{
+	t_ray		to_bot;
+
+	to_bot.direction = rot;
+	to_bot.origin = ray->phit;
+	if (!intersect_plane(bot, rot, &to_bot))
+		return (FALSE);
+	to_bot.direction = vec3_negate(to_bot.direction);
+	if (!intersect_plane(top, rot, &to_bot))
+		return (FALSE);
+	return (TRUE);
+}
+
 int	collides_quadric(t_object *object, t_ray *ray)
 {
 	ray->length = resolve_quad(&object->quadric, ray->origin,

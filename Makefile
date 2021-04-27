@@ -42,7 +42,7 @@ override SRCS	:=									\
 				element/2d/circle.c					\
 				element/2d/triangle.c				\
 				element/3d/cylinder.c				\
-				element/3d/cylinder2.c				\
+				element/3d/hyperboloid.c			\
 				engine/ray.c						\
 				engine/z_buffer.c					\
 				engine/renderer.c					\

@@ -34,7 +34,7 @@ t_object	*new_sphere(float radius, t_vector3 p, t_color color)
 		.g = -2 * p.x,
 		.h = -2 * p.y,
 		.i = -2 * p.z,
-		.j = pow(p.x, 2) + pow(p.y, 2) + pow(p.z, 2) - pow(radius, 2)
+		.j = p.x * p.x + p.y * p.y + p.z * p.z - radius * radius
 	};
 	return (object);
 }

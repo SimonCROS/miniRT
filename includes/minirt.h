@@ -207,7 +207,6 @@ struct s_camera
 	int			show_triangles;
 };
 
-t_camera	*parse_camera(t_list *data, t_vector3 origin);
 t_camera	*new_camera(t_vector3 position, t_vector3 direction, float fov);
 void		reload_camera(t_camera *camera);
 
