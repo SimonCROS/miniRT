@@ -57,7 +57,7 @@ int	parse_object(t_scene *scene, t_list *data, int depth, t_vector3 origin)
 		return (FALSE);
 	file = ft_strtrim((char *)lst_get(data, 2), "\"");
 	printf("\n");
-	if (!parse_file(scene, file, depth, vec3_addv(pos, origin)))
+	if (!parse_file(scene, file, depth + 1, vec3_addv(pos, origin)))
 	{
 		free(file);
 		return (FALSE);

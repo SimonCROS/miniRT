@@ -34,6 +34,8 @@ static int	parse_node_min(t_list *line, t_scene *scene, int depth,
 		return (!!lst_unshift(scene->objects, parse_cylinder(line, origin)));
 	else if (ft_strcmp(lst_first(line), "ci") == 0)
 		return (!!lst_unshift(scene->objects, parse_circle(line, origin)));
+	else if (ft_strcmp(lst_first(line), "hy") == 0)
+		return (!!lst_unshift(scene->objects, parse_hyperboloid(line, origin)));
 	else if (ft_strcmp(lst_first(line), "ob") == 0)
 		return (parse_object(scene, line, depth, origin));
 	return (unknown_type(lst_first(line)));
@@ -57,7 +59,7 @@ int	parse_node(t_list *line, t_scene *scene, int depth, t_vector3 origin)
 		scene->ambiant = parse_ambiant(line);
 		return (!!scene->ambiant);
 	}
-	if (ft_strcmp(lst_first(line), "B") == 0)
+	else if (ft_strcmp(lst_first(line), "B") == 0)
 	{
 		if (scene->background)
 			return (duplicated_node(lst_first(line)));

@@ -63,7 +63,7 @@ int	parse_file(t_scene *scene, char *file, int depth, t_vector3 origin)
 		log_msg(ERROR, "File is not a \".rt\" file.");
 		return (FALSE);
 	}
-	if (++depth == 5)
+	if (depth == 5)
 		return (max_depth_file());
 	nodes = lst_new((t_con)lst_destroy);
 	if (!nodes)

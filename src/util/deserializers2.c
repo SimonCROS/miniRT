@@ -61,10 +61,10 @@ int	args_size(const char *type, int given, int expected)
 		log_msg(ERROR, NULL);
 		if (given > expected)
 			printf("Too many arguments for type \"%s\" : %d arguments \
-expected, %d given", type, expected, given);
+expected, %d given", type, expected - 1, given - 1);
 		else
 			printf("Not enough arguments for type \"%s\" : %d arguments \
-expected, %d given", type, expected, given);
+expected, %d given", type, expected - 1, given - 1);
 		log_nl();
 		return (0);
 	}
