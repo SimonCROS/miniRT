@@ -20,7 +20,6 @@ t_object	*parse_hyperboloid(t_list *data, t_vector3 origin)
 		|| !col_deserialize((char *)lst_get(data, 7), &color))
 		return (NULL);
 	attr[0] *= 0.5;
-	attr[1] *= 0.5;
 	return (new_hyperboloid(attr, vec3_addv(pos, origin), color));
 }
 
@@ -42,14 +41,14 @@ t_object	*new_hyperboloid(float *s, t_vector3 p, t_color color)
 		return (NULL);
 	object->data.cylinder.position2 = vec3_addv(p, vec3_muld(v, s[1] * 0.5));
 	object->quadric = (t_quadric){
-		.a = 1 / (s[1] * s[1]),
-		.b = -1 / (s[2] * s[2]),
-		.c = 1 / (s[3] * s[3]),
-		.g = -2 * p.x / (s[1] * s[1]),
-		.h = 2 * p.y / (s[2] * s[2]),
-		.i = -2 * p.z / (s[3] * s[3]),
-		.j = (p.x * p.x) / (s[1] * s[1]) - (p.y * p.y) / (s[2] * s[2])
-		+ (p.z * p.z) / (s[3] * s[3]) - s[0] * s[0]
+		.a = 1 / (s[2] * s[2]),
+		.b = -1 / (s[3] * s[3]),
+		.c = 1 / (s[4] * s[4]),
+		.g = -2 * p.x / (s[2] * s[2]),
+		.h = 2 * p.y / (s[3] * s[3]),
+		.i = -2 * p.z / (s[4] * s[4]),
+		.j = (p.x * p.x) / (s[2] * s[2]) - (p.y * p.y) / (s[3] * s[3])
+		+ (p.z * p.z) / (s[4] * s[4]) - s[0] * s[0]
 	};
 	return (object);
 }
