@@ -120,13 +120,13 @@ void	*render_thread(t_thread_data *data, int *chunk)
 	chunk_x = *chunk % ratio * params->chunk_width;
 	chunk_y = *chunk / ratio * params->chunk_height;
 	render_chunk(data, chunk_x, chunk_y);
-	pthread_mutex_lock(&(data->mutex_flush));
+	// pthread_mutex_lock(&(data->mutex_flush));
 	if (log_msg(DEBUG, NULL))
 	{
 		printf("Rendering chunk (%d,%d)...", chunk_x, chunk_y);
 		log_nl();
 	}
-	data->vars->on_refresh(data->vars, data->camera->render);
-	pthread_mutex_unlock(&(data->mutex_flush));
+	// data->vars->on_refresh(data->vars, data->camera->render);
+	// pthread_mutex_unlock(&(data->mutex_flush));
 	return (NULL);
 }
