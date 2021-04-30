@@ -162,8 +162,7 @@ void	init_window(char *file, t_scene *scene)
 	}
 	vars.init_image = (t_bifun)mlx_init_image;
 	vars.set_pixel = (t_pixel_writer)mlx_set_pixel;
-	vars.on_refresh = (t_bicon)force_put_image;
-	vars.on_finished = null_biconsumer();
+	vars.on_finished = (t_bicon)force_put_image;
 	vars.free_image = (t_bicon)mlx_free_image;
 	vars.flush = 0;
 	vars.camera = NULL;

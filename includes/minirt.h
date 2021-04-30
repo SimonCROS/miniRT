@@ -146,7 +146,6 @@ struct s_vars
 	t_camera		*camera;
 	t_bifunction	init_image;
 	t_pixel_writer	set_pixel;
-	t_biconsumer	on_refresh;
 	t_biconsumer	on_finished;
 	t_biconsumer	free_image;
 	t_consumer		on_exit;

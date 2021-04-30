@@ -8,20 +8,17 @@ static t_bitmap	*bmp_init_image(t_vars *vars, t_options *params)
 
 static void	bmp_free_image(t_bitmap *image, t_vars *vars)
 {
+	(void)vars;
 	if (image)
 	{
-		(void)vars;
 		free(image->body);
 		free(image);
 	}
 }
 
-static void	bmp_finished(t_vars *vars, t_camera *camera)
+static void	bmp_finished(t_vars *vars, t_bitmap *image)
 {
-	t_bitmap	*image;
-
 	(void)vars;
-	image = camera->render;
 	log_msg(INFO, "Saving...");
 	if (!bmp_save("render.bmp", image))
 	{
@@ -40,7 +37,6 @@ void	init_bmp_image(char *file, t_scene *scene)
 	(void)scene;
 	vars.init_image = (t_bifun)bmp_init_image;
 	vars.set_pixel = (t_pixel_writer)bmp_set_pixel;
-	vars.on_refresh = null_biconsumer();
 	vars.on_finished = (t_bicon)bmp_finished;
 	vars.free_image = (t_bicon)bmp_free_image;
 	vars.camera = (t_camera *)lst_first(scene->cameras);

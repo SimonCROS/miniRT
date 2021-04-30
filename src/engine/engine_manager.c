@@ -5,8 +5,6 @@
 
 #include "tpool.h"
 
-extern int num;
-
 static void	render_triangles(t_vars *vars, t_scene *scene, t_vector3 start,
 	t_vector3 end)
 {
@@ -43,8 +41,6 @@ static void	render3(t_vars *vars, t_tpool *pool, t_thread_data *data,
 	size_t			chunk;
 
 	chunk = 0;
-	if (data->camera->shadows)
-		vars->on_refresh(vars, data->camera->render);
 	if (data->scene->triangles->size)
 	{
 		if (data->camera->show_triangles)
@@ -54,7 +50,6 @@ static void	render3(t_vars *vars, t_tpool *pool, t_thread_data *data,
 					data->scene->render->height, 0));
 		else
 		{
-			pthread_mutex_init(&(data->mutex_flush), NULL);
 			while (chunk < data->chunks)
 			{
 				chunks[chunk] = chunk;
@@ -72,7 +67,6 @@ static void	render3(t_vars *vars, t_tpool *pool, t_thread_data *data,
 	}
 	if (data->scene->objects->size)
 	{
-		pthread_mutex_init(&(data->mutex_flush), NULL);
 		while (chunk < data->chunks)
 		{
 			chunks[chunk] = chunk;
@@ -87,7 +81,6 @@ static void	render3(t_vars *vars, t_tpool *pool, t_thread_data *data,
 		tpool_start(pool);
 		tpool_wait(pool);
 	}
-	vars->on_refresh(vars, data->camera->render);
 	tpool_destroy(pool);
 	free(chunks);
 }
@@ -135,6 +128,7 @@ static void	render2(t_vars *vars, t_camera *camera, t_scene *scene)
 	fill_z_buff(camera->z_buffer, params->width * params->height);
 	fill_background(vars, camera, scene);
 	render3(vars, pool, &data, chunks);
+	vars->on_finished(vars, camera->render);
 }
 
 int	render(t_vars *vars)
@@ -146,13 +140,12 @@ int	render(t_vars *vars)
 	camera = vars->camera;
 	if (camera->render)
 	{
-		vars->on_refresh(vars, camera->render);
+		vars->on_finished(vars, camera);
 		log_msg(DEBUG, "Image loaded from cache");
 	}
 	else
 	{
 		render2(vars, camera, scene);
-		vars->on_finished(vars, camera);
 		log_msg(DEBUG, "Image successfully rendered");
 	}
 	return (0);

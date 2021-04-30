@@ -21,7 +21,6 @@ struct s_thread_dat
 	t_camera		*camera;
 	t_scene			*scene;
 	size_t			chunks;
-	pthread_mutex_t	mutex_flush;
 };
 
 /*** Engine *******************************************************************/
