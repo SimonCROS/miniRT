@@ -60,5 +60,6 @@ t_object	*new_default_object(t_vector3 pos, t_vector3 rot, t_color col,
 	object->collides = collides;
 	object->color = col;
 	object->is_plane = 0;
+	object->is_quadric = 0;
 	return (object);
 }
