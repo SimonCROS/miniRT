@@ -3,8 +3,8 @@
 #include "renderer.h"
 #include "object.h"
 
-static int	in_light(t_scene *scene, t_object *object, float light_dist2,
-	t_ray *ray)
+static int	in_light(t_scene *scene, t_object *object, t_ray *light_ray,
+	float length2)
 {
 	t_iterator	obj_iterator;
 	t_object	*obj_test;
@@ -13,16 +13,16 @@ static int	in_light(t_scene *scene, t_object *object, float light_dist2,
 	while (iterator_has_next(&obj_iterator))
 	{
 		obj_test = iterator_next(&obj_iterator);
-		if (obj_test != object && collision(obj_test, ray)
-			&& ray->length * ray->length <= light_dist2)
+		if (obj_test != object && collision(obj_test, light_ray)
+			&& light_ray->length * light_ray->length <= length2)
 			return (FALSE);
 	}
 	obj_iterator = iterator_new(scene->triangles);
 	while (iterator_has_next(&obj_iterator))
 	{
 		obj_test = iterator_next(&obj_iterator);
-		if (obj_test != object && collision(obj_test, ray)
-			&& ray->length * ray->length <= light_dist2)
+		if (obj_test != object && collision(obj_test, light_ray)
+			&& light_ray->length * light_ray->length <= length2)
 			return (FALSE);
 	}
 	return (TRUE);
@@ -32,29 +32,19 @@ void	render_light(t_scene *scene, t_camera *camera, t_object *object,
 	t_ray *ray)
 {
 	t_light		*light;
-	t_iterator	lightIterator;
 	t_ray		light_ray;
-	t_vector3	lightDir;
-	int			illuminated;
-	float		light_distance2;
+	t_iterator	lightIterator;
+	float		length2;
 
 	ray->color = color_mul(object->color, *(scene->ambiant));
 	lightIterator = iterator_new(scene->lights);
 	while (iterator_has_next(&lightIterator))
 	{
 		light = iterator_next(&lightIterator);
-		lightDir = vec3_subv(light->position, ray->phit);
-		light_distance2 = vec3_length_squared(lightDir);
-		lightDir = vec3_normalize(lightDir);
-		light_ray.origin = ray->phit;
-		light_ray.direction = lightDir;
-		light_ray.length = INFINITY;
-		illuminated = !camera->shadows
-			|| in_light(scene, object, light_distance2, &light_ray);
-		ray->color = color_add(ray->color, color_mul(object->color,
-					color_mulf(color_mulf(light->color, light->brightness),
-						illuminated * light->brightness
-						* fmaxf(0, vec3_dotv(lightDir, ray->nhit)))));
+		light_ray = light->calculate_ray(light, ray, &length2);
+		if (!camera->shadows || in_light(scene, object, &light_ray, length2))
+			ray->color = color_add(ray->color,
+					light->calculate_color(light, object, ray, &light_ray));
 	}
 }
 

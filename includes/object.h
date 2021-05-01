@@ -4,13 +4,27 @@
 # include "libft.h"
 
 typedef struct s_object	t_object;
+typedef struct s_light	t_light;
 
-typedef struct s_light
+typedef struct s_laser
 {
+	t_vector3	direction;
+	float		radius;
+}	t_laser;
+
+struct s_light
+{
+	t_ray		(*calculate_ray)(t_light *, const t_ray *, float *);
+	t_color		(*calculate_color)(t_light *, t_object *, const t_ray *,
+					const t_ray *);
 	float		brightness;
 	t_vector3	position;
 	t_color		color;
-}	t_light;
+	union u_light_data
+	{
+		t_laser	laser;
+	}			data;
+};
 
 typedef struct s_circle
 {
@@ -75,13 +89,16 @@ t_object	*new_circle(float radius, t_vector3 position, t_vector3 rotation,
 				t_color color);
 t_object	*new_cylinder(float *attrs, t_vector3 position, t_vector3 rotation,
 				t_color color);
+t_object	*new_hyperboloid(float *attrs, t_vector3 p, t_color color);
+
 t_object	*new_default_quadric(t_vector3 pos, t_vector3 rot, t_color col,
 				t_bipredicate collides);
 t_object	*new_default_plane(t_vector3 position, t_vector3 rotation,
 				t_color color, t_bipredicate collides);
 t_object	*new_default_object(t_vector3 position, t_vector3 rotation,
 				t_color color, t_bipredicate collides);
-t_object	*new_hyperboloid(float *attrs, t_vector3 p, t_color color);
+t_light		*new_default_light(t_vector3 position, t_color color,
+				float brightness);
 
 t_camera	*parse_camera(t_list *data, t_vector3 origin);
 t_object	*parse_plane(t_list *data, t_vector3 origin);
@@ -93,7 +110,8 @@ t_object	*parse_triangle(t_list *data, t_vector3 origin);
 t_object	*parse_hyperboloid(t_list *data, t_vector3 origin);
 t_light		*parse_light(t_list *data, t_vector3 origin);
 
-t_light		*new_light(float brightness, t_vector3 position, t_color color);
+t_light		*new_light_point(float brightness, t_vector3 position,
+				t_color color);
 
 int			collision(t_object *object, t_ray *ray);
 

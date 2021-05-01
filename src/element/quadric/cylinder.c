@@ -63,7 +63,6 @@ static int	collides_cylinder(t_object *obj, t_ray *ray)
 {
 	int			ret;
 
-// TO patch
 	ret = intersect_side(obj->position, obj->data.cylinder.position2,
 			obj->rotation, ray);
 	ret = collides_caps(obj, ray, obj->position, ret) || ret;

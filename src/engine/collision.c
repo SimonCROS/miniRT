@@ -1,39 +1,31 @@
 #include "minirt.h"
 #include "object.h"
 
+#include <math.h>
+
 int	intersect_side(t_vector3 top, t_vector3 bot, t_vector3 rot, t_ray *ray)
 {
-	t_ray		to_bot;
+	t_ray		side_ray;
 
-	to_bot.direction = rot;
-	to_bot.origin = ray->phit;
-	if (!intersect_plane(bot, rot, &to_bot))
+	side_ray.direction = rot;
+	side_ray.origin = ray->phit;
+	side_ray.length = INFINITY;
+	if (!intersect_plane(bot, rot, &side_ray))
 		return (FALSE);
-	to_bot.direction = vec3_negate(to_bot.direction);
-	if (!intersect_plane(top, rot, &to_bot))
+	side_ray.direction = vec3_negate(side_ray.direction);
+	if (!intersect_plane(top, rot, &side_ray))
 		return (FALSE);
 	return (TRUE);
 }
 
 int	collides_quadric(t_object *object, t_ray *ray)
 {
-	float	t[2];
-
-	if (!resolve_quad_double(&object->quadric, ray->origin, ray->direction, t))
-		return (FALSE);
-	ray->length = t[0];
-	ray->phit = vec3_addv(ray->origin, vec3_muld(ray->direction, ray->length));
-	ray->nhit = resolve_quad_norm(&object->quadric, ray->phit);
-	if (!object->collides)
-		return (TRUE);
-	if (object->collides(object, ray))
-		return (TRUE);
-	ray->length = t[1];
+	ray->length = resolve_quad(&object->quadric, ray->origin, ray->direction);
 	if (!ray->length)
 		return (FALSE);
 	ray->phit = vec3_addv(ray->origin, vec3_muld(ray->direction, ray->length));
 	ray->nhit = resolve_quad_norm(&object->quadric, ray->phit);
-	return (object->collides(object, ray));
+	return (!object->collides || object->collides(object, ray));
 }
 
 int	intersect_plane(t_vector3 pos, t_vector3 rot, t_ray *ray)
