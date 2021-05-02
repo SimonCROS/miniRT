@@ -42,6 +42,8 @@ void	render_light(t_scene *scene, t_camera *camera, t_object *object,
 	{
 		light = iterator_next(&lightIterator);
 		light_ray = light->calculate_ray(light, ray, &length2);
+		if (length2 < 0)
+			continue ;
 		if (!camera->shadows || in_light(scene, object, &light_ray, length2))
 			ray->color = color_add(ray->color,
 					light->calculate_color(light, object, ray, &light_ray));

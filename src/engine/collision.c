@@ -59,9 +59,7 @@ int	collision(t_object *object, t_ray *ray)
 		ray->nhit = object->rotation;
 		if (vec3_dotv(object->rotation, ray->direction) > 0)
 			ray->nhit = vec3_negate(ray->nhit);
-		if (!object->collides)
-			return (TRUE);
-		return (object->collides(object, ray));
+		return (!object->collides || object->collides(object, ray));
 	}
 	return (FALSE);
 }

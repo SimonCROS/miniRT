@@ -23,12 +23,8 @@ t_object	*parse_circle(t_list *data, t_vector3 origin)
 
 static int	collides_circle(t_object *plan, t_ray *ray)
 {
-	t_vector3	v;
-	float		d2;
-
-	v = vec3_subv(ray->phit, plan->position);
-	d2 = vec3_length_squared(v);
-	return (d2 <= plan->data.circle.radius * plan->data.circle.radius);
+	return (vec3_distance_squaredv(ray->phit, plan->position)
+		<= plan->data.circle.radius * plan->data.circle.radius);
 }
 
 t_object	*new_circle(float diametre, t_vector3 position, t_vector3 rotation,

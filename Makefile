@@ -40,6 +40,7 @@ override SRCS	:=									\
 				element/archetype/object.c			\
 				element/archetype/quadric.c			\
 				element/light/point.c				\
+				element/light/laser.c				\
 				element/plane/plane.c				\
 				element/plane/circle.c				\
 				element/plane/square.c				\

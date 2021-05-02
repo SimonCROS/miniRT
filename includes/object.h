@@ -87,9 +87,9 @@ t_object	*new_square(float width, t_vector3 position, t_vector3 rotation,
 				t_color color);
 t_object	*new_circle(float radius, t_vector3 position, t_vector3 rotation,
 				t_color color);
-t_object	*new_cylinder(float *attrs, t_vector3 position, t_vector3 rotation,
-				t_color color);
-t_object	*new_hyperboloid(float *attrs, t_vector3 p, t_color color);
+t_object	*new_cylinder(float attrs[2], t_vector3 position,
+				t_vector3 rotation, t_color color);
+t_object	*new_hyperboloid(float attrs[5], t_vector3 p, t_color color);
 
 t_object	*new_default_quadric(t_vector3 pos, t_vector3 rot, t_color col,
 				t_bipredicate collides);
@@ -108,10 +108,13 @@ t_object	*parse_circle(t_list *data, t_vector3 origin);
 t_object	*parse_cylinder(t_list *data, t_vector3 origin);
 t_object	*parse_triangle(t_list *data, t_vector3 origin);
 t_object	*parse_hyperboloid(t_list *data, t_vector3 origin);
-t_light		*parse_light(t_list *data, t_vector3 origin);
+t_light		*parse_light_point(t_list *data, t_vector3 origin);
+t_light		*parse_light_laser(t_list *data, t_vector3 origin);
 
 t_light		*new_light_point(float brightness, t_vector3 position,
 				t_color color);
+t_light		*new_light_laser(float s[2], t_vector3 position,
+				t_vector3 direction, t_color color);
 
 int			collision(t_object *object, t_ray *ray);
 

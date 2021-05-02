@@ -70,7 +70,7 @@ static int	collides_cylinder(t_object *obj, t_ray *ray)
 	return (ret);
 }
 
-t_object	*new_cylinder(float *s, t_vector3 p, t_vector3 v, t_color color)
+t_object	*new_cylinder(float s[2], t_vector3 p, t_vector3 v, t_color color)
 {
 	t_object	*object;
 

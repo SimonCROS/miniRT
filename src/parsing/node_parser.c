@@ -21,7 +21,9 @@ static int	parse_node_min(t_list *line, t_scene *scene, int depth,
 	if (ft_strcmp(lst_first(line), "c") == 0)
 		return (!!lst_unshift(scene->cameras, parse_camera(line, origin)));
 	else if (ft_strcmp(lst_first(line), "l") == 0)
-		return (!!lst_unshift(scene->lights, parse_light(line, origin)));
+		return (!!lst_unshift(scene->lights, parse_light_point(line, origin)));
+	else if (ft_strcmp(lst_first(line), "la") == 0)
+		return (!!lst_unshift(scene->lights, parse_light_laser(line, origin)));
 	else if (ft_strcmp(lst_first(line), "tr") == 0)
 		return (!!lst_unshift(scene->triangles, parse_triangle(line, origin)));
 	else if (ft_strcmp(lst_first(line), "pl") == 0)

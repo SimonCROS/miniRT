@@ -29,7 +29,7 @@ static int	collides_hyperboloid(t_object *obj, t_ray *ray)
 			obj->rotation, ray));
 }
 
-t_object	*new_hyperboloid(float *s, t_vector3 p, t_color color)
+t_object	*new_hyperboloid(float s[5], t_vector3 p, t_color color)
 {
 	t_object	*object;
 	t_vector3	v;
