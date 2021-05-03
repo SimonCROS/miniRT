@@ -53,15 +53,6 @@ static t_ray	calculate_ray(t_light *light, const t_ray *ray, float *length2)
 	return (light_ray);
 }
 
-static t_color	calculate_color(t_light *light, t_object *object,
-	const t_ray *ray, const t_ray *light_ray)
-{
-	(void)object;
-	(void)ray;
-	(void)light_ray;
-	return (light->color);
-}
-
 t_light	*new_light_laser(float s[2], t_vector3 position, t_vector3 direction,
 	t_color color)
 {
@@ -73,6 +64,5 @@ t_light	*new_light_laser(float s[2], t_vector3 position, t_vector3 direction,
 	light->data.laser.radius = s[1];
 	light->data.laser.direction = direction;
 	light->calculate_ray = calculate_ray;
-	light->calculate_color = calculate_color;
 	return (light);
 }

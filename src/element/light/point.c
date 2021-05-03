@@ -34,21 +34,6 @@ static t_ray	calculate_ray(t_light *light, const t_ray *ray, float *length2)
 	return (light_ray);
 }
 
-static t_color	calculate_color(t_light *light, t_object *object,
-	const t_ray *ray, const t_ray *light_ray)
-{
-	return (
-		color_mul(object->color,
-			color_mulf(light->color,
-				light->brightness * light->brightness
-				* fmaxf(0,
-					vec3_dotv(light_ray->direction, ray->nhit)
-				)
-			)
-		)
-	);
-}
-
 t_light	*new_light_point(float brightness, t_vector3 position, t_color color)
 {
 	t_light	*light;
@@ -57,6 +42,5 @@ t_light	*new_light_point(float brightness, t_vector3 position, t_color color)
 	if (!light)
 		return (NULL);
 	light->calculate_ray = calculate_ray;
-	light->calculate_color = calculate_color;
 	return (light);
 }
