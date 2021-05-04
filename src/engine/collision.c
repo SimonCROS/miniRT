@@ -20,12 +20,23 @@ int	intersect_side(t_vector3 top, t_vector3 bot, t_vector3 rot, t_ray *ray)
 
 int	collides_quadric(t_object *object, t_ray *ray)
 {
-	ray->length = resolve_quad(&object->quadric, ray->origin, ray->direction);
+	float	t[2];
+
+	if (!resolve_quad_double(&object->quadric, ray->origin, ray->direction, t))
+		return (FALSE);
+	ray->length = t[0];
+	ray->phit = vec3_addv(ray->origin, vec3_muld(ray->direction, ray->length));
+	ray->nhit = resolve_quad_norm(&object->quadric, ray->phit);
+	if (!object->collides)
+		return (TRUE);
+	if (object->collides(object, ray))
+		return (TRUE);
+	ray->length = t[1];
 	if (!ray->length)
 		return (FALSE);
 	ray->phit = vec3_addv(ray->origin, vec3_muld(ray->direction, ray->length));
 	ray->nhit = resolve_quad_norm(&object->quadric, ray->phit);
-	return (!object->collides || object->collides(object, ray));
+	return (object->collides(object, ray));
 }
 
 int	intersect_plane(t_vector3 pos, t_vector3 rot, t_ray *ray)

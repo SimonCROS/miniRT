@@ -37,6 +37,11 @@ typedef struct s_cylinder
 	float			radius;
 }	t_cylinder;
 
+typedef struct s_compound
+{
+	t_list			*elements;
+}	t_compound;
+
 typedef struct s_hyperboloid
 {
 	t_vector3		position2;
@@ -73,12 +78,15 @@ struct s_object
 	{
 		t_circle		circle;
 		t_square		square;
+		t_compound		compound;
 		t_cylinder		cylinder;
 		t_triangle		triangle;
 		t_hyperboloid	hyperboloid;
 	}				data;
 };
 
+t_object	*new_cube(float width, t_vector3 position, t_vector3 rotation,
+				t_color color);
 t_object	*new_sphere(float diametre, t_vector3 position, t_color color);
 t_object	*new_plane(t_vector3 position, t_vector3 rotation, t_color color);
 t_object	*new_triangle(t_vector3 p1, t_vector3 p2, t_vector3 p3,
@@ -99,8 +107,11 @@ t_object	*new_default_object(t_vector3 position, t_vector3 rotation,
 				t_color color, t_bipredicate collides);
 t_light		*new_default_light(t_vector3 position, t_color color,
 				float brightness);
+t_object	*new_default_compound_object(t_vector3 position, t_vector3 rotation,
+				t_color color);
 
 t_camera	*parse_camera(t_list *data, t_vector3 origin);
+int			parse_cube(t_list *data, t_vector3 origin, t_list *objects);
 t_object	*parse_plane(t_list *data, t_vector3 origin);
 t_object	*parse_square(t_list *data, t_vector3 origin);
 t_object	*parse_sphere(t_list *data, t_vector3 origin);
@@ -126,5 +137,7 @@ void		render_light(t_scene *sc, t_camera *cam, t_object *obj, t_ray *ray);
 int			collides_quadric(t_object *object, t_ray *ray);
 int			intersect_side(t_vector3 top, t_vector3 bot, t_vector3 rot,
 				t_ray *ray);
+
+t_object	*nearest_object(t_list *objects, t_ray *ray);
 
 #endif

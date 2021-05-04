@@ -50,34 +50,43 @@ void	render_light(t_scene *scene, t_camera *camera, t_object *object,
 	}
 }
 
-static void	render_pixel(t_thread_data *data, t_scene *scene, size_t x,
-	size_t y)
+t_object	*nearest_object(t_list *objects, t_ray *ray)
 {
 	t_iterator	obj_iterator;
-	t_ray		ray;
 	t_object	*object;
 	t_object	*obj_test;
 	t_ray		obj_ray;
 
 	object = NULL;
-	ray = compute_ray(scene->render, data->camera, x, y);
-	obj_iterator = iterator_new(scene->objects);
+	obj_iterator = iterator_new(objects);
 	while (iterator_has_next(&obj_iterator))
 	{
 		obj_test = iterator_next(&obj_iterator);
-		obj_ray = ray;
-		if (collision(obj_test, &obj_ray) && obj_ray.length < ray.length)
+		obj_ray = *ray;
+		if (collision(obj_test, &obj_ray) && obj_ray.length < ray->length)
 		{
-			ray = obj_ray;
+			*ray = obj_ray;
 			object = obj_test;
 		}
 	}
-	if (ray.length == INFINITY || !object)
-		return ;
-	render_light(scene, data->camera, object, &ray);
-	// y += (int)((double)10 * sin((double)x / (double)10));
-	// y = fminf(y, fmaxf(0, scene->render->height - 1));
-	data->vars->set_pixel(data->camera->render, x, y, ray.color);
+	return (object);
+}
+
+static void	render_pixel(t_thread_data *data, t_scene *scene, size_t x,
+	size_t y)
+{
+	t_ray		ray;
+	t_object	*object;
+
+	ray = compute_ray(scene->render, data->camera, x, y);
+	object = nearest_object(scene->objects, &ray);
+	if (object)
+	{
+		render_light(scene, data->camera, object, &ray);
+		// y += (int)((double)10 * sin((double)x / (double)10));
+		// y = fminf(y, fmaxf(0, scene->render->height - 1));
+		data->vars->set_pixel(data->camera->render, x, y, ray.color);
+	}
 }
 
 static void	render_chunk(t_thread_data *data, size_t start_x, size_t start_y)

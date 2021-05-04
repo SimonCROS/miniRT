@@ -1,5 +1,5 @@
 NAME					:= miniRT
-LINUX					:= 1
+LINUX					:= 0
 
 override HEADERS		:= includes/minirt.h
 
@@ -24,7 +24,7 @@ override CC				:= gcc
 override RM				:= rm -f
 
 override CFLAGS			:= -Wall -Wextra -Werror
-override INCLUDES		:= -I$(INC) -I$(LIBFT_DIR)/$(INC) -I$(MINILIBX)
+override INCLUDES		:= -I$(INC) -I$(LIBFT_DIR)/$(INC) -I$(MINILIBX) -g3
 
 override SRCS	:=									\
 				main.c								\
@@ -39,6 +39,7 @@ override SRCS	:=									\
 				element/archetype/light.c			\
 				element/archetype/object.c			\
 				element/archetype/quadric.c			\
+				element/archetype/compound.c		\
 				element/light/point.c				\
 				element/light/laser.c				\
 				element/plane/plane.c				\
@@ -48,6 +49,7 @@ override SRCS	:=									\
 				element/quadric/cylinder.c			\
 				element/quadric/hyperboloid.c		\
 				element/quadric/sphere.c			\
+				element/compound/cube.c				\
 				engine/ray.c						\
 				engine/z_buffer.c					\
 				engine/renderer.c					\

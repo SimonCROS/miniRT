@@ -15,7 +15,6 @@ static void	render_triangles(t_vars *vars, t_scene *scene, t_vector3 start,
 		project(vars, iterator_next(&obj_iterator), scene, start, end);
 }
 
-
 static void	*triangle_thread(t_thread_data *data, int *chunk)
 {
 	t_options	*params;
@@ -140,7 +139,7 @@ int	render(t_vars *vars)
 	camera = vars->camera;
 	if (camera->render)
 	{
-		vars->on_finished(vars, camera);
+		vars->on_finished(vars, camera->render);
 		log_msg(DEBUG, "Image loaded from cache");
 	}
 	else
