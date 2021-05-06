@@ -83,8 +83,8 @@ static void	render_pixel(t_thread_data *data, t_scene *scene, size_t x,
 	if (object)
 	{
 		render_light(scene, data->camera, object, &ray);
-		// y += (int)((double)10 * sin((double)x / (double)10));
-		// y = fminf(y, fmaxf(0, scene->render->height - 1));
+		y += (int)((double)10 * sin((double)x / (double)10));
+		y = fminf(y, fmaxf(0, scene->render->height - 1));
 		data->vars->set_pixel(data->camera->render, x, y, ray.color);
 	}
 }

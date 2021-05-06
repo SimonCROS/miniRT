@@ -50,6 +50,7 @@ override SRCS	:=									\
 				element/quadric/hyperboloid.c		\
 				element/quadric/sphere.c			\
 				element/compound/cube.c				\
+				element/compound/pyramid.c			\
 				engine/ray.c						\
 				engine/z_buffer.c					\
 				engine/renderer.c					\

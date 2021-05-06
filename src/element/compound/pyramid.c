@@ -33,7 +33,7 @@ int	parse_pyramid(t_list *data, t_vector3 origin, t_list *objects)
 	float		height;
 	t_color		color;
 
-	if (!args_size(lst_first(data), data->size, 5))
+	if (!args_size(lst_first(data), data->size, 6))
 		return (0);
 	if (!vec3_deserialize((char *)lst_get(data, 1), &pos)
 		|| !dir_deserialize((char *)lst_get(data, 2), &rot)

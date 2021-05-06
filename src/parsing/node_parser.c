@@ -40,6 +40,8 @@ static int	parse_node_min(t_list *line, t_scene *scene, int depth,
 		return (!!lst_unshift(scene->objects, parse_hyperboloid(line, origin)));
 	else if (ft_strcmp(lst_first(line), "cu") == 0)
 		return (parse_cube(line, origin, scene->objects));
+	else if (ft_strcmp(lst_first(line), "py") == 0)
+		return (parse_pyramid(line, origin, scene->objects));
 	else if (ft_strcmp(lst_first(line), "ob") == 0)
 		return (parse_object(scene, line, depth, origin));
 	return (unknown_type(lst_first(line)));
