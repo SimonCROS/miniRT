@@ -85,8 +85,6 @@ struct s_object
 	}				data;
 };
 
-t_object	*new_cube(float width, t_vector3 position, t_vector3 rotation,
-				t_color color);
 t_object	*new_sphere(float diametre, t_vector3 position, t_color color);
 t_object	*new_plane(t_vector3 position, t_vector3 rotation, t_color color);
 t_object	*new_triangle(t_vector3 p1, t_vector3 p2, t_vector3 p3,
@@ -112,6 +110,7 @@ t_object	*new_default_compound_object(t_vector3 position, t_vector3 rotation,
 
 t_camera	*parse_camera(t_list *data, t_vector3 origin);
 int			parse_cube(t_list *data, t_vector3 origin, t_list *objects);
+int			parse_pyramid(t_list *data, t_vector3 origin, t_list *objects);
 t_object	*parse_plane(t_list *data, t_vector3 origin);
 t_object	*parse_square(t_list *data, t_vector3 origin);
 t_object	*parse_sphere(t_list *data, t_vector3 origin);
