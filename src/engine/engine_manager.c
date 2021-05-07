@@ -37,49 +37,42 @@ static void	*triangle_thread(t_thread_data *data, int *chunk)
 static void	render3(t_vars *vars, t_tpool *pool, t_thread_data *data,
 	size_t *chunks)
 {
-	size_t			chunk;
+	size_t	chunk;
+	int		has_triangles;
+	int		has_objects;
 
 	chunk = 0;
-	if (data->scene->triangles->size)
+	has_triangles = data->scene->triangles->size;
+	has_objects = data->scene->objects->size;
+	if (has_triangles && data->camera->show_triangles)
+		render_triangles(vars, data->scene,
+			vec3_new(0, 0, 0),
+			vec3_new(data->scene->render->width,
+				data->scene->render->height, 0));
+	while (chunk < data->chunks)
 	{
-		if (data->camera->show_triangles)
-			render_triangles(vars, data->scene,
-				vec3_new(0, 0, 0),
-				vec3_new(data->scene->render->width,
-					data->scene->render->height, 0));
-		else
+		chunks[chunk] = chunk;
+		if (has_triangles && !data->camera->show_triangles)
 		{
-			while (chunk < data->chunks)
+			if (!tpool_add_work(pool, (t_bifun)triangle_thread, data, chunks + chunk))
 			{
-				chunks[chunk] = chunk;
-				if (!tpool_add_work(pool, (t_bifun)triangle_thread, data, chunks + chunk))
-				{
-					perror("Error\nAn error occurred while starting rendering");
-					exit_minirt(vars, pool, chunks, EXIT_FAILURE);
-				}
-				chunk++;
+				perror("Error\nAn error occurred while starting rendering");
+				exit_minirt(vars, pool, chunks, EXIT_FAILURE);
 			}
-			tpool_set_name(pool, "CHUNK_WORKER");
-			tpool_start(pool);
-			tpool_wait(pool);
 		}
-	}
-	if (data->scene->objects->size)
-	{
-		while (chunk < data->chunks)
+		if (has_objects && !data->camera->show_triangles)
 		{
-			chunks[chunk] = chunk;
 			if (!tpool_add_work(pool, (t_bifun)render_thread, data, chunks + chunk))
 			{
 				perror("Error\nAn error occurred while starting rendering");
 				exit_minirt(vars, pool, chunks, EXIT_FAILURE);
 			}
-			chunk++;
 		}
-		tpool_set_name(pool, "CHUNK_WORKER");
-		tpool_start(pool);
-		tpool_wait(pool);
+		chunk++;
 	}
+	tpool_set_name(pool, "CHUNK_WORKER");
+	tpool_start(pool);
+	tpool_wait(pool);
 	tpool_destroy(pool);
 	free(chunks);
 }
