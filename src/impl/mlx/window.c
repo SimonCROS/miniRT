@@ -58,6 +58,7 @@ void	reset_keys(t_vars *vars)
 	vars->cam_left = 0;
 	vars->cam_right = 0;
 	vars->scroll_direction = 0;
+	vars->samples = 2;
 	vars->click_type = CLICK_NONE;
 }
 

@@ -38,6 +38,7 @@ void	init_bmp_image(char *file, t_scene *scene)
 	vars.camera = (t_camera *)lst_first(scene->cameras);
 	vars.on_exit = null_consumer();
 	vars.camera->shadows = 1;
+	vars.samples = 1;
 	render(&vars);
 	exit_minirt(&vars, NULL, NULL, EXIT_SUCCESS);
 }

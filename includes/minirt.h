@@ -166,6 +166,7 @@ struct s_vars
 	int				cam_right;
 	int				cam_up;
 	int				cam_down;
+	int				samples;
 };
 
 void		exit_minirt(t_vars *vars, t_tpool *pool, void *other, int __status);

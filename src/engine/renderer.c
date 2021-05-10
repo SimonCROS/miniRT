@@ -75,17 +75,45 @@ t_object	*nearest_object(t_list *objects, t_ray *ray)
 static void	render_pixel(t_thread_data *data, t_scene *scene, size_t x,
 	size_t y)
 {
+	float		i;
+	float		j;
 	t_ray		ray;
 	t_object	*object;
+	int			changed;
+	t_color		color;
 
-	ray = compute_ray(scene->render, data->camera, x, y);
-	object = nearest_object(scene->objects, &ray);
-	if (object)
+	changed = 0;
+	i = 0;
+	while (i < data->vars->samples)
 	{
-		render_light(scene, data->camera, object, &ray);
+		j = 0;
+		while (j < data->vars->samples)
+		{
+			object = NULL;
+			ray = compute_ray(scene->render, data->camera, x + i / data->vars->samples, y + j / data->vars->samples);
+			object = nearest_object(scene->objects, &ray);
+			if (object)
+			{
+				changed = 1;
+				render_light(scene, data->camera, object, &ray);
+				if (i == 0 && j == 0)
+					color = ray.color;
+				else
+					color = color_avg(color, ray.color);
+			}
+			else if (i == 0 && j == 0)
+				color = *(scene->background);
+			else
+				color = color_avg(color, *(scene->background));
+			j++;
+		}
+		i++;
+	}
+	if (changed)
+	{
 		// y += (int)((double)10 * sin((double)x / (double)10));
 		// y = fminf(y, fmaxf(0, scene->render->height - 1));
-		data->vars->set_pixel(data->camera->render, x, y, ray.color);
+		data->vars->set_pixel(data->camera->render, x, y, color);
 	}
 }
 
