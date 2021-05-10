@@ -32,13 +32,14 @@ void	init_bmp_image(char *file, t_scene *scene)
 	(void)file;
 	(void)scene;
 	vars.init_image = (t_bifun)bmp_init_image;
+	vars.get_pixel = (t_pixel_reader)bmp_get_pixel;
 	vars.set_pixel = (t_pixel_writer)bmp_set_pixel;
 	vars.on_finished = (t_bicon)bmp_finished;
 	vars.free_image = (t_bicon)bmp_free_image;
 	vars.camera = (t_camera *)lst_first(scene->cameras);
 	vars.on_exit = null_consumer();
 	vars.camera->shadows = 1;
-	vars.samples = 1;
+	vars.samples = 2;
 	render(&vars);
 	exit_minirt(&vars, NULL, NULL, EXIT_SUCCESS);
 }

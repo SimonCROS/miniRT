@@ -80,10 +80,13 @@ static void	render_pixel(t_thread_data *data, t_scene *scene, size_t x,
 	t_ray		ray;
 	t_object	*object;
 	int			changed;
+	t_color		before;
 	t_color		color;
 
 	changed = 0;
 	i = 0;
+	before = data->vars->get_pixel(data->camera->render, x, y);
+	color = before;
 	while (i < data->vars->samples)
 	{
 		j = 0;
@@ -101,10 +104,8 @@ static void	render_pixel(t_thread_data *data, t_scene *scene, size_t x,
 				else
 					color = color_avg(color, ray.color);
 			}
-			else if (i == 0 && j == 0)
-				color = *(scene->background);
 			else
-				color = color_avg(color, *(scene->background));
+				color = color_avg(color, before);
 			j++;
 		}
 		i++;

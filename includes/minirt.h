@@ -63,6 +63,7 @@ typedef struct s_options	t_options;
 typedef struct s_image		t_image;
 typedef enum e_click_type	t_click_type;
 typedef void				(*t_pixel_writer)(void *, int, int, t_color);
+typedef t_color				(*t_pixel_reader)(void *, int, int);
 
 typedef struct s_ray		t_ray;
 typedef struct s_camera		t_camera;
@@ -145,6 +146,7 @@ struct s_vars
 	void			*win;
 	t_camera		*camera;
 	t_bifunction	init_image;
+	t_pixel_reader	get_pixel;
 	t_pixel_writer	set_pixel;
 	t_biconsumer	on_finished;
 	t_biconsumer	free_image;

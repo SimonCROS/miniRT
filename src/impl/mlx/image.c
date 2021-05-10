@@ -11,6 +11,14 @@ void	mlx_free_image(t_image *image, t_vars *vars)
 	}
 }
 
+t_color	mlx_get_pixel(t_image *data, int x, int y)
+{
+	char	*dst;
+
+	dst = data->addr + (y * data->line_length + x * (data->bits_per_pixel / 8));
+	return (color_from_hex(*(unsigned int *)dst));
+}
+
 void	mlx_set_pixel(t_image *data, int x, int y, t_color color)
 {
 	char	*dst;
