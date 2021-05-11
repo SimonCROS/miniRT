@@ -4,7 +4,8 @@
 
 static void	free_camera_render(t_camera *camera, t_vars *vars)
 {
-	free(camera->z_buffer);
+	if (camera->z_buffer)
+		free(camera->z_buffer);
 	if (camera->render)
 		vars->free_image(camera->render, vars);
 }

@@ -153,7 +153,6 @@ struct s_vars
 	void			*win;
 	t_camera		*camera;
 	t_bifunction	init_image;
-	t_pixel_reader	get_pixel;
 	t_pixel_writer	set_pixel;
 	t_biconsumer	on_finished;
 	t_biconsumer	free_image;

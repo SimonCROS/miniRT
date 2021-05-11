@@ -113,7 +113,6 @@ static void	render2(t_vars *vars, t_camera *camera, t_scene *scene)
 	chunks = malloc(data.chunks * sizeof(size_t));
 	if (!camera->z_buffer || !camera->render || !pool || !chunks)
 	{
-		free(camera->z_buffer);
 		perror("Error\nAn error occurred while starting rendering");
 		exit_minirt(vars, pool, chunks, EXIT_FAILURE);
 	}
