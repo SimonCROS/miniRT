@@ -78,14 +78,18 @@ static int	init_mlx(t_vars *vars, char *file, t_scene *scene)
 	free(name);
 	if (!vars->win)
 		return (FALSE);
-	mlx_string_put(vars->mlx, vars->win, 0, 50, ~0, "Press 'enter' to start");
-	mlx_string_put(vars->mlx, vars->win, 0, 70, ~0, "Press 'm' to \
+	mlx_string_put(vars->mlx, vars->win, 10, 50, ~0, "Press 'enter' to start");
+	mlx_string_put(vars->mlx, vars->win, 10, 70, ~0, "Press 'm' to \
 enable/disable shadows");
-	mlx_string_put(vars->mlx, vars->win, 0, 90, ~0, "Press 'm' to \
+	mlx_string_put(vars->mlx, vars->win, 10, 90, ~0, "Press 'n' to \
 enable/disable the triangle mode");
-	mlx_string_put(vars->mlx, vars->win, 0, 110, ~0, "Press 'f' to \
+	mlx_string_put(vars->mlx, vars->win, 10, 110, ~0, "Press 'c' to \
+enable/disable antialiasing (SSAA 4x)");
+	mlx_string_put(vars->mlx, vars->win, 10, 130, ~0, "Press 'v' to \
+enable/disable normal disruption");
+	mlx_string_put(vars->mlx, vars->win, 10, 150, ~0, "Press 'f' to \
 enable/disable debug mode");
-	mlx_string_put(vars->mlx, vars->win, 0, 130, ~0, "Press 'esc' to exit");
+	mlx_string_put(vars->mlx, vars->win, 10, 170, ~0, "Press 'esc' to exit");
 	return (TRUE);
 }
 
