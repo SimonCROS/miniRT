@@ -87,7 +87,7 @@ triangle mode.");
 			else if (i == K_DOWN)
 				vars->cam_down = 1;
 		}
-		else if (i == K_C)
+		else if (i == K_C || i == K_V)
 		{
 			if (i == K_C)
 			{
@@ -101,8 +101,10 @@ triangles are in the scene.");
 					scene->render->samples = 4;
 				else
 					scene->render->samples = 1;
-				vars->flush = 1;
 			}
+			else if (i == K_V)
+				camera->normal_disruption = !camera->normal_disruption;
+			vars->flush = 1;
 		}
 	}
 	return (0);

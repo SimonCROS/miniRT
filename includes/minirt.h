@@ -213,6 +213,7 @@ struct s_camera
 	float		hlen;
 	int			shadows;
 	int			show_triangles;
+	int			normal_disruption;
 };
 
 t_camera	*new_camera(t_vector3 position, t_vector3 direction, float fov);

@@ -105,8 +105,6 @@ static void	render_pixel(t_thread_data *data, t_scene *scene, size_t x,
 	}
 	if (changed)
 		data->vars->set_pixel(data->camera->render, x, y, color);
-	// y += (int)((double)10 * sin((double)x / (double)10));
-	// y = fminf(y, fmaxf(0, scene->render->height - 1));
 }
 
 static void	render_chunk(t_thread_data *data, size_t start_x, size_t start_y)

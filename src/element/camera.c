@@ -83,5 +83,6 @@ t_camera	*new_camera(t_vector3 position, t_vector3 direction, float fov)
 	camera->render = NULL;
 	camera->z_buffer = NULL;
 	camera->show_triangles = FALSE;
+	camera->normal_disruption = FALSE;
 	return (camera);
 }

@@ -20,5 +20,7 @@ t_ray	compute_ray(t_options *render, t_camera *camera, float x, float y)
 	ray.light = 1;
 	ray.origin = camera->position;
 	ray.length = *get_z_buffer_value(camera->z_buffer, x, y, render->width);
+	if (camera->normal_disruption)
+		ray.origin.y += 0.5 * sin((double)x / (double)10);
 	return (ray);
 }
