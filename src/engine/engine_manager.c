@@ -137,6 +137,8 @@ int	render(t_vars *vars)
 	}
 	else
 	{
+		get_samples_template(scene->render->samples,
+			scene->render->samples_template);
 		render2(vars, camera, scene);
 		log_msg(DEBUG, "Image successfully rendered");
 	}

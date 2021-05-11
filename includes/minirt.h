@@ -29,6 +29,8 @@
 #  define K_P 35
 #  define K_M 46
 #  define K_N 45
+#  define K_C 8
+#  define K_V 9
 #  define K_ESP 49
 #  define K_LSHIFT 257
 # else
@@ -47,11 +49,16 @@
 #  define K_F 102
 #  define K_M 109
 #  define K_N 110
+#  define K_C 99
+#  define K_V 118
 #  define K_ESP 32
 #  define K_LSHIFT 65505
 # endif
 
 /*** Types ********************************************************************/
+
+typedef float				t_noaa[1][2];
+typedef float				t_ssaa4[4][2];
 
 typedef struct s_vars		t_vars;
 
@@ -168,7 +175,6 @@ struct s_vars
 	int				cam_right;
 	int				cam_up;
 	int				cam_down;
-	int				samples;
 };
 
 void		exit_minirt(t_vars *vars, t_tpool *pool, void *other, int __status);
@@ -239,6 +245,8 @@ struct s_options
 	int		threads;
 	size_t	chunk_width;
 	size_t	chunk_height;
+	int		samples;
+	float	samples_template[8][2];
 };
 
 struct s_scene
@@ -256,6 +264,7 @@ struct s_scene
 void		*free_scene(t_scene *scene);
 t_scene		*get_scene(void);
 int			load_scene(char *file);
+void		get_samples_template(int aa, void *buf);
 
 /*** Parsing utils ************************************************************/
 

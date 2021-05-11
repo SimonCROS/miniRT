@@ -75,47 +75,38 @@ t_object	*nearest_object(t_list *objects, t_ray *ray)
 static void	render_pixel(t_thread_data *data, t_scene *scene, size_t x,
 	size_t y)
 {
-	float		i;
-	float		j;
+	int			i;
 	t_ray		ray;
 	t_object	*object;
 	int			changed;
-	t_color		before;
 	t_color		color;
 
+	color = *(scene->background);
 	changed = 0;
 	i = 0;
-	before = data->vars->get_pixel(data->camera->render, x, y);
-	color = before;
-	while (i < data->vars->samples)
+	while (i < scene->render->samples)
 	{
-		j = 0;
-		while (j < data->vars->samples)
+		ray = compute_ray(scene->render, data->camera,
+				x + scene->render->samples_template[i][0],
+				y + scene->render->samples_template[i][1]);
+		object = nearest_object(scene->objects, &ray);
+		if (object)
 		{
-			object = NULL;
-			ray = compute_ray(scene->render, data->camera, x + i / data->vars->samples, y + j / data->vars->samples);
-			object = nearest_object(scene->objects, &ray);
-			if (object)
-			{
-				changed = 1;
-				render_light(scene, data->camera, object, &ray);
-				if (i == 0 && j == 0)
-					color = ray.color;
-				else
-					color = color_avg(color, ray.color);
-			}
+			changed = 1;
+			render_light(scene, data->camera, object, &ray);
+			if (i == 0)
+				color = ray.color;
 			else
-				color = color_avg(color, before);
-			j++;
+				color = color_avg(color, ray.color);
 		}
+		else
+			color = color_avg(color, *(scene->background));
 		i++;
 	}
 	if (changed)
-	{
-		// y += (int)((double)10 * sin((double)x / (double)10));
-		// y = fminf(y, fmaxf(0, scene->render->height - 1));
 		data->vars->set_pixel(data->camera->render, x, y, color);
-	}
+	// y += (int)((double)10 * sin((double)x / (double)10));
+	// y = fminf(y, fmaxf(0, scene->render->height - 1));
 }
 
 static void	render_chunk(t_thread_data *data, size_t start_x, size_t start_y)

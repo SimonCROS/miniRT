@@ -87,6 +87,23 @@ triangle mode.");
 			else if (i == K_DOWN)
 				vars->cam_down = 1;
 		}
+		else if (i == K_C)
+		{
+			if (i == K_C)
+			{
+				if (scene->triangles->size)
+				{
+					log_msg(WARN, "Antialiasing can't be enabled when \
+triangles are in the scene.");
+					return (0);
+				}
+				if (scene->render->samples == 1)
+					scene->render->samples = 4;
+				else
+					scene->render->samples = 1;
+				vars->flush = 1;
+			}
+		}
 	}
 	return (0);
 }

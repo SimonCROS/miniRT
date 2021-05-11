@@ -146,53 +146,14 @@ void	project(t_vars *vars, t_object *triangle, t_scene *scene, t_vector3 min, t_
 			y = min_raster.y;
 			while (y <= max_raster.y - 1)
 			{
-				float		i;
-				float		j;
-				int			changed;
-				t_color		before;
-				t_color		color;
-
-				changed = 0;
-				i = 0;
-				before = vars->get_pixel(camera->render, x, y);
-				color = before;
 				buf_z = get_z_buffer_value(camera->z_buffer, x, y, scene->render->width);
-				while (i < vars->samples)
+				ray = compute_ray(scene->render, camera, x, y);
+				if (collides_triangle(triangle, &ray) && ray.length < *buf_z)
 				{
-					j = 0;
-					while (j < vars->samples)
-					{
-						ray = compute_ray(scene->render, camera, x + i / vars->samples, y + j / vars->samples);
-						if (collides_triangle(triangle, &ray) && ray.length < *buf_z)
-						{
-							changed = 1;
-							render_light(scene, camera, triangle, &ray);
-							if (i == 0 && j == 0)
-								color = ray.color;
-							else
-								color = color_avg(color, ray.color);
-						}
-						else
-							color = color_avg(color, before);
-						j++;
-					}
-					i++;
+					*buf_z = ray.length;
+					render_light(scene, camera, triangle, &ray);
+					vars->set_pixel(camera->render, x, y, ray.color);
 				}
-				if (changed)
-				{
-					// y += (int)((double)10 * sin((double)x / (double)10));
-					// y = fminf(y, fmaxf(0, scene->render->height - 1));
-					vars->set_pixel(camera->render, x, y, color);
-				}
-
-				// buf_z = get_z_buffer_value(camera->z_buffer, x, y, scene->render->width);
-				// ray = compute_ray(scene->render, camera, x, y);
-				// if (collides_triangle(triangle, &ray) && ray.length < *buf_z)
-				// {
-				// 	*buf_z = ray.length;
-				// 	render_light(scene, camera, triangle, &ray);
-				// 	vars->set_pixel(camera->render, x, y, ray.color);
-				// }
 				y++;
 			}
 			x++;
