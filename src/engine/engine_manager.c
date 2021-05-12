@@ -34,6 +34,15 @@ static void	*triangle_thread(t_thread_data *data, int *chunk)
 	return (NULL);
 }
 
+static void	*render_thread(t_thread_data *data, int *chunk)
+{
+	if (data->scene->triangles->size && !data->camera->show_triangles)
+		triangle_thread(data, chunk);
+	if (data->scene->objects->size)
+		object_thread(data, chunk);
+	return (NULL);
+}
+
 static void	render3(t_vars *vars, t_tpool *pool, t_thread_data *data,
 	size_t *chunks)
 {
@@ -52,21 +61,10 @@ static void	render3(t_vars *vars, t_tpool *pool, t_thread_data *data,
 	while (chunk < data->chunks)
 	{
 		chunks[chunk] = chunk;
-		if (has_triangles && !data->camera->show_triangles)
+		if (!tpool_add_work(pool, (t_bifun)render_thread, data, chunks + chunk))
 		{
-			if (!tpool_add_work(pool, (t_bifun)triangle_thread, data, chunks + chunk))
-			{
-				perror("Error\nAn error occurred while starting rendering");
-				exit_minirt(vars, pool, chunks, EXIT_FAILURE);
-			}
-		}
-		if (has_objects && !data->camera->show_triangles)
-		{
-			if (!tpool_add_work(pool, (t_bifun)render_thread, data, chunks + chunk))
-			{
-				perror("Error\nAn error occurred while starting rendering");
-				exit_minirt(vars, pool, chunks, EXIT_FAILURE);
-			}
+			perror("Error\nAn error occurred while starting rendering");
+			exit_minirt(vars, pool, chunks, EXIT_FAILURE);
 		}
 		chunk++;
 	}

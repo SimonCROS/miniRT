@@ -40,4 +40,5 @@ void	init_bmp_image(char *file, t_scene *scene)
 	vars.camera->shadows = 1;
 	render(&vars);
 	exit_minirt(&vars, NULL, NULL, EXIT_SUCCESS);
+
 }

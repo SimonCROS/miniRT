@@ -25,7 +25,7 @@ struct s_thread_dat
 
 /*** Engine *******************************************************************/
 
-void		*render_thread(t_thread_data *data, int *chunk);
+void		*object_thread(t_thread_data *data, int *chunk);
 
 /*** Z-Buffer *****************************************************************/
 

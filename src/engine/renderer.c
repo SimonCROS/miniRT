@@ -127,7 +127,7 @@ static void	render_chunk(t_thread_data *data, size_t start_x, size_t start_y)
 	}
 }
 
-void	*render_thread(t_thread_data *data, int *chunk)
+void	*object_thread(t_thread_data *data, int *chunk)
 {
 	t_options	*params;
 	int			chunk_x;
