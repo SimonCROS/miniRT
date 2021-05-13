@@ -1,0 +1,36 @@
+#!/bin/bash
+set -e
+
+# Add folder to path
+sudo echo "export PATH=\"$HOME/.local/bin:\$PATH\"" >> ~/.zshrc
+export PATH="$HOME/.local/bin:$PATH"
+
+# Enable progress bar for apt-get
+sudo sh -c 'echo "Dpkg::Progress-Fancy \"1\";" > /etc/apt/apt.conf.d/99progressbar'
+
+# Install the necessary packages
+sudo apt-get -y update
+sudo apt-get -y install xrdp
+sudo apt-get -y install xfce4 xfce4-terminal tango-icon-theme
+sudo apt-get -y install build-essential manpages-dev python3-pip
+sudo apt-get -y install libbsd-dev libxext-dev
+sudo apt-get -y purge light-locker
+
+# Setup Xfce Desktop Environment
+sudo echo xfce4-session > ~/.xsession
+sudo sh -c "sudo echo '#!/bin/sh
+
+if [ -r /etc/default/locale ]; then
+  . /etc/default/locale
+  export LANG LANGUAGE
+fi
+
+startxfce4' > /etc/xrdp/startwm.sh"
+
+# Setup Xrdp
+sudo sed -i 's/port=3389/port=3390/' /etc/xrdp/xrdp.ini
+sudo service xrdp restart
+
+# Install norminette  
+python3 -m pip install --upgrade pip setuptools
+python3 -m pip install norminette

@@ -48,11 +48,9 @@ static void	render3(t_vars *vars, t_tpool *pool, t_thread_data *data,
 {
 	size_t	chunk;
 	int		has_triangles;
-	int		has_objects;
 
 	chunk = 0;
 	has_triangles = data->scene->triangles->size;
-	has_objects = data->scene->objects->size;
 	if (has_triangles && data->camera->show_triangles)
 		render_triangles(vars, data->scene,
 			vec3_new(0, 0, 0),

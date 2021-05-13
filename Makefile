@@ -89,9 +89,9 @@ $(BIN)/%.o:	$(SRC)/%.c $(HEADERS)
 			$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@ -O3
 
 $(NAME):	compile_lib $(OBJS)
-			@ln -sf $(MINILIBX)/$(MLX) .
-			@ln -sf $(LIBFT_DIR)/$(LIBFT) .
-			@$(CC) $(CFLAGS) $(OBJS) $(MLX) $(LIBFT) -o $(NAME) $(LIBRARIES)
+			ln -sf $(MINILIBX)/$(MLX) .
+			ln -sf $(LIBFT_DIR)/$(LIBFT) .
+			$(CC) $(CFLAGS) $(OBJS) $(MLX) $(LIBFT) -o $(NAME) $(LIBRARIES)
 
 compile_lib:
 			@$(MAKE) -C $(LIBFT_DIR)
