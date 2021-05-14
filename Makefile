@@ -71,6 +71,7 @@ override SRCS	:=									\
 				provider/scene_provider.c			\
 				provider/debug_mode_provider.c		\
 				util/logs.c							\
+				util/utils.c						\
 				util/scene.c						\
 				util/deserializers.c				\
 				util/deserializers2.c				\

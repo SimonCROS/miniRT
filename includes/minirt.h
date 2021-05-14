@@ -20,17 +20,18 @@
 #  define K_UP 126
 #  define K_ESC 53
 #  define K_ENTER 36
-#  define K_W 13
-#  define K_S 1
 #  define K_A 0
+#  define K_C 8
 #  define K_D 2
 #  define K_F 3
-#  define K_O 31
-#  define K_P 35
 #  define K_M 46
 #  define K_N 45
-#  define K_C 8
+#  define K_O 31
+#  define K_P 35
+#  define K_S 1
 #  define K_V 9
+#  define K_W 13
+#  define K_X 7
 #  define K_ESP 49
 #  define K_LSHIFT 257
 # else
@@ -40,17 +41,18 @@
 #  define K_UP 65362
 #  define K_ESC 65307
 #  define K_ENTER 65293
-#  define K_W 122
-#  define K_S 115
 #  define K_A 113
+#  define K_C 99
 #  define K_D 100
-#  define K_O 111
-#  define K_P 112
 #  define K_F 102
 #  define K_M 109
 #  define K_N 110
-#  define K_C 99
+#  define K_O 111
+#  define K_P 112
+#  define K_S 115
 #  define K_V 118
+#  define K_W 122
+#  define K_X 123
 #  define K_ESP 32
 #  define K_LSHIFT 65505
 # endif
@@ -213,6 +215,7 @@ struct s_camera
 	int			shadows;
 	int			show_triangles;
 	int			normal_disruption;
+	int			sepia;
 };
 
 t_camera	*new_camera(t_vector3 position, t_vector3 direction, float fov);
@@ -264,7 +267,6 @@ struct s_scene
 void		*free_scene(t_scene *scene);
 t_scene		*get_scene(void);
 int			load_scene(char *file);
-void		get_samples_template(int aa, void *buf);
 
 /*** Parsing utils ************************************************************/
 
@@ -299,5 +301,10 @@ struct s_gnl_entry
 char		**ft_split_first(char *s, char c);
 int			get_next_line(int fd, char **line);
 int			gnl_init(char ***current, char **tmp_line, ssize_t *result);
+
+/*** Misc *********************************************************************/
+
+void		get_samples_template(int aa, void *buf);
+t_color		to_sepia(t_color in);
 
 #endif

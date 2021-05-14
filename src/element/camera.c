@@ -72,17 +72,14 @@ t_camera	*new_camera(t_vector3 position, t_vector3 direction, float fov)
 {
 	t_camera	*camera;
 
-	camera = malloc(sizeof(t_camera));
+	camera = ft_calloc(1, sizeof(t_camera));
 	if (!camera)
 		return (NULL);
-	camera->shadows = 0;
 	camera->position = position;
 	camera->direction = direction;
 	reload_camera(camera);
 	camera->hlen = tan(fov * 0.5 * M_PI / 180);
 	camera->render = NULL;
 	camera->z_buffer = NULL;
-	camera->show_triangles = FALSE;
-	camera->normal_disruption = FALSE;
 	return (camera);
 }

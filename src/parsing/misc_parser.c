@@ -1,15 +1,6 @@
 #include "minirt.h"
 #include "object.h"
 
-void	get_samples_template(int aa, void *buf)
-{
-	if (aa == 1)
-		ft_memcpy(buf, (t_noaa){{0, 0}}, sizeof(t_noaa));
-	else if (aa == 4)
-		ft_memcpy(buf, (t_ssaa4){{0.25, 0.4}, {0.4, -0.25}, {-0.25, -0.4},
-		{-0.4, 0.25}}, sizeof(t_ssaa4));
-}
-
 t_options	*parse_render(t_list *data)
 {
 	t_options	params;

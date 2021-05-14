@@ -104,6 +104,8 @@ triangles are in the scene.");
 			}
 			else if (i == K_V)
 				camera->normal_disruption = !camera->normal_disruption;
+			else if (i == K_X)
+				camera->sepia = !camera->sepia;
 			vars->flush = 1;
 		}
 	}
