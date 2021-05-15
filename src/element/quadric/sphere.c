@@ -20,11 +20,29 @@ t_object	*parse_sphere(t_list *data, t_vector3 origin)
 	return (new_sphere(radius, vec3_addv(pos, origin), color));
 }
 
+static int	collides_sphere(t_object *obj, t_ray *ray)
+{
+	(void)obj;
+	float u, v;
+	int i, j;
+	float phi = atan2f(ray->nhit.z, ray->nhit.x);
+	float theta = asinf(ray->nhit.y);
+	u = 1 - (phi + M_PI) / (2 * M_PI);
+	v = (theta + M_PI / 2) / M_PI;
+	i = u * 100;
+	j = v * 100;
+
+	obj->color = color_new(170, 170, 170);
+	if ((i % 10 < 5 && j % 10 >= 5) || (i % 10 >= 5 && j % 10 < 5))
+		obj->color = color_new(80, 80, 80);
+	return (TRUE);
+}
+
 t_object	*new_sphere(float radius, t_vector3 p, t_color color)
 {
 	t_object	*object;
 
-	object = new_default_quadric(p, vec3_new(0, 1, 0), color, NULL);
+	object = new_default_quadric(p, vec3_new(0, 1, 0), color, (t_bipre)collides_sphere);
 	if (!object)
 		return (NULL);
 	object->quadric = (t_quadric){
