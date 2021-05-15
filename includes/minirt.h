@@ -52,7 +52,7 @@
 #  define K_S 115
 #  define K_V 118
 #  define K_W 122
-#  define K_X 123
+#  define K_X 120
 #  define K_ESP 32
 #  define K_LSHIFT 65505
 # endif
@@ -140,8 +140,8 @@ int			on_close(t_vars *vars);
 int			on_scroll(t_vars *vars, int direction);
 int			on_drag(t_vars *vars, t_click_type type);
 int			on_click(t_vars *vars, t_click_type type);
-int			on_change_camera(t_vars *vars);
 int			on_release_click(t_vars *vars, t_click_type type);
+int			on_change_camera(t_vars *vars, t_camera *from, t_camera *to);
 
 /*** Bmp implementation *******************************************************/
 

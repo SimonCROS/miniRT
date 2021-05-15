@@ -12,9 +12,10 @@ void	apply_sepia(t_options *options, char *image_addr, int bits_per_pixel)
 	bytes_per_pixel = bits_per_pixel / 8;
 	while (i < options->width * options->height)
 	{
-		image_addr += bytes_per_pixel;
 		dst = (unsigned int *)image_addr;
 		*dst = color_to_hex(to_sepia(color_from_hex(*dst)));
+		image_addr += bytes_per_pixel;
+		i++;
 	}
 }
 

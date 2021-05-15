@@ -15,7 +15,7 @@ int	key_pressed_hook(int i, t_vars *vars)
 	{
 		started = 1;
 		vars->camera = (t_camera *)lst_first(scene->cameras);
-		return (on_change_camera(vars));
+		return (on_change_camera(vars, NULL, vars->camera));
 	}
 	else if (started)
 	{
@@ -54,8 +54,8 @@ triangle mode.");
 			scene->index %= scene->cameras->size;
 			if (scene->index < 0)
 				scene->index = scene->cameras->size + scene->index;
-			vars->camera = (t_camera*)lst_get(scene->cameras, scene->index);
-			return (on_change_camera(vars));
+			vars->camera = (t_camera *)lst_get(scene->cameras, scene->index);
+			return (on_change_camera(vars, camera, vars->camera));
 		}
 		else if (i == K_W || i == K_S || i == K_A || i == K_D || i == K_ESP
 			|| i == K_LSHIFT || i == K_LEFT || i == K_RIGHT || i == K_UP
@@ -104,9 +104,15 @@ triangles are in the scene.");
 			}
 			else if (i == K_V)
 				camera->normal_disruption = !camera->normal_disruption;
-			else if (i == K_X)
-				camera->sepia = !camera->sepia;
 			vars->flush = 1;
+		}
+		else if (i == K_X)
+		{
+			camera->sepia = !camera->sepia;
+			if (camera->render && camera->sepia)
+				vars->on_finished(vars, camera->render);
+			else
+				vars->flush = 1;
 		}
 	}
 	return (0);
