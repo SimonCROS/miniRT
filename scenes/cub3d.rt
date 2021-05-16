@@ -1,0 +1,121 @@
+R       1000 1000         4 1000 250
+A       1                                                     255,255,255
+B                                                             0,0,0
+
+c       0,0.5,0             0,0,-1            60
+
+pl      0,0,0               0,1,0                             168,127,50
+pl      0,1,0               0,1,0                             9,207,237
+
+# Spawn
+
+ob      0,0,-5              "scenes/elements/cub3d/wall_ew.rt"
+ob      0,0,-4              "scenes/elements/cub3d/wall_ew.rt"
+ob      0,0,-3              "scenes/elements/cub3d/wall_ew.rt"
+ob      0,0,-2              "scenes/elements/cub3d/wall_ew.rt"
+ob      0,0,-1              "scenes/elements/cub3d/wall_ew.rt"
+ob      0,0,0               "scenes/elements/cub3d/wall_no_s.rt"
+
+# Big south wall
+
+ob      -10,0,-6               "scenes/elements/cub3d/wall_n.rt"
+ob      -9,0,-6               "scenes/elements/cub3d/wall_n.rt"
+ob      -8,0,-6               "scenes/elements/cub3d/wall_n.rt"
+ob      -7,0,-6               "scenes/elements/cub3d/wall_n.rt"
+ob      -6,0,-6               "scenes/elements/cub3d/wall_n.rt"
+ob      -5,0,-6               "scenes/elements/cub3d/wall_n.rt"
+ob      -4,0,-6               "scenes/elements/cub3d/wall_n.rt"
+ob      -3,0,-6               "scenes/elements/cub3d/wall_n.rt"
+ob      -2,0,-6               "scenes/elements/cub3d/wall_n.rt"
+ob      -1,0,-6               "scenes/elements/cub3d/wall_n.rt"
+ob      1,0,-6               "scenes/elements/cub3d/wall_n.rt"
+ob      2,0,-6               "scenes/elements/cub3d/wall_n.rt"
+ob      3,0,-6               "scenes/elements/cub3d/wall_n.rt"
+ob      4,0,-6               "scenes/elements/cub3d/wall_n.rt"
+ob      5,0,-6               "scenes/elements/cub3d/wall_n.rt"
+ob      6,0,-6               "scenes/elements/cub3d/wall_n.rt"
+ob      7,0,-6               "scenes/elements/cub3d/wall_n.rt"
+ob      8,0,-6               "scenes/elements/cub3d/wall_n.rt"
+ob      9,0,-6               "scenes/elements/cub3d/wall_n.rt"
+ob      10,0,-6              "scenes/elements/cub3d/wall_n.rt"
+
+# Big notrh wall
+
+ob      -10,0,-26               "scenes/elements/cub3d/wall_s.rt"
+ob      -9,0,-26               "scenes/elements/cub3d/wall_s.rt"
+ob      -8,0,-26               "scenes/elements/cub3d/wall_s.rt"
+ob      -7,0,-26               "scenes/elements/cub3d/wall_s.rt"
+ob      -6,0,-26               "scenes/elements/cub3d/wall_s.rt"
+ob      -5,0,-26               "scenes/elements/cub3d/wall_s.rt"
+ob      -4,0,-26               "scenes/elements/cub3d/wall_s.rt"
+ob      -3,0,-26               "scenes/elements/cub3d/wall_s.rt"
+ob      -2,0,-26               "scenes/elements/cub3d/wall_s.rt"
+ob      -1,0,-26               "scenes/elements/cub3d/wall_s.rt"
+ob      0,0,-26               "scenes/elements/cub3d/wall_s.rt"
+ob      1,0,-26               "scenes/elements/cub3d/wall_s.rt"
+ob      2,0,-26               "scenes/elements/cub3d/wall_s.rt"
+ob      3,0,-26               "scenes/elements/cub3d/wall_s.rt"
+ob      4,0,-26               "scenes/elements/cub3d/wall_s.rt"
+ob      5,0,-26               "scenes/elements/cub3d/wall_s.rt"
+ob      6,0,-26               "scenes/elements/cub3d/wall_s.rt"
+ob      7,0,-26               "scenes/elements/cub3d/wall_s.rt"
+ob      8,0,-26               "scenes/elements/cub3d/wall_s.rt"
+ob      9,0,-26               "scenes/elements/cub3d/wall_s.rt"
+ob      10,0,-26              "scenes/elements/cub3d/wall_s.rt"
+
+# Big west wall
+
+ob      -10,0,-26               "scenes/elements/cub3d/wall_e.rt"
+ob      -10,0,-25              "scenes/elements/cub3d/wall_e.rt"
+ob      -10,0,-24              "scenes/elements/cub3d/wall_e.rt"
+ob      -10,0,-23              "scenes/elements/cub3d/wall_e.rt"
+ob      -10,0,-22              "scenes/elements/cub3d/wall_e.rt"
+ob      -10,0,-21              "scenes/elements/cub3d/wall_e.rt"
+ob      -10,0,-20             "scenes/elements/cub3d/wall_e.rt"
+ob      -10,0,-19             "scenes/elements/cub3d/wall_e.rt"
+ob      -10,0,-18             "scenes/elements/cub3d/wall_e.rt"
+ob      -10,0,-17             "scenes/elements/cub3d/wall_e.rt"
+ob      -10,0,-16            "scenes/elements/cub3d/wall_e.rt"
+ob      -10,0,-15            "scenes/elements/cub3d/wall_e.rt"
+ob      -10,0,-14            "scenes/elements/cub3d/wall_e.rt"
+ob      -10,0,-13            "scenes/elements/cub3d/wall_e.rt"
+ob      -10,0,-12            "scenes/elements/cub3d/wall_e.rt"
+ob      -10,0,-11            "scenes/elements/cub3d/wall_e.rt"
+ob      -10,0,-10             "scenes/elements/cub3d/wall_e.rt"
+ob      -10,0,-9             "scenes/elements/cub3d/wall_e.rt"
+ob      -10,0,-8             "scenes/elements/cub3d/wall_e.rt"
+ob      -10,0,-7             "scenes/elements/cub3d/wall_e.rt"
+ob      -10,0,-6             "scenes/elements/cub3d/wall_e.rt"
+
+# Big west wall
+
+ob      10,0,-26               "scenes/elements/cub3d/wall_w.rt"
+ob      10,0,-25              "scenes/elements/cub3d/wall_w.rt"
+ob      10,0,-24              "scenes/elements/cub3d/wall_w.rt"
+ob      10,0,-23              "scenes/elements/cub3d/wall_w.rt"
+ob      10,0,-22              "scenes/elements/cub3d/wall_w.rt"
+ob      10,0,-21              "scenes/elements/cub3d/wall_w.rt"
+ob      10,0,-20             "scenes/elements/cub3d/wall_w.rt"
+ob      10,0,-19             "scenes/elements/cub3d/wall_w.rt"
+ob      10,0,-18             "scenes/elements/cub3d/wall_w.rt"
+ob      10,0,-17             "scenes/elements/cub3d/wall_w.rt"
+ob      10,0,-16            "scenes/elements/cub3d/wall_w.rt"
+ob      10,0,-15            "scenes/elements/cub3d/wall_w.rt"
+ob      10,0,-14            "scenes/elements/cub3d/wall_w.rt"
+ob      10,0,-13            "scenes/elements/cub3d/wall_w.rt"
+ob      10,0,-12            "scenes/elements/cub3d/wall_w.rt"
+ob      10,0,-11            "scenes/elements/cub3d/wall_w.rt"
+ob      10,0,-10             "scenes/elements/cub3d/wall_w.rt"
+ob      10,0,-9             "scenes/elements/cub3d/wall_w.rt"
+ob      10,0,-8             "scenes/elements/cub3d/wall_w.rt"
+ob      10,0,-7             "scenes/elements/cub3d/wall_w.rt"
+ob      10,0,-6             "scenes/elements/cub3d/wall_w.rt"
+
+# Other walls
+
+ob      4,0,-15             "scenes/elements/cub3d/wall.rt"
+ob      -2,0,-9             "scenes/elements/cub3d/wall.rt"
+ob      8,0,-20             "scenes/elements/cub3d/wall.rt"
+ob      2,0,-13             "scenes/elements/cub3d/wall.rt"
+ob      -7,0,-24            "scenes/elements/cub3d/wall.rt"
+ob      -6,0,-12            "scenes/elements/cub3d/wall.rt"

@@ -51,11 +51,6 @@ static void	render3(t_vars *vars, t_tpool *pool, t_thread_data *data,
 
 	chunk = 0;
 	has_triangles = data->scene->triangles->size;
-	if (has_triangles && data->camera->show_triangles)
-		render_triangles(vars, data->scene,
-			vec3_new(0, 0, 0),
-			vec3_new(data->scene->render->width,
-				data->scene->render->height, 0));
 	while (chunk < data->chunks)
 	{
 		chunks[chunk] = chunk;
@@ -70,6 +65,11 @@ static void	render3(t_vars *vars, t_tpool *pool, t_thread_data *data,
 	tpool_start(pool);
 	tpool_wait(pool);
 	tpool_destroy(pool);
+	if (has_triangles && data->camera->show_triangles)
+		render_triangles(vars, data->scene,
+			vec3_new(0, 0, 0),
+			vec3_new(data->scene->render->width,
+				data->scene->render->height, 0));
 	free(chunks);
 }
 

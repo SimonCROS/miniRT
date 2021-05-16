@@ -104,15 +104,12 @@ void	project(t_vars *vars, t_object *triangle, t_scene *scene, t_vector3 min, t_
 	if (s0.z < 0 && s1.z < 0 && s2.z < 0)
 		return ;
 	if (camera->show_triangles)
-	{
-		int	w;
-		int	h;
-
-		w = max.x - 1;
-		h = max.y - 1;
-		if (s0.x < min.x || s1.x < min.x || s2.x < min.x || s0.y < min.y
-			|| s1.y < min.y || s2.y < min.y || s0.x > w || s1.x > w || s2.x > w
-			|| s0.y > h || s1.y > h || s2.y > h)
+	{	
+		if ((s0.x < 0 && s1.x < 0 && s2.x < 0)
+			|| (s0.x > max.x && s1.x > max.x && s2.x > max.x))
+			return ;
+		if ((s0.y < 0 && s1.y < 0 && s2.y < 0)
+			|| (s0.y > max.y && s1.y > max.y && s2.y > max.y))
 			return ;
 		draw_line(vars, s0.x, s0.y, s1.x, s1.y, color_new(224, 211, 25));
 		draw_line(vars, s1.x, s1.y, s2.x, s2.y, color_new(224, 211, 25));

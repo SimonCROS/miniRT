@@ -8,7 +8,11 @@ void	draw_line(t_vars *vars, int x0, int y0, int x1, int y1, t_color color)
 	int	sy;
 	int	err;
 	int	e2;
+	int	w;
+	int	h;
 
+	w = get_scene()->render->width;
+	h = get_scene()->render->height;
 	dx = abs(x1 - x0);
 	sx = 2 * (x0 < x1) - 1;
 	dy = -abs(y1 - y0);
@@ -16,7 +20,8 @@ void	draw_line(t_vars *vars, int x0, int y0, int x1, int y1, t_color color)
 	err = dx + dy;
 	while (TRUE)
 	{
-		vars->set_pixel(vars->camera->render, x0, y0, color);
+		if (x0 >= 0 && x0 < w && y0 >= 0 && y0 < h)
+			vars->set_pixel(vars->camera->render, x0, y0, color);
 		if (x0 == x1 && y0 == y1)
 			break ;
 		e2 = 2 * err;
