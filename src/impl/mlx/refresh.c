@@ -19,26 +19,10 @@ void	apply_sepia(t_options *options, char *image_addr, int bits_per_pixel)
 	}
 }
 
-#if defined __APPLE__
-
 void	force_put_image(t_vars *vars, t_image *image)
 {
 	if (vars->camera->sepia)
 		apply_sepia(get_scene()->render, image->addr, image->bits_per_pixel);
-	mlx_sync(MLX_SYNC_IMAGE_WRITABLE, image->img);
-	mlx_sync(MLX_SYNC_WIN_FLUSH_CMD, vars->win);
 	mlx_put_image_to_window(vars->mlx, vars->win, image->img, 0, 0);
-	mlx_sync(MLX_SYNC_WIN_CMD_COMPLETED, vars->win);
+	mlx_do_sync(vars->mlx);
 }
-
-#elif defined __linux__
-
-void	force_put_image(t_vars *vars, t_image *image)
-{
-	if (vars->camera->sepia)
-		apply_sepia(get_scene()->render, image->addr, image->bits_per_pixel);
-	*(int *)(vars->mlx + 80) = 1;
-	mlx_put_image_to_window(vars->mlx, vars->win, image->img, 0, 0);
-}
-
-#endif

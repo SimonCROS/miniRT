@@ -29,9 +29,11 @@
 #  define K_O 31
 #  define K_P 35
 #  define K_S 1
+#  define K_U 32
 #  define K_V 9
 #  define K_W 13
 #  define K_X 7
+#  define K_Z 6
 #  define K_ESP 49
 #  define K_LSHIFT 257
 # else
@@ -50,9 +52,11 @@
 #  define K_O 111
 #  define K_P 112
 #  define K_S 115
+#  define K_U 117
 #  define K_V 118
 #  define K_W 122
 #  define K_X 120
+#  define K_Z 122
 #  define K_ESP 32
 #  define K_LSHIFT 65505
 # endif
@@ -216,6 +220,7 @@ struct s_camera
 	int			show_triangles;
 	int			normal_disruption;
 	int			sepia;
+	int			sphere_up_map;
 };
 
 t_camera	*new_camera(t_vector3 position, t_vector3 direction, float fov);

@@ -6,8 +6,9 @@
 static t_color	calculate_color(t_light *light, t_object *object,
 	const t_ray *ray, const t_ray *light_ray)
 {
+	(void)object;
 	return (
-		color_mul(object->color,
+		color_mul(light_ray->color,
 			color_mulf(light->color,
 				light->brightness * light->brightness
 				* fmaxf(0,
