@@ -31,7 +31,7 @@ static int	in_light(t_scene *scene, t_object *object, t_ray *light_ray,
 void	render_light(t_scene *scene, t_camera *camera, t_object *object,
 	t_ray *ray)
 {
-	float		angle;
+	float		a;
 	t_light		*light;
 	t_ray		light_ray;
 	t_iterator	lightIterator;
@@ -45,13 +45,15 @@ void	render_light(t_scene *scene, t_camera *camera, t_object *object,
 		light_ray = light->calculate_ray(light, ray, &length2);
 		if (length2 < 0)
 			continue ;
-		angle = fmaxf(0, vec3_dotv(light_ray.direction, ray->nhit));
-		if (angle && (!camera->shadows
+		a = fmaxf(0, vec3_dotv(light_ray.direction, ray->nhit));
+		if (a && (!camera->shadows
 				|| in_light(scene, object, &light_ray, length2)))
 		{
-			ray->color = color_add(ray->color, color_from_hsl(angle, 1, .5));
-			// ray->color = color_add(ray->color,
-			// 		light->calculate_color(light, object, ray, angle));
+			if (camera->color_disruption)
+				ray->color = color_add(ray->color, color_from_hsl(a, 1, .5));
+			else
+				ray->color = color_add(ray->color,
+						light->calculate_color(light, object, ray, a));
 		}
 	}
 	if (object->post_light_calculation)

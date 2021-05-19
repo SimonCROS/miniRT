@@ -21,6 +21,7 @@
 #  define K_ESC 53
 #  define K_ENTER 36
 #  define K_A 0
+#  define K_B 1
 #  define K_C 8
 #  define K_D 2
 #  define K_F 3
@@ -44,6 +45,7 @@
 #  define K_ESC 65307
 #  define K_ENTER 65293
 #  define K_A 113
+#  define K_B 98
 #  define K_C 99
 #  define K_D 100
 #  define K_F 102
@@ -221,6 +223,7 @@ struct s_camera
 	int			normal_disruption;
 	int			sepia;
 	int			sphere_up_map;
+	int			color_disruption;
 };
 
 t_camera	*new_camera(t_vector3 position, t_vector3 direction, float fov);

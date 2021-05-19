@@ -87,7 +87,7 @@ triangle mode.");
 			else if (i == K_DOWN)
 				vars->cam_down = 1;
 		}
-		else if (i == K_C || i == K_V || i == K_U)
+		else if (i == K_B || i == K_C || i == K_U || i == K_V)
 		{
 			if (i == K_C)
 			{
@@ -106,6 +106,8 @@ triangles are in the scene.");
 				camera->normal_disruption = !camera->normal_disruption;
 			else if (i == K_U)
 				camera->sphere_up_map = !camera->sphere_up_map;
+			else if (i == K_B)
+				camera->color_disruption = !camera->color_disruption;
 			vars->flush = 1;
 		}
 		else if (i == K_X)
