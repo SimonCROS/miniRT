@@ -42,7 +42,7 @@ static t_color	calculate_sphere_color(const t_camera *cam, const t_ray *ray)
 		j = v * 100;
 		if ((i % 10 < 5 && j % 10 >= 5) || (i % 10 >= 5 && j % 10 < 5))
 			color = color_new(125, 125, 125);
-	}
+	}	
 	return (color);
 }
 

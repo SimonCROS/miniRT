@@ -31,14 +31,13 @@ static int	in_light(t_scene *scene, t_object *object, t_ray *light_ray,
 void	render_light(t_scene *scene, t_camera *camera, t_object *object,
 	t_ray *ray)
 {
-	t_color		default_color;
+	float		angle;
 	t_light		*light;
 	t_ray		light_ray;
 	t_iterator	lightIterator;
 	float		length2;
 
-	default_color = object->color;
-	ray->color = color_mul(default_color, *(scene->ambiant));
+	ray->color = color_mul(object->color, *(scene->ambiant));
 	lightIterator = iterator_new(scene->lights);
 	while (iterator_has_next(&lightIterator))
 	{
@@ -46,10 +45,14 @@ void	render_light(t_scene *scene, t_camera *camera, t_object *object,
 		light_ray = light->calculate_ray(light, ray, &length2);
 		if (length2 < 0)
 			continue ;
-		light_ray.color = default_color;
-		if (!camera->shadows || in_light(scene, object, &light_ray, length2))
-			ray->color = color_add(ray->color,
-					light->calculate_color(light, object, ray, &light_ray));
+		angle = fmaxf(0, vec3_dotv(light_ray.direction, ray->nhit));
+		if (angle && (!camera->shadows
+				|| in_light(scene, object, &light_ray, length2)))
+		{
+			ray->color = color_add(ray->color, color_from_hsl(angle, 1, .5));
+			// ray->color = color_add(ray->color,
+			// 		light->calculate_color(light, object, ray, angle));
+		}
 	}
 	if (object->post_light_calculation)
 		ray->color = object->post_light_calculation(camera, ray);

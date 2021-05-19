@@ -4,16 +4,13 @@
 #include "object.h"
 
 static t_color	calculate_color(t_light *light, t_object *object,
-	const t_ray *ray, const t_ray *light_ray)
+	const t_ray *ray, float angle)
 {
-	(void)object;
+	(void)ray;
 	return (
-		color_mul(light_ray->color,
+		color_mul(object->color,
 			color_mulf(light->color,
-				light->brightness * light->brightness
-				* fmaxf(0,
-					vec3_dotv(light_ray->direction, ray->nhit)
-				)
+				light->brightness * light->brightness * angle
 			)
 		)
 	);

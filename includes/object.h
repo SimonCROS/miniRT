@@ -17,8 +17,7 @@ typedef struct s_laser
 struct s_light
 {
 	t_ray		(*calculate_ray)(t_light *, const t_ray *, float *);
-	t_color		(*calculate_color)(t_light *, t_object *, const t_ray *,
-					const t_ray *);
+	t_color		(*calculate_color)(t_light *, t_object *, const t_ray *, float);
 	float		brightness;
 	t_vector3	position;
 	t_color		color;
