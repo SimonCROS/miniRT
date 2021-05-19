@@ -4,27 +4,25 @@
 
 int	on_drag(t_vars *vars, t_click_type type)
 {
-	int			move_x;
-	int			move_y;
-	t_camera	*camera;
+	int			mx;
+	int			my;
+	t_camera	*c;
 
-	camera = vars->camera;
-	move_x = vars->mouse_x - vars->mouse_x_from;
-	move_y = vars->mouse_y - vars->mouse_y_from;
+	c = vars->camera;
+	mx = vars->mouse_x - vars->mouse_x_from;
+	my = vars->mouse_y - vars->mouse_y_from;
 	if (type == CLICK_MIDDLE)
 	{
-		camera->position = vec3_subv(camera->position,
-				vec3_muld(camera->right, move_x * 0.5));
-		camera->position = vec3_subv(camera->position,
-				vec3_muld(camera->up, move_y * 0.5));
+		c->position = vec3_subv(c->position, vec3_muld(c->right, mx * 0.5));
+		c->position = vec3_subv(c->position, vec3_muld(c->up, my * 0.5));
 	}
 	if (type == CLICK_LEFT)
 	{
-		camera->direction = vec3_rotate_axis(camera->direction, camera->up,
-				M_PI / 800 * -move_x);
-		camera->direction = vec3_rotate_axis(camera->direction, camera->right,
-				M_PI / 800 * move_y);
-		reload_camera(camera);
+		c->direction = vec3_rotate_axis(c->direction, c->up,
+				M_PI / 800 * -mx);
+		c->direction = vec3_rotate_axis(c->direction, c->right,
+				M_PI / 800 * my);
+		reload_camera(c);
 	}
 	vars->mouse_x_from = vars->mouse_x;
 	vars->mouse_y_from = vars->mouse_y;

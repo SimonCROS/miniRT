@@ -1,5 +1,10 @@
 #include "minirt.h"
 
+int	log_prev_line(void)
+{
+	return (printf("\033[A\33[2K\r"));
+}
+
 int	log_cr(void)
 {
 	return (printf("\033[0m\r"));

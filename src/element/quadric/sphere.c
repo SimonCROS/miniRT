@@ -26,18 +26,14 @@ static t_color	calculate_sphere_color(const t_camera *cam, const t_ray *ray)
 	float	v;
 	int		i;
 	int		j;
-	float	phi;
-	float	theta;
 	t_color	color;
 
 	color = ray->color;
 	if (cam->sphere_up_map)
 	{
 		color = color_new(200, 200, 200);
-		phi = atan2f(ray->nhit.z, ray->nhit.x);
-		theta = asinf(ray->nhit.y);
-		u = 1 - (phi + M_PI) / (2 * M_PI);
-		v = (theta + M_PI / 2) / M_PI;
+		u = 1 - (atan2f(ray->nhit.z, ray->nhit.x) + M_PI) / (2 * M_PI);
+		v = (asinf(ray->nhit.y) + M_PI / 2) / M_PI;
 		i = u * 100;
 		j = v * 100;
 		if ((i % 10 < 5 && j % 10 >= 5) || (i % 10 >= 5 && j % 10 < 5))

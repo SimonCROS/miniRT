@@ -43,5 +43,5 @@ int	parse_pyramid(t_list *data, t_vector3 origin, t_list *objects)
 		return (0);
 	width = fabsf(width);
 	return (generate_triangles(objects, (float [2]){width, height},
-			(t_vector3 [2]){vec3_addv(pos, origin), rot}, color));
+		(t_vector3 [2]){vec3_addv(pos, origin), rot}, color));
 }

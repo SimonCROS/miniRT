@@ -32,18 +32,10 @@ static t_matrix44	look_at(t_vector3 from, t_vector3 to)
 	up = vec3_crossv(forward, right);
 	if (vec3_length_squared(up) == 0)
 		up = vec3_new(0, 1, 0);
-	c2w.e[0][0] = right.x;
-	c2w.e[0][1] = right.y;
-	c2w.e[0][2] = right.z;
-	c2w.e[1][0] = up.x;
-	c2w.e[1][1] = up.y;
-	c2w.e[1][2] = up.z;
-	c2w.e[2][0] = forward.x;
-	c2w.e[2][1] = forward.y;
-	c2w.e[2][2] = forward.z;
-	c2w.e[3][0] = from.x;
-	c2w.e[3][1] = from.y;
-	c2w.e[3][2] = from.z;
+	ft_memcpy(c2w.e[0], &right, sizeof(t_vector3));
+	ft_memcpy(c2w.e[1], &up, sizeof(t_vector3));
+	ft_memcpy(c2w.e[2], &forward, sizeof(t_vector3));
+	ft_memcpy(c2w.e[3], &from, sizeof(t_vector3));
 	c2w.e[3][3] = 1;
 	return (c2w);
 }

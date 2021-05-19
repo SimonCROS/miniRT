@@ -243,6 +243,7 @@ enum e_log_type
 
 int			log_nl(void);
 int			log_cr(void);
+int			log_prev_line(void);
 int			log_msg_arg(t_log_type type, char *str, const char *arg);
 int			log_msg(t_log_type type, char *str);
 int			is_debug_enabled(void);

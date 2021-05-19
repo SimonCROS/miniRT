@@ -13,9 +13,9 @@ t_color	to_sepia(t_color in)
 {
 	t_color	out;
 
-	out.r = (in.r * .393) + (in.g *.769) + (in.b * .189);
-	out.g = (in.r * .349) + (in.g *.686) + (in.b * .168);
-	out.b = (in.r * .272) + (in.g *.534) + (in.b * .131);
+	out.r = (in.r * .393) + (in.g * .769) + (in.b * .189);
+	out.g = (in.r * .349) + (in.g * .686) + (in.b * .168);
+	out.b = (in.r * .272) + (in.g * .534) + (in.b * .131);
 	out.a = 1;
 	return (out);
 }

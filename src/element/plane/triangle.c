@@ -26,12 +26,13 @@ t_object	*parse_triangle(t_list *data, t_vector3 origin)
 
 static int	collides_triangle(t_object *object, t_ray *ray)
 {
-	t_vector3 pvec = (t_vector3) { 0,0,0 };
-	t_vector3 tvec = (t_vector3) { 0,0,0 };
-	t_vector3 qvec = (t_vector3) { 0,0,0 };
-	float det, invdet, u, v;
-	t_triangle	triangle = object->data.triangle;
+	t_vector3	pvec;
+	t_vector3	tvec;
+	t_vector3	qvec;
+	t_triangle	triangle;
+	float		det, invdet, u, v, t;
 
+	triangle = object->data.triangle;
 	pvec = vec3_crossv(ray->direction, triangle.edge2);
 	det = vec3_dotv(triangle.edge1, pvec);
 	if (det > -__FLT_EPSILON__ && det < __FLT_EPSILON__)
@@ -45,7 +46,7 @@ static int	collides_triangle(t_object *object, t_ray *ray)
 	v = invdet * vec3_dotv(ray->direction, qvec);
 	if (v < 0 || u + v > 1)
 		return (FALSE);
-	float t = invdet * vec3_dotv(triangle.edge2, qvec);
+	t = invdet * vec3_dotv(triangle.edge2, qvec);
 	if (t > __FLT_EPSILON__)
 	{
 		ray->length = t;
