@@ -68,7 +68,6 @@ override SRCS	:=									\
 				impl/mlx/event/on_click.c			\
 				impl/mlx/event/on_scroll.c			\
 				impl/mlx/event/on_change_camera.c	\
-				provider/scene_provider.c			\
 				provider/debug_mode_provider.c		\
 				util/logs.c							\
 				util/utils.c						\

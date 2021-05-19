@@ -22,7 +22,7 @@ void	apply_sepia(t_options *options, char *image_addr, int bits_per_pixel)
 void	force_put_image(t_vars *vars, t_image *image)
 {
 	if (vars->camera->sepia)
-		apply_sepia(get_scene()->render, image->addr, image->bits_per_pixel);
+		apply_sepia(vars->scene->render, image->addr, image->bits_per_pixel);
 	mlx_put_image_to_window(vars->mlx, vars->win, image->img, 0, 0);
 	mlx_do_sync(vars->mlx);
 }

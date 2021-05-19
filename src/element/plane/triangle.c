@@ -90,13 +90,15 @@ static float	fmaxf3(float a, float b, float c)
 	return (fmaxf(a, fmaxf(b, c)));
 }
 
-void	project(t_vars *vars, t_object *triangle, t_scene *scene, t_vector3 min, t_vector3 max)
+void	project(t_vars *vars, t_object *triangle, t_vector3 min, t_vector3 max)
 {
 	t_vector3	s0;
 	t_vector3	s1;
 	t_vector3	s2;
+	t_scene		*scene;
 	t_camera	*camera;
 
+	scene = vars->scene;
 	camera = vars->camera;
 	s0 = convert_to_raster(scene->render, camera, triangle->data.triangle.p1);
 	s1 = convert_to_raster(scene->render, camera, triangle->data.triangle.p2);

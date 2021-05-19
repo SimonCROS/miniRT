@@ -30,7 +30,7 @@ void	init_bmp_image(char *file, t_scene *scene)
 	t_vars		vars;
 
 	(void)file;
-	(void)scene;
+	vars.scene = scene;
 	vars.init_image = (t_bifun)bmp_init_image;
 	vars.set_pixel = (t_pixel_writer)bmp_set_pixel;
 	vars.on_finished = (t_bicon)bmp_finished;

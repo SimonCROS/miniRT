@@ -157,6 +157,7 @@ void	init_window(char *file, t_scene *scene)
 	t_vars	vars;
 
 	vars.on_exit = (t_con)mlx_exit;
+	vars.scene = scene;
 	if (!init_mlx(&vars, file, scene))
 	{
 		errno = -1;

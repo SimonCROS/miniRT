@@ -6,7 +6,7 @@ int	key_pressed_hook(int i, t_vars *vars)
 	t_scene		*scene;
 	t_camera	*camera;
 
-	scene = get_scene();
+	scene = vars->scene;
 	if (i == K_ESC)
 		exit_minirt(vars, NULL, NULL, EXIT_SUCCESS);
 	else if (i == K_F)

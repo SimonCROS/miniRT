@@ -11,8 +11,8 @@ void	draw_line(t_vars *vars, int x0, int y0, int x1, int y1, t_color color)
 	int	w;
 	int	h;
 
-	w = get_scene()->render->width;
-	h = get_scene()->render->height;
+	w = vars->scene->render->width;
+	h = vars->scene->render->height;
 	dx = abs(x1 - x0);
 	sx = 2 * (x0 < x1) - 1;
 	dy = -abs(y1 - y0);

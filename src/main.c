@@ -2,6 +2,7 @@
 
 int	main(int argc, char **argv)
 {
+	t_scene	*scene;
 	int		save;
 
 	pthread_setname_ft("MAIN");
@@ -15,7 +16,8 @@ int	main(int argc, char **argv)
 		perror("Error\nUnable to parse program arguments");
 		exit(EXIT_FAILURE);
 	}
-	if (!load_scene(argv[1]))
+	scene = parse(argv[1]);
+	if (!scene)
 	{
 		log_msg(FATAL, "An error occurred while parsing the file");
 		perror("Error\nAn error occurred while parsing the file");
@@ -23,8 +25,8 @@ int	main(int argc, char **argv)
 	}
 	log_msg(INFO, "Parsing finished");
 	if (save)
-		init_bmp_image(argv[1], get_scene());
+		init_bmp_image(argv[1], scene);
 	else
-		init_window(argv[1], get_scene());
+		init_window(argv[1], scene);
 	exit(EXIT_SUCCESS);
 }

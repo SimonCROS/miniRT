@@ -159,6 +159,7 @@ struct s_vars
 {
 	void			*mlx;
 	void			*win;
+	t_scene			*scene;
 	t_camera		*camera;
 	t_bifunction	init_image;
 	t_pixel_writer	set_pixel;
@@ -273,8 +274,6 @@ struct s_scene
 };
 
 void		*free_scene(t_scene *scene);
-t_scene		*get_scene(void);
-int			load_scene(char *file);
 
 /*** Parsing utils ************************************************************/
 
