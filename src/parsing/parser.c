@@ -17,7 +17,8 @@ static int	parse_lines(t_list *nodes, char *file, int fd)
 		if (!(reading % 1000))
 		{
 			log_msg(INFO, NULL);
-			printf("\033[33m< Reading\033[0m %s... \033[33m%d", file, reading);
+			printf("\033[33m< Reading\033[0m %s... (\33[33m%d\33[0m)",
+				file, reading);
 			log_cr();
 		}
 		reading++;
@@ -25,19 +26,13 @@ static int	parse_lines(t_list *nodes, char *file, int fd)
 		if (result < 0)
 			break ;
 		if (*buffer == '#')
-		{
 			free(buffer);
-			continue ;
-		}
-		if (!lst_unshift(nodes, as_listf((void **)ft_splitf(buffer, ' '), free)))
+		else if (!lst_unshift(nodes, as_listf((void **)ft_splitf(buffer, ' '), free)))
 		{
 			errno = -1;
 			return (0);
 		}
 	}
-	log_msg(INFO, NULL);
-	printf("\033[33m< Reading\033[0m %s... \033[33m%d", file, reading);
-	log_nl();
 	return (result != -1);
 }
 
@@ -84,16 +79,16 @@ int	parse_file(t_scene *scene, char *file, int depth, t_vector3 origin)
 		if (!(parsing % (int)(nodes->size / 100 + 1)))
 		{
 			log_msg(INFO, NULL);
-			printf("\033[32m> Parsing\033[0m %s... \033[32m%d%%", file,
-				parsing * 100 / nodes->size);
+			printf("\33[32m> Parsing\33[0m %s... (\33[33m%d\33[0m) \33[32m%d%%",
+				file, parsing, parsing * 100 / nodes->size);
 			log_cr();
 		}
 		parsing++;
 		success = parse_node(iterator_next(&iterator), scene, depth, origin);
 	}
 	log_msg(INFO, NULL);
-	printf("\033[32m> Parsing\033[0m %s... \033[32m%d%%", file,
-		parsing * 100 / nodes->size);
+	printf("\33[32m> Parsing\33[0m %s... (\33[33m%d\33[0m) \33[32m%d%%",
+		file, parsing, parsing * 100 / nodes->size);
 	log_nl();
 	lst_destroy(nodes);
 	return (success);

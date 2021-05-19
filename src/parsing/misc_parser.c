@@ -57,7 +57,6 @@ int	parse_object(t_scene *scene, t_list *data, int depth, t_vector3 origin)
 	if (!vec_deserialize((char *)lst_get(data, 1), &pos))
 		return (FALSE);
 	file = ft_strtrim((char *)lst_get(data, 2), "\"");
-	printf("\n");
 	if (!parse_file(scene, file, depth + 1, vec3_addv(pos, origin)))
 	{
 		free(file);

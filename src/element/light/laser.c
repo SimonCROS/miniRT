@@ -28,15 +28,13 @@ static t_ray	calculate_ray(t_light *light, const t_ray *ray, float *length2)
 	t_ray		light_ray;
 	float		inter_dist;
 
+	*length2 = -1;
 	light_ray.origin = ray->phit;
 	light_ray.direction = vec3_negate(light->data.laser.direction);
 	light_ray.length = INFINITY;
 	if (!intersect_plane(light->position, light->data.laser.direction,
 			&light_ray))
-	{
-		*length2 = -1;
 		return (light_ray);
-	}
 	p = vec3_muld(light_ray.direction, light_ray.length);
 	p = vec3_addv(p, light_ray.origin);
 	if (vec3_dotv(light->data.laser.direction, light_ray.direction) > 0)
@@ -45,10 +43,7 @@ static t_ray	calculate_ray(t_light *light, const t_ray *ray, float *length2)
 	light_ray.nhit = light->data.laser.direction;
 	inter_dist = vec3_distance_squaredv(light_ray.phit, light->position);
 	if (inter_dist > light->data.laser.radius * light->data.laser.radius)
-	{
-		*length2 = -1;
 		return (light_ray);
-	}
 	*length2 = light_ray.length * light_ray.length;
 	return (light_ray);
 }

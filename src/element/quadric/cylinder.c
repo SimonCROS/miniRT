@@ -44,14 +44,14 @@ static int	intersect_base(t_vector3 pos, t_vector3 rot, t_ray *ray, float rad)
 	return (FALSE);
 }
 
-static int	collides_caps(t_object *obj, t_ray *ray, t_vector3 base, int collides)
+static int	collides_caps(t_object *obj, t_ray *ray, t_vector3 base, int colli)
 {
 	t_ray		tmp;
 
 	tmp = *ray;
 	tmp.length = INFINITY;
 	if (intersect_base(base, obj->rotation, &tmp, obj->data.cylinder.radius)
-		&& (!collides || tmp.length < ray->length))
+		&& (!colli || tmp.length < ray->length))
 	{
 		*ray = tmp;
 		return (TRUE);
