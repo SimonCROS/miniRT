@@ -20,20 +20,20 @@ t_object	*parse_sphere(t_list *data, t_vector3 origin)
 	return (new_sphere(radius, vec3_addv(pos, origin), color));
 }
 
-static t_color	calculate_sphere_color(t_camera *cam, t_object *obj, t_ray *ray)
+static t_color	calculate_sphere_color(const t_camera *cam, const t_ray *ray)
 {
-	t_color	color;
-	float	med;
 	float	u;
 	float	v;
 	int		i;
 	int		j;
 	float	phi;
 	float	theta;
+	t_color	color;
 
-	color = obj->color;
+	color = ray->color;
 	if (cam->sphere_up_map)
 	{
+		color = color_new(200, 200, 200);
 		phi = atan2f(ray->nhit.z, ray->nhit.x);
 		theta = asinf(ray->nhit.y);
 		u = 1 - (phi + M_PI) / (2 * M_PI);
@@ -41,13 +41,7 @@ static t_color	calculate_sphere_color(t_camera *cam, t_object *obj, t_ray *ray)
 		i = u * 100;
 		j = v * 100;
 		if ((i % 10 < 5 && j % 10 >= 5) || (i % 10 >= 5 && j % 10 < 5))
-		{
-			med = (color.r * color.g * color.b) / 3;
-			if (med > 0.5)
-				color = color_mulf(color, 0.5);
-			else
-				color = color_mulf(color, 2);
-		}
+			color = color_new(125, 125, 125);
 	}
 	return (color);
 }
@@ -68,6 +62,6 @@ t_object	*new_sphere(float radius, t_vector3 p, t_color color)
 		.i = -2 * p.z,
 		.j = p.x * p.x + p.y * p.y + p.z * p.z - radius * radius
 	};
-	object->calculate_color = calculate_sphere_color;
+	object->post_light_calculation = calculate_sphere_color;
 	return (object);
 }

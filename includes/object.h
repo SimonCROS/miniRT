@@ -6,7 +6,7 @@
 typedef struct s_object	t_object;
 typedef struct s_light	t_light;
 
-typedef t_color			(*t_calc_color)(t_camera *, t_object *, t_ray *);
+typedef t_color			(*t_calc_color)(const t_camera *cam, const t_ray *ray);
 
 typedef struct s_laser
 {
@@ -70,7 +70,7 @@ typedef struct s_triangle
 struct s_object
 {
 	t_bipredicate	collides;
-	t_calc_color	calculate_color;
+	t_calc_color	post_light_calculation;
 	t_vector3		position;
 	t_vector3		rotation;
 	int				is_plane;

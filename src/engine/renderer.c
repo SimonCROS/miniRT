@@ -37,7 +37,7 @@ void	render_light(t_scene *scene, t_camera *camera, t_object *object,
 	t_iterator	lightIterator;
 	float		length2;
 
-	default_color = object->calculate_color(camera, object, ray);
+	default_color = object->color;
 	ray->color = color_mul(default_color, *(scene->ambiant));
 	lightIterator = iterator_new(scene->lights);
 	while (iterator_has_next(&lightIterator))
@@ -51,6 +51,8 @@ void	render_light(t_scene *scene, t_camera *camera, t_object *object,
 			ray->color = color_add(ray->color,
 					light->calculate_color(light, object, ray, &light_ray));
 	}
+	if (object->post_light_calculation)
+		ray->color = object->post_light_calculation(camera, ray);
 }
 
 t_object	*nearest_object(t_list *objects, t_ray *ray)
