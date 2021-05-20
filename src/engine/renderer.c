@@ -45,10 +45,8 @@ void	render_light(t_scene *scene, t_camera *camera, t_object *object,
 	{
 		light = iterator_next(&lightIterator);
 		light_ray = light->calculate_ray(light, ray, &length2);
-		if (length2 < 0)
-			continue ;
 		a = fmaxf(0, vec3_dotv(light_ray.direction, ray->nhit));
-		if (a && (!camera->shadows
+		if (length2 < 0 && a && (!camera->shadows
 				|| in_light(scene, object, &light_ray, length2)))
 		{
 			if (camera->color_disruption)
