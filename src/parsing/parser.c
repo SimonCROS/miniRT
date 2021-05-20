@@ -17,8 +17,7 @@ static int	parse_lines(t_list *nodes, char *file, int fd)
 		if (!(reading % 1000))
 		{
 			log_msg(INFO, NULL);
-			printf("\033[33m< Reading\033[0m %s... (\33[33m%d\33[0m)",
-				file, reading);
+			printf("\033[33m< Reading\033[0m %s...", file);
 			log_nl();
 			log_prev_line();
 		}

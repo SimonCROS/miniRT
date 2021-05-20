@@ -1,5 +1,15 @@
 #include "minirt.h"
 
+float	fminf3(float a, float b, float c)
+{
+	return (fminf(a, fminf(b, c)));
+}
+
+float	fmaxf3(float a, float b, float c)
+{
+	return (fmaxf(a, fmaxf(b, c)));
+}
+
 void	get_samples_template(int aa, void *buf)
 {
 	if (aa == 1)

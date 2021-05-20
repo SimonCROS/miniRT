@@ -21,7 +21,7 @@
 #  define K_ESC 53
 #  define K_ENTER 36
 #  define K_A 0
-#  define K_B 1
+#  define K_B 11
 #  define K_C 8
 #  define K_D 2
 #  define K_F 3
@@ -314,5 +314,7 @@ int			gnl_init(char ***current, char **tmp_line, ssize_t *result);
 
 void		get_samples_template(int aa, void *buf);
 t_color		to_sepia(t_color in);
+float		fminf3(float a, float b, float c);
+float		fmaxf3(float a, float b, float c);
 
 #endif
