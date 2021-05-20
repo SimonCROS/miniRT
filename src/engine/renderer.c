@@ -9,6 +9,8 @@ static int	in_light(t_scene *scene, t_object *object, t_ray *light_ray,
 	t_iterator	obj_iterator;
 	t_object	*obj_test;
 
+	light_ray->origin = vec3_addv(light_ray->origin,
+			vec3_muld(light_ray->direction, 0.001));
 	obj_iterator = iterator_new(scene->objects);
 	while (iterator_has_next(&obj_iterator))
 	{
