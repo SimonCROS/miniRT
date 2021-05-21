@@ -44,6 +44,9 @@ override SRCS	:=									\
 				graphic/vector3f/deserialize.c		\
 				graphic/quadric/resolve.c			\
 				graphic/matrix/matrix44.c			\
+				graphic/bounding_box/new.c			\
+				graphic/bounding_box/intersecions.c	\
+				graphic/draw_line.c					\
 				main.c								\
 				exit.c								\
 				parsing/parser.c					\
