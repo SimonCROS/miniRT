@@ -3,7 +3,7 @@
 
 #include <math.h>
 
-int	intersect_side(t_vector3 top, t_vector3 bot, t_vector3 rot, t_ray *ray)
+int	intersect_side(t_vec3f top, t_vec3f bot, t_vec3f rot, t_ray *ray)
 {
 	t_ray		side_ray;
 
@@ -25,7 +25,7 @@ int	collides_quadric(t_object *object, t_ray *ray)
 	if (!resolve_quad_double(&object->quadric, ray->origin, ray->direction, t))
 		return (FALSE);
 	ray->length = t[0];
-	ray->phit = vec3_addv(ray->origin, vec3_muld(ray->direction, ray->length));
+	ray->phit = vec3_add(ray->origin, vec3_muld(ray->direction, ray->length));
 	ray->nhit = resolve_quad_norm(&object->quadric, ray->phit);
 	if (!object->collides)
 		return (TRUE);
@@ -34,21 +34,21 @@ int	collides_quadric(t_object *object, t_ray *ray)
 	ray->length = t[1];
 	if (!ray->length)
 		return (FALSE);
-	ray->phit = vec3_addv(ray->origin, vec3_muld(ray->direction, ray->length));
+	ray->phit = vec3_add(ray->origin, vec3_muld(ray->direction, ray->length));
 	ray->nhit = resolve_quad_norm(&object->quadric, ray->phit);
 	return (object->collides(object, ray));
 }
 
-int	intersect_plane(t_vector3 pos, t_vector3 rot, t_ray *ray)
+int	intersect_plane(t_vec3f pos, t_vec3f rot, t_ray *ray)
 {
 	float		dot;
-	t_vector3	p0l0;
+	t_vec3f	p0l0;
 
-	dot = vec3_dotv(rot, ray->direction);
+	dot = vec3_dot(rot, ray->direction);
 	if (dot != 0)
 	{
-		p0l0 = vec3_subv(pos, ray->origin);
-		ray->length = vec3_dotv(p0l0, rot) / dot;
+		p0l0 = vec3_sub(pos, ray->origin);
+		ray->length = vec3_dot(p0l0, rot) / dot;
 		return (ray->length >= 0);
 	}
 	return (FALSE);
@@ -56,7 +56,7 @@ int	intersect_plane(t_vector3 pos, t_vector3 rot, t_ray *ray)
 
 int	collision(t_object *object, t_ray *ray)
 {
-	t_vector3	p;
+	t_vec3f	p;
 
 	if (!object->is_plane && !object->is_quadric)
 		return (object->collides(object, ray));
@@ -65,10 +65,10 @@ int	collision(t_object *object, t_ray *ray)
 	else if (intersect_plane(object->position, object->rotation, ray))
 	{
 		p = vec3_muld(ray->direction, ray->length);
-		p = vec3_addv(p, ray->origin);
+		p = vec3_add(p, ray->origin);
 		ray->phit = p;
 		ray->nhit = object->rotation;
-		if (vec3_dotv(object->rotation, ray->direction) > 0)
+		if (vec3_dot(object->rotation, ray->direction) > 0)
 			ray->nhit = vec3_negate(ray->nhit);
 		return (!object->collides || object->collides(object, ray));
 	}

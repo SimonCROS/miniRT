@@ -16,7 +16,7 @@ static t_color	calculate_color(t_light *light, t_object *object,
 	);
 }
 
-t_light	*new_default_light(t_vector3 position, t_color color, float brightness)
+t_light	*new_default_light(t_vec3f position, t_color color, float brightness)
 {
 	t_light	*light;
 

@@ -95,24 +95,24 @@ enable/disable debug mode");
 
 void	launch_move_events(t_vars *vars)
 {
-	static t_vector3	up = (t_vector3){0, 1, 0};
+	static t_vec3f	up = (t_vec3f){0, 1, 0};
 	t_camera			*c;
 
 	c = vars->camera;
 	if (vars->up)
-		c->position = vec3_addv(c->position, vec3_muld(up, 2));
+		c->position = vec3_add(c->position, vec3_muld(up, 2));
 	if (vars->down)
-		c->position = vec3_subv(c->position, vec3_muld(up, 2));
+		c->position = vec3_sub(c->position, vec3_muld(up, 2));
 	if (vars->forward)
-		c->position = vec3_addv(c->position, vec3_muld(c->flat, 2));
+		c->position = vec3_add(c->position, vec3_muld(c->flat, 2));
 	if (vars->backward)
-		c->position = vec3_subv(c->position, vec3_muld(c->flat, 2));
+		c->position = vec3_sub(c->position, vec3_muld(c->flat, 2));
 	if (vars->left)
-		c->position = vec3_subv(c->position,
-				vec3_muld(vec3_crossv(c->flat, up), 2));
+		c->position = vec3_sub(c->position,
+				vec3_muld(vec3_cross(c->flat, up), 2));
 	if (vars->right)
-		c->position = vec3_addv(c->position,
-				vec3_muld(vec3_crossv(c->flat, up), 2));
+		c->position = vec3_add(c->position,
+				vec3_muld(vec3_cross(c->flat, up), 2));
 	if (vars->cam_left)
 		c->direction = vec3_rotate_y(c->direction, M_PI / 30);
 	if (vars->cam_right)

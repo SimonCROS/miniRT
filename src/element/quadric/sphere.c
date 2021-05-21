@@ -3,9 +3,9 @@
 
 #include <math.h>
 
-t_object	*parse_sphere(t_list *data, t_vector3 origin)
+t_object	*parse_sphere(t_list *data, t_vec3f origin)
 {
-	t_vector3	pos;
+	t_vec3f	pos;
 	float		diametre;
 	float		radius;
 	t_color		color;
@@ -17,7 +17,7 @@ t_object	*parse_sphere(t_list *data, t_vector3 origin)
 		|| !col_deserialize((char *)lst_get(data, 3), &color))
 		return (NULL);
 	radius = fabsf(diametre) * 0.5;
-	return (new_sphere(radius, vec3_addv(pos, origin), color));
+	return (new_sphere(radius, vec3_add(pos, origin), color));
 }
 
 static t_color	calculate_sphere_color(const t_camera *cam, const t_ray *ray)
@@ -42,7 +42,7 @@ static t_color	calculate_sphere_color(const t_camera *cam, const t_ray *ray)
 	return (color);
 }
 
-t_object	*new_sphere(float radius, t_vector3 p, t_color color)
+t_object	*new_sphere(float radius, t_vec3f p, t_color color)
 {
 	t_object	*object;
 

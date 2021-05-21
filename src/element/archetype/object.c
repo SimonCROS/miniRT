@@ -1,7 +1,7 @@
 #include "minirt.h"
 #include "object.h"
 
-t_object	*new_default_object(t_vector3 pos, t_vector3 rot, t_color col,
+t_object	*new_default_object(t_vec3f pos, t_vec3f rot, t_color col,
 	t_bipredicate collides)
 {
 	t_object	*object;

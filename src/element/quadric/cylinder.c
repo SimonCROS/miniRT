@@ -3,10 +3,10 @@
 
 #include <math.h>
 
-t_object	*parse_cylinder(t_list *data, t_vector3 origin)
+t_object	*parse_cylinder(t_list *data, t_vec3f origin)
 {
-	t_vector3	pos;
-	t_vector3	rot;
+	t_vec3f	pos;
+	t_vec3f	rot;
 	float		attr[2];
 	t_color		color;
 
@@ -19,24 +19,24 @@ t_object	*parse_cylinder(t_list *data, t_vector3 origin)
 		|| !col_deserialize((char *)lst_get(data, 5), &color))
 		return (NULL);
 	attr[0] *= 0.5;
-	return (new_cylinder(attr, vec3_addv(pos, origin), rot, color));
+	return (new_cylinder(attr, vec3_add(pos, origin), rot, color));
 }
 
-static int	intersect_base(t_vector3 pos, t_vector3 rot, t_ray *ray, float rad)
+static int	intersect_base(t_vec3f pos, t_vec3f rot, t_ray *ray, float rad)
 {
-	t_vector3	v;
+	t_vec3f	v;
 	float		d2;
-	t_vector3	p;
+	t_vec3f	p;
 
 	if (intersect_plane(pos, rot, ray))
 	{
 		p = vec3_muld(ray->direction, ray->length);
-		p = vec3_addv(p, ray->origin);
+		p = vec3_add(p, ray->origin);
 		ray->phit = p;
 		ray->nhit = rot;
-		if (vec3_dotv(rot, ray->direction) > 0)
+		if (vec3_dot(rot, ray->direction) > 0)
 			ray->nhit = vec3_negate(ray->nhit);
-		v = vec3_subv(ray->phit, pos);
+		v = vec3_sub(ray->phit, pos);
 		d2 = vec3_length_squared(v);
 		if (d2 <= rad * rad)
 			return (TRUE);
@@ -44,7 +44,7 @@ static int	intersect_base(t_vector3 pos, t_vector3 rot, t_ray *ray, float rad)
 	return (FALSE);
 }
 
-static int	collides_caps(t_object *obj, t_ray *ray, t_vector3 base, int colli)
+static int	collides_caps(t_object *obj, t_ray *ray, t_vec3f base, int colli)
 {
 	t_ray		tmp;
 
@@ -70,16 +70,16 @@ static int	collides_cylinder(t_object *obj, t_ray *ray)
 	return (ret);
 }
 
-t_object	*new_cylinder(float s[2], t_vector3 p, t_vector3 v, t_color color)
+t_object	*new_cylinder(float s[2], t_vec3f p, t_vec3f v, t_color color)
 {
 	t_object	*object;
 
-	object = new_default_quadric(vec3_subv(p, vec3_muld(v, s[1] * 0.5)), v,
+	object = new_default_quadric(vec3_sub(p, vec3_muld(v, s[1] * 0.5)), v,
 			color, (t_bipre)collides_cylinder);
 	if (!object)
 		return (NULL);
 	object->data.cylinder.radius = s[0];
-	object->data.cylinder.position2 = vec3_addv(p, vec3_muld(v, s[1] * 0.5));
+	object->data.cylinder.position2 = vec3_add(p, vec3_muld(v, s[1] * 0.5));
 	object->quadric = (t_quadric){
 		.a = v.y * v.y + v.z * v.z,
 		.b = v.x * v.x + v.z * v.z,

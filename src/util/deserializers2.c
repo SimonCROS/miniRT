@@ -1,8 +1,8 @@
 #include "minirt.h"
 
-int	vec_deserialize(const char *str, t_vector3 *vector)
+int	vec_deserialize(const char *str, t_vec3f *vector)
 {
-	t_vector3	rot;
+	t_vec3f	rot;
 
 	if (!vec3_deserialize(str, &rot))
 	{
@@ -15,9 +15,9 @@ int	vec_deserialize(const char *str, t_vector3 *vector)
 	return (1);
 }
 
-int	dir_deserialize(const char *str, t_vector3 *direction)
+int	dir_deserialize(const char *str, t_vec3f *direction)
 {
-	t_vector3	dir;
+	t_vec3f	dir;
 
 	if (!vec_deserialize(str, &dir))
 		return (0);

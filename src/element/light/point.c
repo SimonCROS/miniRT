@@ -3,9 +3,9 @@
 
 #include <math.h>
 
-t_light	*parse_light_point(t_list *data, t_vector3 origin)
+t_light	*parse_light_point(t_list *data, t_vec3f origin)
 {
-	t_vector3	pos;
+	t_vec3f	pos;
 	float		bright;
 	t_color		color;
 
@@ -15,16 +15,16 @@ t_light	*parse_light_point(t_list *data, t_vector3 origin)
 		|| !bounded_float_deserialize((char *)lst_get(data, 2), &bright, 0, 1)
 		|| !col_deserialize((char *)lst_get(data, 3), &color))
 		return (NULL);
-	return (new_light_point(bright, vec3_addv(pos, origin), color));
+	return (new_light_point(bright, vec3_add(pos, origin), color));
 }
 
 static t_ray	calculate_ray(t_light *light, const t_ray *ray, float *length2)
 {
 	t_ray		light_ray;
-	t_vector3	lightDir;
+	t_vec3f	lightDir;
 	float		light_distance2;
 
-	lightDir = vec3_subv(light->position, ray->phit);
+	lightDir = vec3_sub(light->position, ray->phit);
 	light_distance2 = vec3_length_squared(lightDir);
 	lightDir = vec3_normalize(lightDir);
 	light_ray.origin = ray->phit;
@@ -34,7 +34,7 @@ static t_ray	calculate_ray(t_light *light, const t_ray *ray, float *length2)
 	return (light_ray);
 }
 
-t_light	*new_light_point(float brightness, t_vector3 position, t_color color)
+t_light	*new_light_point(float brightness, t_vec3f position, t_color color)
 {
 	t_light	*light;
 

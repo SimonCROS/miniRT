@@ -3,9 +3,9 @@
 
 #include <math.h>
 
-t_object	*parse_hyperboloid(t_list *data, t_vector3 origin)
+t_object	*parse_hyperboloid(t_list *data, t_vec3f origin)
 {
-	t_vector3	pos;
+	t_vec3f	pos;
 	float		attr[5];
 	t_color		color;
 
@@ -20,7 +20,7 @@ t_object	*parse_hyperboloid(t_list *data, t_vector3 origin)
 		|| !col_deserialize((char *)lst_get(data, 7), &color))
 		return (NULL);
 	attr[0] *= 0.5;
-	return (new_hyperboloid(attr, vec3_addv(pos, origin), color));
+	return (new_hyperboloid(attr, vec3_add(pos, origin), color));
 }
 
 static int	collides_hyperboloid(t_object *obj, t_ray *ray)
@@ -29,17 +29,17 @@ static int	collides_hyperboloid(t_object *obj, t_ray *ray)
 			obj->rotation, ray));
 }
 
-t_object	*new_hyperboloid(float s[5], t_vector3 p, t_color color)
+t_object	*new_hyperboloid(float s[5], t_vec3f p, t_color color)
 {
 	t_object	*object;
-	t_vector3	v;
+	t_vec3f	v;
 
 	v = vec3_new(0, 1, 0);
-	object = new_default_quadric(vec3_subv(p, vec3_muld(v, s[1] * 0.5)), v,
+	object = new_default_quadric(vec3_sub(p, vec3_muld(v, s[1] * 0.5)), v,
 			color, (t_bipre)collides_hyperboloid);
 	if (!object)
 		return (NULL);
-	object->data.cylinder.position2 = vec3_addv(p, vec3_muld(v, s[1] * 0.5));
+	object->data.cylinder.position2 = vec3_add(p, vec3_muld(v, s[1] * 0.5));
 	object->quadric = (t_quadric){
 		.a = 1 / (s[2] * s[2]),
 		.b = -1 / (s[3] * s[3]),

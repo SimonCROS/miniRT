@@ -47,9 +47,9 @@ t_color	*parse_ambiant(t_list *data)
 	return (color_clone(color_mulf(color, brightness)));
 }
 
-int	parse_object(t_scene *scene, t_list *data, int depth, t_vector3 origin)
+int	parse_object(t_scene *scene, t_list *data, int depth, t_vec3f origin)
 {
-	t_vector3	pos;
+	t_vec3f	pos;
 	char		*file;
 
 	if (!args_size(lst_first(data), data->size, 3))
@@ -57,7 +57,7 @@ int	parse_object(t_scene *scene, t_list *data, int depth, t_vector3 origin)
 	if (!vec_deserialize((char *)lst_get(data, 1), &pos))
 		return (FALSE);
 	file = ft_strtrim((char *)lst_get(data, 2), "\"");
-	if (!parse_file(scene, file, depth + 1, vec3_addv(pos, origin)))
+	if (!parse_file(scene, file, depth + 1, vec3_add(pos, origin)))
 	{
 		free(file);
 		return (FALSE);

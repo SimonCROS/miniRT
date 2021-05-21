@@ -3,10 +3,10 @@
 
 #include <math.h>
 
-t_object	*parse_circle(t_list *data, t_vector3 origin)
+t_object	*parse_circle(t_list *data, t_vec3f origin)
 {
-	t_vector3	pos;
-	t_vector3	rot;
+	t_vec3f	pos;
+	t_vec3f	rot;
 	float		diametre;
 	t_color		color;
 
@@ -18,16 +18,16 @@ t_object	*parse_circle(t_list *data, t_vector3 origin)
 		|| !col_deserialize((char *)lst_get(data, 4), &color))
 		return (NULL);
 	diametre = fabsf(diametre);
-	return (new_circle(diametre, vec3_addv(pos, origin), rot, color));
+	return (new_circle(diametre, vec3_add(pos, origin), rot, color));
 }
 
 static int	collides_circle(t_object *plan, t_ray *ray)
 {
-	return (vec3_distance_squaredv(ray->phit, plan->position)
+	return (vec3_distance_squared(ray->phit, plan->position)
 		<= plan->data.circle.radius * plan->data.circle.radius);
 }
 
-t_object	*new_circle(float diametre, t_vector3 position, t_vector3 rotation,
+t_object	*new_circle(float diametre, t_vec3f position, t_vec3f rotation,
 	t_color color)
 {
 	t_object	*plan;

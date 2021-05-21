@@ -6,6 +6,7 @@
 
 # include "libft.h"
 # include "tpool.h"
+# include "graphics.h"
 
 /*** Definitions **************************************************************/
 
@@ -191,10 +192,10 @@ void		exit_minirt(t_vars *vars, t_tpool *pool, void *other, int __status);
 
 struct s_ray
 {
-	t_vector3	direction;
-	t_vector3	phit;
-	t_vector3	nhit;
-	t_vector3	origin;
+	t_vec3f	direction;
+	t_vec3f	phit;
+	t_vec3f	nhit;
+	t_vec3f	origin;
 	t_color		color;
 	float		length;
 	float		light;
@@ -203,17 +204,17 @@ struct s_ray
 int			render(t_vars *vars);
 void		draw_line(t_vars *vars, int x0, int y0, int x1, int y1, t_color co);
 t_ray		compute_ray(t_options *render, t_camera *camera, float x, float y);
-int			intersect_plane(t_vector3 position, t_vector3 rotation, t_ray *ray);
+int			intersect_plane(t_vec3f position, t_vec3f rotation, t_ray *ray);
 
 /*** Camera *******************************************************************/
 
 struct s_camera
 {
-	t_vector3	position;
-	t_vector3	direction;
-	t_vector3	flat;
-	t_vector3	right;
-	t_vector3	up;
+	t_vec3f	position;
+	t_vec3f	direction;
+	t_vec3f	flat;
+	t_vec3f	right;
+	t_vec3f	up;
 	t_matrix44	c2w;
 	t_matrix44	w2c;
 	void		*render;
@@ -227,7 +228,7 @@ struct s_camera
 	int			color_disruption;
 };
 
-t_camera	*new_camera(t_vector3 position, t_vector3 direction, float fov);
+t_camera	*new_camera(t_vec3f position, t_vec3f direction, float fov);
 void		reload_camera(t_camera *camera);
 
 /*** Logs utils ***************************************************************/
@@ -279,10 +280,10 @@ void		*free_scene(t_scene *scene);
 /*** Parsing utils ************************************************************/
 
 int			render(t_vars *vars);
-int			parse_file(t_scene *scene, char *file, int depth, t_vector3 origin);
+int			parse_file(t_scene *scene, char *file, int depth, t_vec3f origin);
 int			col_deserialize(const char *str, t_color *color);
-int			vec_deserialize(const char *str, t_vector3 *vector);
-int			dir_deserialize(const char *str, t_vector3 *direction);
+int			vec_deserialize(const char *str, t_vec3f *vector);
+int			dir_deserialize(const char *str, t_vec3f *direction);
 int			float_deserialize(char *str, float *result);
 int			int_deserialize(char *str, int *result);
 int			bounded_int_deserialize(char *str, int *result, int min, int max);
@@ -290,8 +291,8 @@ int			bounded_float_deserialize(char *str, float *result, float min,
 				float max);
 int			ulong_deserialize(char *str, unsigned long *result);
 int			args_size(const char *type, int given, int expected);
-int			parse_object(t_scene *sce, t_list *data, int depth, t_vector3 ori);
-int			parse_node(t_list *line, t_scene *scene, int depth, t_vector3 ori);
+int			parse_object(t_scene *sce, t_list *data, int depth, t_vec3f ori);
+int			parse_node(t_list *line, t_scene *scene, int depth, t_vec3f ori);
 t_options	*parse_render(t_list *data);
 t_color		*parse_ambiant(t_list *data);
 t_color		*parse_background(t_list *data);

@@ -5,7 +5,7 @@
 
 #include "tpool.h"
 
-static void	render_triangles(t_vars *vars, t_vector3 start, t_vector3 end)
+static void	render_triangles(t_vars *vars, t_vec3f start, t_vec3f end)
 {
 	t_iterator	obj_iterator;
 

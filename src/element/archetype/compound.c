@@ -6,7 +6,7 @@ static int	collides_compound_object(t_object *container, t_ray *ray)
 	return (!!nearest_object(container->data.compound.elements, ray));
 }
 
-t_object	*new_default_compound_object(t_vector3 p, t_vector3 r, t_color c)
+t_object	*new_default_compound_object(t_vec3f p, t_vec3f r, t_color c)
 {
 	t_object	*object;
 

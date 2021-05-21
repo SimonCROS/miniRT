@@ -3,10 +3,10 @@
 
 #include <math.h>
 
-t_object	*parse_square(t_list *data, t_vector3 origin)
+t_object	*parse_square(t_list *data, t_vec3f origin)
 {
-	t_vector3	pos;
-	t_vector3	rot;
+	t_vec3f	pos;
+	t_vec3f	rot;
 	float		width;
 	t_color		color;
 
@@ -18,14 +18,14 @@ t_object	*parse_square(t_list *data, t_vector3 origin)
 		|| !color_deserialize((char *)lst_get(data, 4), &color))
 		return (NULL);
 	width = fabsf(width);
-	return (new_square(width, vec3_addv(pos, origin), rot, color));
+	return (new_square(width, vec3_add(pos, origin), rot, color));
 }
 
-static int	orient(t_vector3 a, t_vector3 b, t_vector3 c, t_vector3 n)
+static int	orient(t_vec3f a, t_vec3f b, t_vec3f c, t_vec3f n)
 {
 	int	result;
 
-	result = vec3_dotv(vec3_crossv(vec3_subv(b, a), vec3_subv(c, a)), n);
+	result = vec3_dot(vec3_cross(vec3_sub(b, a), vec3_sub(c, a)), n);
 	if (result < 0)
 		return (-1);
 	return (result > 0);
@@ -46,29 +46,29 @@ int	collides_square(t_object *plan, t_ray *ray)
 	return (0);
 }
 
-t_object	*new_square(float width, t_vector3 position, t_vector3 rotation,
+t_object	*new_square(float width, t_vec3f position, t_vec3f rotation,
 	t_color color)
 {
 	t_object	*plan;
 	float		mid;
-	t_vector3	diagonal;
+	t_vec3f	diagonal;
 
 	plan = new_default_plane(position, rotation, color,
 			(t_bipre)collides_square);
 	if (!plan)
 		return (NULL);
 	mid = (width * sqrtf(2)) * 0.5;
-	diagonal = vec3_crossv(rotation, vec3_new(1, 0, 0));
+	diagonal = vec3_cross(rotation, vec3_new(1, 0, 0));
 	if (vec3_is_null(diagonal))
 		diagonal = vec3_new(0, 1, 0);
 	diagonal = vec3_rotate_axis(diagonal, rotation, M_PI_4);
 	diagonal = vec3_muld(vec3_normalize(diagonal), mid);
-	plan->data.square.p1 = vec3_addv(diagonal, position);
-	plan->data.square.p3 = vec3_addv(vec3_negate(diagonal), position);
+	plan->data.square.p1 = vec3_add(diagonal, position);
+	plan->data.square.p3 = vec3_add(vec3_negate(diagonal), position);
 	diagonal = vec3_rotate_axis(diagonal, rotation, M_PI_2);
 	diagonal = vec3_muld(vec3_normalize(diagonal), mid);
-	plan->data.square.p2 = vec3_addv(diagonal, position);
-	plan->data.square.p4 = vec3_addv(vec3_negate(diagonal), position);
+	plan->data.square.p2 = vec3_add(diagonal, position);
+	plan->data.square.p4 = vec3_add(vec3_negate(diagonal), position);
 	plan->data.square.width = width;
 	return (plan);
 }

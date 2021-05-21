@@ -3,17 +3,17 @@
 
 #include <math.h>
 
-static int	generate_triangles(t_list *objects, float wh[2], t_vector3 pr[2],
+static int	generate_triangles(t_list *objects, float wh[2], t_vec3f pr[2],
 	t_color c)
 {
 	t_object	*obj;
 	t_square	square;
-	t_vector3	top;
+	t_vec3f	top;
 	float		w;
 
 	w = wh[0];
-	top = vec3_addv(pr[0], vec3_muld(pr[1], wh[1]));
-	obj = new_square(w, vec3_addv(pr[0], vec3_muld(pr[1], w / 2)), pr[1], c);
+	top = vec3_add(pr[0], vec3_muld(pr[1], wh[1]));
+	obj = new_square(w, vec3_add(pr[0], vec3_muld(pr[1], w / 2)), pr[1], c);
 	if (!lst_unshift(objects, obj))
 		return (FALSE);
 	square = obj->data.square;
@@ -25,10 +25,10 @@ static int	generate_triangles(t_list *objects, float wh[2], t_vector3 pr[2],
 	return (TRUE);
 }
 
-int	parse_pyramid(t_list *data, t_vector3 origin, t_list *objects)
+int	parse_pyramid(t_list *data, t_vec3f origin, t_list *objects)
 {
-	t_vector3	pos;
-	t_vector3	rot;
+	t_vec3f	pos;
+	t_vec3f	rot;
 	float		width;
 	float		height;
 	t_color		color;
@@ -43,5 +43,5 @@ int	parse_pyramid(t_list *data, t_vector3 origin, t_list *objects)
 		return (0);
 	width = fabsf(width);
 	return (generate_triangles(objects, (float [2]){width, height},
-		(t_vector3 [2]){vec3_addv(pos, origin), rot}, color));
+		(t_vec3f [2]){vec3_add(pos, origin), rot}, color));
 }

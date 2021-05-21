@@ -44,7 +44,7 @@ static int	max_depth_file(void)
 	return (FALSE);
 }
 
-int	parse_file(t_scene *scene, char *file, int depth, t_vector3 origin)
+int	parse_file(t_scene *scene, char *file, int depth, t_vec3f origin)
 {
 	t_list		*nodes;
 	t_iterator	iterator;

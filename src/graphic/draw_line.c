@@ -1,4 +1,5 @@
 #include "minirt.h"
+#include "graphics.h"
 
 void	draw_line(t_vars *vars, int x0, int y0, int x1, int y1, t_color color)
 {

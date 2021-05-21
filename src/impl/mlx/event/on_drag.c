@@ -13,8 +13,8 @@ int	on_drag(t_vars *vars, t_click_type type)
 	my = vars->mouse_y - vars->mouse_y_from;
 	if (type == CLICK_MIDDLE)
 	{
-		c->position = vec3_subv(c->position, vec3_muld(c->right, mx * 0.5));
-		c->position = vec3_subv(c->position, vec3_muld(c->up, my * 0.5));
+		c->position = vec3_sub(c->position, vec3_muld(c->right, mx * 0.5));
+		c->position = vec3_sub(c->position, vec3_muld(c->up, my * 0.5));
 	}
 	if (type == CLICK_LEFT)
 	{

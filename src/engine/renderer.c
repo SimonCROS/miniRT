@@ -9,7 +9,7 @@ static int	in_light(t_scene *scene, t_object *object, t_ray *light_ray,
 	t_iterator	obj_iterator;
 	t_object	*obj_test;
 
-	light_ray->origin = vec3_addv(light_ray->origin,
+	light_ray->origin = vec3_add(light_ray->origin,
 			vec3_muld(light_ray->direction, 0.001));
 	obj_iterator = iterator_new(scene->objects);
 	while (iterator_has_next(&obj_iterator))
@@ -45,7 +45,7 @@ void	render_light(t_scene *scene, t_camera *camera, t_object *object,
 	{
 		light = iterator_next(&lightIterator);
 		light_ray = light->calculate_ray(light, ray, &length2);
-		a = fmaxf(0, vec3_dotv(light_ray.direction, ray->nhit));
+		a = fmaxf(0, vec3_dot(light_ray.direction, ray->nhit));
 		if (length2 < 0 && a && (!camera->shadows
 				|| in_light(scene, object, &light_ray, length2)))
 		{

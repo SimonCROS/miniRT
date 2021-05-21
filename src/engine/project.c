@@ -1,16 +1,16 @@
 #include "minirt.h"
 #include "object.h"
 
-static t_vector3	convert_to_raster(t_options *render, t_camera *camera,
-	t_vector3 vertexWorld)
+static t_vec3f	convert_to_raster(t_options *render, t_camera *camera,
+	t_vec3f vertexWorld)
 {
-	t_vector3	vertexView;
-	t_vector3	vertexCamera;
-	t_vector3	vertexScreen;
-	t_vector3	vertexNDC;
-	t_vector3	vertexRaster;
+	t_vec3f	vertexView;
+	t_vec3f	vertexCamera;
+	t_vec3f	vertexScreen;
+	t_vec3f	vertexNDC;
+	t_vec3f	vertexRaster;
 
-	vertexView = vec3_normalize(vec3_subv(camera->position, vertexWorld));
+	vertexView = vec3_normalize(vec3_sub(camera->position, vertexWorld));
 	vertexCamera = mat44_mul_vec(camera->w2c, vertexView);
 	vertexRaster.z = vertexCamera.z;
 	vertexCamera.z = fabsf(vertexCamera.z);
@@ -24,14 +24,14 @@ static t_vector3	convert_to_raster(t_options *render, t_camera *camera,
 	return (vertexRaster);
 }
 
-static void	ray_trace_clip()
+static void	ray_trace_clip(t_vars *vars, t_object *triangle, t_vec3f min, t_vec3f max)
 {
 	size_t		x;
 	size_t		y;
 	t_ray		ray;
 	float		*buf_z;
-	t_vector3	min_raster;
-	t_vector3	max_raster;
+	t_vec3f	min_raster;
+	t_vec3f	max_raster;
 
 	min_raster.x = fminf3(s0.x, s1.x, s2.x);
 	min_raster.y = fminf3(s0.y, s1.y, s2.y);
@@ -66,11 +66,11 @@ static void	ray_trace_clip()
 	}
 }
 
-void	project(t_vars *vars, t_object *triangle, t_vector3 min, t_vector3 max)
+void	project(t_vars *vars, t_object *triangle, t_vec3f min, t_vec3f max)
 {
-	t_vector3	s0;
-	t_vector3	s1;
-	t_vector3	s2;
+	t_vec3f	s0;
+	t_vec3f	s1;
+	t_vec3f	s2;
 	t_scene		*scene;
 	t_camera	*camera;
 
@@ -94,7 +94,5 @@ void	project(t_vars *vars, t_object *triangle, t_vector3 min, t_vector3 max)
 		draw_line(vars, s2.x, s2.y, s0.x, s0.y, color_new(224, 211, 25));
 	}
 	else
-	{	
-		
-	}
+		ray_trace_clip()
 }

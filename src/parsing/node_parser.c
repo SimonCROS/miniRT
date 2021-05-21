@@ -16,7 +16,7 @@ static int	unknown_type(char *type)
 }
 
 static int	parse_node_min(t_list *line, t_scene *scene, int depth,
-	t_vector3 origin)
+	t_vec3f origin)
 {
 	if (ft_strcmp(lst_first(line), "c") == 0)
 		return (!!lst_unshift(scene->cameras, parse_camera(line, origin)));
@@ -47,7 +47,7 @@ static int	parse_node_min(t_list *line, t_scene *scene, int depth,
 	return (unknown_type(lst_first(line)));
 }
 
-int	parse_node(t_list *line, t_scene *scene, int depth, t_vector3 origin)
+int	parse_node(t_list *line, t_scene *scene, int depth, t_vec3f origin)
 {
 	if (lst_is_empty(line))
 		return (1);
