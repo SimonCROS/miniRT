@@ -8,10 +8,8 @@ void	draw_line(t_vars *vars, t_line ln, t_color color)
 	int		err;
 	int		e2;
 
-	d.x = abs(ln.to.x - ln.from.x);
-	s.x = 2 * (ln.from.x < ln.to.x) - 1;
-	d.y = -abs(ln.to.y - ln.from.y);
-	s.y = 2 * (ln.from.y < ln.to.y) - 1;
+	d = (t_vec2i){abs(ln.to.x - ln.from.x), -abs(ln.to.y - ln.from.y)};
+	s = (t_vec2i){2 * (ln.from.x < ln.to.x) - 1, 2 * (ln.from.y < ln.to.y) - 1};
 	err = d.x + d.y;
 	while (ln.from.x != ln.to.x || ln.from.y != ln.to.y)
 	{

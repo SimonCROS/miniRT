@@ -15,7 +15,15 @@ static int	unknown_type(char *type)
 	return (FALSE);
 }
 
-static int	parse_node_min(t_list *line, t_scene *scene, int depth,
+static int	parse_node3(t_list *line, t_scene *scene, int depth,
+	t_vec3f origin)
+{
+	if (ft_strcmp(lst_first(line), "ob") == 0)
+		return (parse_object(scene, line, depth, origin));
+	return (unknown_type(lst_first(line)));
+}
+
+static int	parse_node2(t_list *line, t_scene *scene, int depth,
 	t_vec3f origin)
 {
 	if (ft_strcmp(lst_first(line), "c") == 0)
@@ -42,9 +50,7 @@ static int	parse_node_min(t_list *line, t_scene *scene, int depth,
 		return (parse_cube(line, origin, scene->objects));
 	else if (ft_strcmp(lst_first(line), "py") == 0)
 		return (parse_pyramid(line, origin, scene->objects));
-	else if (ft_strcmp(lst_first(line), "ob") == 0)
-		return (parse_object(scene, line, depth, origin));
-	return (unknown_type(lst_first(line)));
+	return (parse_node3(line, scene, depth, origin));
 }
 
 int	parse_node(t_list *line, t_scene *scene, int depth, t_vec3f origin)
@@ -72,5 +78,5 @@ int	parse_node(t_list *line, t_scene *scene, int depth, t_vec3f origin)
 		scene->background = parse_background(line);
 		return (!!scene->background);
 	}
-	return (parse_node_min(line, scene, depth, origin));
+	return (parse_node2(line, scene, depth, origin));
 }

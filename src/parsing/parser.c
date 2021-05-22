@@ -1,6 +1,18 @@
 #include "minirt.h"
 #include "object.h"
 
+static void	parse_log(char *file, int parsing, int size)
+{
+	if (!(parsing % (int)(size / 100 + 1)))
+	{
+		log_msg(INFO, NULL);
+		printf("\33[32m> Parsing\33[0m %s... (\33[33m%d\33[0m) \33[32m%d%%",
+			file, parsing, parsing * 100 / size);
+		log_nl();
+		log_prev_line();
+	}
+}
+
 int	parse_file(t_scene *scene, char *file, int depth, t_vec3f origin)
 {
 	t_list		*nodes;
@@ -15,14 +27,7 @@ int	parse_file(t_scene *scene, char *file, int depth, t_vec3f origin)
 	parsing = 0;
 	while (success && iterator_has_next(&iterator))
 	{
-		if (!(parsing % (int)(nodes->size / 100 + 1)))
-		{
-			log_msg(INFO, NULL);
-			printf("\33[32m> Parsing\33[0m %s... (\33[33m%d\33[0m) \33[32m%d%%",
-				file, parsing, parsing * 100 / nodes->size);
-			log_nl();
-			log_prev_line();
-		}
+		parse_log(file, parsing, nodes->size);
 		parsing++;
 		success = parse_node(iterator_next(&iterator), scene, depth, origin);
 	}
