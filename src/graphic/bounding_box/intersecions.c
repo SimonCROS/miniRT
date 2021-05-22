@@ -12,6 +12,8 @@ t_bounding_box	bounding_box_intersection(t_bounding_box b1, t_bounding_box b2)
 	return (box);
 }
 
+#include <stdio.h>
+
 int	bounding_box_intersects(t_bounding_box b1, t_bounding_box b2)
 {
 	if (b1.min.x == b1.max.x || b1.min.y == b2.max.y || b2.min.x == b2.max.x
@@ -19,7 +21,7 @@ int	bounding_box_intersects(t_bounding_box b1, t_bounding_box b2)
 		return (FALSE);
 	if (b1.min.x >= b2.max.x || b2.min.x >= b1.max.x)
 		return (FALSE);
-	if (b1.min.y <= b2.max.y || b2.min.y <= b1.max.y)
+	if (b1.min.y >= b2.max.y || b2.min.y >= b1.max.y)
 		return (FALSE);
 	return (TRUE);
 }

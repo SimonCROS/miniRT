@@ -71,9 +71,10 @@ void	project(t_vars *vars, t_object *obj, t_bounding_box chunk)
 	behind = convert_to_raster(&s0, scene->render, cam, obj->data.triangle.p1);
 	behind += convert_to_raster(&s1, scene->render, cam, obj->data.triangle.p2);
 	behind += convert_to_raster(&s2, scene->render, cam, obj->data.triangle.p3);
-	if (!behind && cam->show_triangles)
-	{	
-		if (!bounding_box_intersects(box, chunk))
+	box = bounding_box_fromf3(s0, s1, s2);
+	if (cam->show_triangles)
+	{
+		if (behind || !bounding_box_intersects(box, chunk))
 			return ;
 		draw_line(vars, s0.x, s0.y, s1.x, s1.y, color_new(224, 211, 25));
 		draw_line(vars, s1.x, s1.y, s2.x, s2.y, color_new(224, 211, 25));
@@ -84,8 +85,7 @@ void	project(t_vars *vars, t_object *obj, t_bounding_box chunk)
 		if (cam->shadows && behind)
 			box = chunk;
 		else
-			box = bounding_box_intersection(bounding_box_fromf3(s0, s1, s2),
-					chunk);
+			box = bounding_box_intersection(box, chunk);
 		ray_trace_clip(vars, obj, box);
 	}
 }
