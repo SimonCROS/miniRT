@@ -30,6 +30,7 @@ override SRCS	:=									\
 				main.c								\
 				exit.c								\
 				parsing/parser.c					\
+				parsing/reader.c					\
 				parsing/node_parser.c				\
 				parsing/misc_parser.c				\
 				parsing/gnl/get_next_line.c			\

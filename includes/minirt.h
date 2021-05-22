@@ -86,6 +86,8 @@ typedef struct s_camera		t_camera;
 
 typedef struct s_gnl_entry	t_gnl_entry;
 
+typedef enum e_read_status	t_read_status;
+
 typedef enum e_impl			t_impl;
 
 /*** Mlx implementation *******************************************************/
@@ -281,6 +283,13 @@ void		*free_scene(t_scene *scene);
 
 /*** Parsing utils ************************************************************/
 
+enum e_read_status
+{
+	READ_ERROR,
+	READ_SUCCESS,
+	READ_EOF
+};
+
 int			render(t_vars *vars);
 int			parse_file(t_scene *scene, char *file, int depth, t_vec3f origin);
 int			col_deserialize(const char *str, t_color *color);
@@ -288,12 +297,14 @@ int			vec_deserialize(const char *str, t_vec3f *vector);
 int			dir_deserialize(const char *str, t_vec3f *direction);
 int			float_deserialize(char *str, float *result);
 int			int_deserialize(char *str, int *result);
+int			min_int_deserialize(char *str, int *result, int min);
 int			bounded_int_deserialize(char *str, int *result, int min, int max);
 int			bounded_float_deserialize(char *str, float *result, float min,
 				float max);
 int			args_size(const char *type, int given, int expected);
 int			parse_object(t_scene *sce, t_list *data, int depth, t_vec3f ori);
 int			parse_node(t_list *line, t_scene *scene, int depth, t_vec3f ori);
+int			read_file(char *file, int depth, t_list **nodes);
 t_options	*parse_render(t_list *data);
 t_color		*parse_ambiant(t_list *data);
 t_color		*parse_background(t_list *data);

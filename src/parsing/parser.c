@@ -1,76 +1,15 @@
-#include <fcntl.h>
-
 #include "minirt.h"
 #include "object.h"
-
-static int	parse_lines(t_list *nodes, char *file, int fd)
-{
-	int		result;
-	char	*buffer;
-	int		reading;
-
-	buffer = NULL;
-	result = 1;
-	reading = 0;
-	while (result > 0)
-	{
-		if (!(reading % 1000))
-		{
-			log_msg(INFO, NULL);
-			printf("\033[33m< Reading\033[0m %s...", file);
-			log_nl();
-			log_prev_line();
-		}
-		reading++;
-		result = get_next_line(fd, &buffer);
-		if (result < 0)
-			break ;
-		if (*buffer == '#')
-			free(buffer);
-		else if (!lst_unshift(nodes, as_listf((void **)ft_splitf(buffer, ' '), free)))
-		{
-			errno = -1;
-			return (0);
-		}
-	}
-	return (result != -1);
-}
-
-static int	max_depth_file(void)
-{
-	errno = EWOULDBLOCK;
-	log_msg(ERROR,
-		"Maximum file depth reached, maybe you have a circular inclusion.");
-	return (FALSE);
-}
 
 int	parse_file(t_scene *scene, char *file, int depth, t_vec3f origin)
 {
 	t_list		*nodes;
 	t_iterator	iterator;
 	int			success;
-	int			fd;
 	int			parsing;
 
-	if (!ft_ends_with(file, ".rt"))
-	{
-		errno = -1;
-		log_msg(ERROR, "File is not a \".rt\" file.");
+	if (!read_file(file, depth, &nodes))
 		return (FALSE);
-	}
-	if (depth == 5)
-		return (max_depth_file());
-	nodes = lst_new((t_con)lst_destroy);
-	if (!nodes)
-		return (FALSE);
-	fd = open(file, O_RDONLY);
-	if (fd < 0 || !parse_lines(nodes, file, fd))
-	{
-		lst_destroy(nodes);
-		close(fd);
-		return (FALSE);
-	}
-	close(fd);
 	iterator = iterator_new(nodes);
 	success = 1;
 	parsing = 0;

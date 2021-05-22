@@ -49,6 +49,25 @@ int	int_deserialize(char *str, int *result)
 	return (1);
 }
 
+int	min_int_deserialize(char *str, int *result, int min)
+{
+	int	res;
+
+	if (!int_deserialize(str, &res))
+		return (0);
+	if (res < min)
+	{
+		errno = -1;
+		log_msg(ERROR, NULL);
+		printf("The following int must be greater or equal to %d \"%s\"",
+			min, str);
+		log_nl();
+		return (0);
+	}
+	*result = res;
+	return (1);
+}
+
 int	bounded_int_deserialize(char *str, int *result, int min, int max)
 {
 	int	res;
