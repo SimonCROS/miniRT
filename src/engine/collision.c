@@ -41,7 +41,7 @@ int	collides_quadric(t_object *object, t_ray *ray)
 
 int	intersect_plane(t_vec3f pos, t_vec3f rot, t_ray *ray)
 {
-	float		dot;
+	float	dot;
 	t_vec3f	p0l0;
 
 	dot = vec3_dot(rot, ray->direction);

@@ -5,7 +5,7 @@ t_camera	*parse_camera(t_list *data, t_vec3f origin)
 {
 	t_vec3f	pos;
 	t_vec3f	rot;
-	int			fov;
+	int		fov;
 
 	if (!args_size(lst_first(data), data->size, 4))
 		return (NULL);
@@ -19,7 +19,7 @@ t_camera	*parse_camera(t_list *data, t_vec3f origin)
 static t_matrix44	look_at(t_vec3f from, t_vec3f to)
 {
 	static t_vec3f	tmp = (t_vec3f){0, 1, 0};
-	t_matrix44			c2w;
+	t_matrix44		c2w;
 	t_vec3f			forward;
 	t_vec3f			right;
 	t_vec3f			up;

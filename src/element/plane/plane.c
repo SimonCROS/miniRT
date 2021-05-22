@@ -7,7 +7,7 @@ t_object	*parse_plane(t_list *data, t_vec3f origin)
 {
 	t_vec3f	pos;
 	t_vec3f	rot;
-	t_color		color;
+	t_color	color;
 
 	if (!args_size(lst_first(data), data->size, 4))
 		return (NULL);

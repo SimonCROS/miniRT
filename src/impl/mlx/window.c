@@ -96,7 +96,7 @@ enable/disable debug mode");
 void	launch_move_events(t_vars *vars)
 {
 	static t_vec3f	up = (t_vec3f){0, 1, 0};
-	t_camera			*c;
+	t_camera		*c;
 
 	c = vars->camera;
 	if (vars->up)

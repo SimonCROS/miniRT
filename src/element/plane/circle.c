@@ -7,8 +7,8 @@ t_object	*parse_circle(t_list *data, t_vec3f origin)
 {
 	t_vec3f	pos;
 	t_vec3f	rot;
-	float		diametre;
-	t_color		color;
+	float	diametre;
+	t_color	color;
 
 	if (!args_size(lst_first(data), data->size, 5))
 		return (NULL);

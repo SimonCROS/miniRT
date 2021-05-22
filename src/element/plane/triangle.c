@@ -9,7 +9,7 @@ t_object	*parse_triangle(t_list *data, t_vec3f origin)
 	t_vec3f	p1;
 	t_vec3f	p2;
 	t_vec3f	p3;
-	t_color		color;
+	t_color	color;
 
 	if (!args_size(lst_first(data), data->size, 5))
 		return (NULL);
@@ -28,8 +28,8 @@ static int	collides_triangle_2(t_object *object, t_ray *ray, t_vec3f tvec,
 	float invdet, float u)
 {
 	t_vec3f	qvec;
-	float		v;
-	float		t;
+	float	v;
+	float	t;
 
 	qvec = vec3_cross(tvec, object->data.triangle.edge1);
 	v = invdet * vec3_dot(ray->direction, qvec);
@@ -55,9 +55,9 @@ static int	collides_triangle(t_object *object, t_ray *ray)
 {
 	t_vec3f	pvec;
 	t_vec3f	tvec;
-	float		u;
-	float		det;
-	float		invdet;
+	float	u;
+	float	det;
+	float	invdet;
 
 	pvec = vec3_cross(ray->direction, object->data.triangle.edge2);
 	det = vec3_dot(object->data.triangle.edge1, pvec);
@@ -74,8 +74,8 @@ static int	collides_triangle(t_object *object, t_ray *ray)
 t_object	*new_triangle(t_vec3f p1, t_vec3f p2, t_vec3f p3, t_color col)
 {
 	t_object	*triangle;
-	t_vec3f	edge1;
-	t_vec3f	edge2;
+	t_vec3f		edge1;
+	t_vec3f		edge2;
 
 	edge1 = vec3_sub(p2, p1);
 	edge2 = vec3_sub(p3, p1);

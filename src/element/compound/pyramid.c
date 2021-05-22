@@ -8,7 +8,7 @@ static int	generate_triangles(t_list *objects, float wh[2], t_vec3f pr[2],
 {
 	t_object	*obj;
 	t_square	square;
-	t_vec3f	top;
+	t_vec3f		top;
 	float		w;
 
 	w = wh[0];
@@ -29,9 +29,9 @@ int	parse_pyramid(t_list *data, t_vec3f origin, t_list *objects)
 {
 	t_vec3f	pos;
 	t_vec3f	rot;
-	float		width;
-	float		height;
-	t_color		color;
+	float	width;
+	float	height;
+	t_color	color;
 
 	if (!args_size(lst_first(data), data->size, 6))
 		return (0);

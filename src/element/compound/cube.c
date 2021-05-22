@@ -6,7 +6,7 @@
 static t_object	*new_custom_square(t_vec3f points[4], t_color color)
 {
 	t_object	*square;
-	t_vec3f	rotation;
+	t_vec3f		rotation;
 	float		width;
 
 	rotation = vec3_cross(vec3_sub(points[1], points[0]),
@@ -53,8 +53,8 @@ int	parse_cube(t_list *data, t_vec3f origin, t_list *objects)
 {
 	t_vec3f	pos;
 	t_vec3f	rot;
-	float		width;
-	t_color		color;
+	float	width;
+	t_color	color;
 
 	if (!args_size(lst_first(data), data->size, 5))
 		return (0);

@@ -196,9 +196,9 @@ struct s_ray
 	t_vec3f	phit;
 	t_vec3f	nhit;
 	t_vec3f	origin;
-	t_color		color;
-	float		length;
-	float		light;
+	t_color	color;
+	float	length;
+	float	light;
 };
 
 int			render(t_vars *vars);
@@ -210,11 +210,11 @@ int			intersect_plane(t_vec3f position, t_vec3f rotation, t_ray *ray);
 
 struct s_camera
 {
-	t_vec3f	position;
-	t_vec3f	direction;
-	t_vec3f	flat;
-	t_vec3f	right;
-	t_vec3f	up;
+	t_vec3f		position;
+	t_vec3f		direction;
+	t_vec3f		flat;
+	t_vec3f		right;
+	t_vec3f		up;
 	t_matrix44	c2w;
 	t_matrix44	w2c;
 	void		*render;

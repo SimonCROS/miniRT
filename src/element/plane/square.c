@@ -7,8 +7,8 @@ t_object	*parse_square(t_list *data, t_vec3f origin)
 {
 	t_vec3f	pos;
 	t_vec3f	rot;
-	float		width;
-	t_color		color;
+	float	width;
+	t_color	color;
 
 	if (!args_size(lst_first(data), data->size, 5))
 		return (NULL);
@@ -51,7 +51,7 @@ t_object	*new_square(float width, t_vec3f position, t_vec3f rotation,
 {
 	t_object	*plan;
 	float		mid;
-	t_vec3f	diagonal;
+	t_vec3f		diagonal;
 
 	plan = new_default_plane(position, rotation, color,
 			(t_bipre)collides_square);

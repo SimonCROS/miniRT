@@ -50,7 +50,7 @@ t_color	*parse_ambiant(t_list *data)
 int	parse_object(t_scene *scene, t_list *data, int depth, t_vec3f origin)
 {
 	t_vec3f	pos;
-	char		*file;
+	char	*file;
 
 	if (!args_size(lst_first(data), data->size, 3))
 		return (FALSE);

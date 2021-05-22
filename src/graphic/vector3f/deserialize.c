@@ -3,9 +3,9 @@
 
 int	vec3_deserialize(const char *str, t_vec3f *vector)
 {
-	t_list		*parts;
+	t_list	*parts;
 	t_vec3f	result;
-	int			ret;
+	int		ret;
 
 	if (ft_strcnt(str, ',') != 2)
 		return (0);

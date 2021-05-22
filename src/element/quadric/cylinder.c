@@ -7,8 +7,8 @@ t_object	*parse_cylinder(t_list *data, t_vec3f origin)
 {
 	t_vec3f	pos;
 	t_vec3f	rot;
-	float		attr[2];
-	t_color		color;
+	float	attr[2];
+	t_color	color;
 
 	if (!args_size(lst_first(data), data->size, 6))
 		return (NULL);
@@ -25,7 +25,7 @@ t_object	*parse_cylinder(t_list *data, t_vec3f origin)
 static int	intersect_base(t_vec3f pos, t_vec3f rot, t_ray *ray, float rad)
 {
 	t_vec3f	v;
-	float		d2;
+	float	d2;
 	t_vec3f	p;
 
 	if (intersect_plane(pos, rot, ray))
@@ -46,7 +46,7 @@ static int	intersect_base(t_vec3f pos, t_vec3f rot, t_ray *ray, float rad)
 
 static int	collides_caps(t_object *obj, t_ray *ray, t_vec3f base, int colli)
 {
-	t_ray		tmp;
+	t_ray	tmp;
 
 	tmp = *ray;
 	tmp.length = INFINITY;
@@ -61,7 +61,7 @@ static int	collides_caps(t_object *obj, t_ray *ray, t_vec3f base, int colli)
 
 static int	collides_cylinder(t_object *obj, t_ray *ray)
 {
-	int			ret;
+	int	ret;
 
 	ret = intersect_side(obj->position, obj->data.cylinder.position2,
 			obj->rotation, ray);

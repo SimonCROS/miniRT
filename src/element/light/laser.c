@@ -7,8 +7,8 @@ t_light	*parse_light_laser(t_list *data, t_vec3f origin)
 {
 	t_vec3f	pos;
 	t_vec3f	dir;
-	float		attrs[2];
-	t_color		color;
+	float	attrs[2];
+	t_color	color;
 
 	if (!args_size(lst_first(data), data->size, 6))
 		return (NULL);
@@ -25,8 +25,8 @@ t_light	*parse_light_laser(t_list *data, t_vec3f origin)
 static t_ray	calculate_ray(t_light *light, const t_ray *ray, float *length2)
 {
 	t_vec3f	p;
-	t_ray		light_ray;
-	float		inter_dist;
+	t_ray	light_ray;
+	float	inter_dist;
 
 	*length2 = -1;
 	light_ray.origin = ray->phit;

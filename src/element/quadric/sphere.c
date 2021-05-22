@@ -6,9 +6,9 @@
 t_object	*parse_sphere(t_list *data, t_vec3f origin)
 {
 	t_vec3f	pos;
-	float		diametre;
-	float		radius;
-	t_color		color;
+	float	diametre;
+	float	radius;
+	t_color	color;
 
 	if (!args_size(lst_first(data), data->size, 4))
 		return (NULL);

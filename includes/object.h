@@ -11,7 +11,7 @@ typedef t_color			(*t_calc_color)(const t_camera *cam, const t_ray *ray);
 typedef struct s_laser
 {
 	t_vec3f	direction;
-	float		radius;
+	float	radius;
 }	t_laser;
 
 struct s_light
@@ -19,7 +19,7 @@ struct s_light
 	t_ray		(*calculate_ray)(t_light *, const t_ray *, float *);
 	t_color		(*calculate_color)(t_light *, t_object *, const t_ray *, float);
 	float		brightness;
-	t_vec3f	position;
+	t_vec3f		position;
 	t_color		color;
 	union u_light_data
 	{
@@ -34,8 +34,8 @@ typedef struct s_circle
 
 typedef struct s_cylinder
 {
-	t_vec3f		position2;
-	float			radius;
+	t_vec3f	position2;
+	float	radius;
 }	t_cylinder;
 
 typedef struct s_compound
@@ -50,28 +50,28 @@ typedef struct s_hyperboloid
 
 typedef struct s_square
 {
-	float			width;
-	t_vec3f		p1;
-	t_vec3f		p2;
-	t_vec3f		p3;
-	t_vec3f		p4;
+	float	width;
+	t_vec3f	p1;
+	t_vec3f	p2;
+	t_vec3f	p3;
+	t_vec3f	p4;
 }	t_square;
 
 typedef struct s_triangle
 {
-	t_vec3f		p1;
-	t_vec3f		p2;
-	t_vec3f		p3;
-	t_vec3f		edge1;
-	t_vec3f		edge2;
+	t_vec3f	p1;
+	t_vec3f	p2;
+	t_vec3f	p3;
+	t_vec3f	edge1;
+	t_vec3f	edge2;
 }	t_triangle;
 
 struct s_object
 {
 	t_bipredicate	collides;
 	t_calc_color	post_light_calculation;
-	t_vec3f		position;
-	t_vec3f		rotation;
+	t_vec3f			position;
+	t_vec3f			rotation;
 	int				is_plane;
 	int				is_quadric;
 	t_color			color;

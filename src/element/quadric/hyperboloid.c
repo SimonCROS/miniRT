@@ -6,8 +6,8 @@
 t_object	*parse_hyperboloid(t_list *data, t_vec3f origin)
 {
 	t_vec3f	pos;
-	float		attr[5];
-	t_color		color;
+	float	attr[5];
+	t_color	color;
 
 	if (!args_size(lst_first(data), data->size, 8))
 		return (NULL);
@@ -32,7 +32,7 @@ static int	collides_hyperboloid(t_object *obj, t_ray *ray)
 t_object	*new_hyperboloid(float s[5], t_vec3f p, t_color color)
 {
 	t_object	*object;
-	t_vec3f	v;
+	t_vec3f		v;
 
 	v = vec3_new(0, 1, 0);
 	object = new_default_quadric(vec3_sub(p, vec3_muld(v, s[1] * 0.5)), v,

@@ -29,8 +29,9 @@ t_matrix44	mat44_null(void)
 
 static float	determin(float matrix[4][4], int k)
 {
-	float deter = 0.0, z = 1.0, mt[4][4];
-	int a, b, c, x, y;
+	float	deter = 0.0, z = 1.0, mt[4][4];
+	int		a, b, c, x, y;
+
 	if (k == 1)
 		return (matrix[0][0]);
 	else
@@ -85,8 +86,9 @@ static void	trans(t_matrix44 *result, float matr[4][4], float m1[4][4], int r)
 }
 
 static void cofac(t_matrix44 *result, float comatr[4][4], int f) {
-	float matr[4][4], cofact[4][4];
-	int a, b, c, d, x, y;
+	float	matr[4][4], cofact[4][4];
+	int		a, b, c, d, x, y;
+
 	for (c = 0; c < f; ++c) {
 		for (d = 0; d < f; ++d) {
 			x = 0;
