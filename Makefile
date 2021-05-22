@@ -91,10 +91,11 @@ override SRCS	:=									\
 				graphic/vector3f/sub.c				\
 				graphic/vector3f/deserialize.c		\
 				graphic/quadric/resolve.c			\
+				graphic/quadric/resolve2.c			\
 				graphic/matrix/matrix44.c			\
 				graphic/bounding_box/new.c			\
 				graphic/bounding_box/intersecions.c	\
-				graphic/line/new.c		\
+				graphic/line/new.c					\
 				graphic/draw_line.c					\
 
 override OBJS	:= $(addprefix $(BIN)/, $(SRCS:.c=.o))

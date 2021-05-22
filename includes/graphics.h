@@ -40,6 +40,11 @@ struct s_quadric
 	float	j;
 };
 
+float			discriminant(t_vec3f abc);
+float			inter_quad_line_sol(t_vec3f abc, float d);
+t_vec3f			inter_quad_line_coeff(t_quadric *q, t_vec3f o, t_vec3f d);
+void			inter_quad_line_sol_double(t_vec3f abc, float d, float t[2]);
+
 /**
  * @brief Resolve the length of the vector dir to get the firts intersection
  * between the vector and the quadric.
