@@ -86,6 +86,8 @@ typedef struct s_camera		t_camera;
 
 typedef struct s_gnl_entry	t_gnl_entry;
 
+typedef enum e_impl			t_impl;
+
 /*** Mlx implementation *******************************************************/
 
 struct s_image
@@ -311,6 +313,12 @@ int			get_next_line(int fd, char **line);
 int			gnl_init(char ***current, char **tmp_line, ssize_t *result);
 
 /*** Misc *********************************************************************/
+
+enum e_impl
+{
+	USE_MLX,
+	USE_BMP
+};
 
 void		get_samples_template(int aa, void *buf);
 t_color		to_sepia(t_color in);
