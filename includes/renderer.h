@@ -16,11 +16,11 @@ typedef struct s_thread_dat	t_thread_data;
 struct s_thread_dat
 {
 	t_vars			*vars;
-	size_t			width;
-	size_t			height;
+	int				width;
+	int				height;
 	t_camera		*camera;
 	t_scene			*scene;
-	size_t			chunks;
+	int				chunks;
 };
 
 /*** Engine *******************************************************************/
@@ -29,7 +29,7 @@ void		*object_thread(t_thread_data *data, int *chunk);
 
 /*** Z-Buffer *****************************************************************/
 
-void		fill_z_buff(float *z_buffer, size_t length);
-float		*get_z_buffer_value(float *z_buf, size_t x, size_t y, size_t width);
+void		fill_z_buff(float *z_buffer, int length);
+float		*get_z_buffer_value(float *z_buf, int x, int y, int width);
 
 #endif

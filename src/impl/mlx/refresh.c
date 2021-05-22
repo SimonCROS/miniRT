@@ -5,8 +5,8 @@
 static void	apply_sepia(t_options *options, char *image_addr,
 			int bits_per_pixel, int line_length)
 {
-	unsigned int	i;
 	unsigned int	*dst;
+	int				i;
 	int				bytes_per_pixel;
 	int				width;
 

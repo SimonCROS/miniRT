@@ -8,12 +8,12 @@ t_options	*parse_render(t_list *data)
 
 	if (!args_size(lst_first(data), data->size, 6))
 		return (NULL);
-	if (!ulong_deserialize((char *)lst_get(data, 1), &params.width)
-		|| !ulong_deserialize((char *)lst_get(data, 2), &params.height)
+	if (!int_deserialize((char *)lst_get(data, 1), &params.width)
+		|| !int_deserialize((char *)lst_get(data, 2), &params.height)
 		|| !bounded_int_deserialize((char *)lst_get(data, 3), &params.threads,
 			1, MAX_THREADS)
-		|| !ulong_deserialize((char *)lst_get(data, 4), &params.chunk_width)
-		|| !ulong_deserialize((char *)lst_get(data, 5), &params.chunk_height))
+		|| !int_deserialize((char *)lst_get(data, 4), &params.chunk_width)
+		|| !int_deserialize((char *)lst_get(data, 5), &params.chunk_height))
 		return (NULL);
 	params.samples = 1;
 	render_data = malloc(sizeof(t_options));

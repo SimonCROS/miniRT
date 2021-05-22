@@ -1,40 +1,33 @@
 #include "minirt.h"
 #include "graphics.h"
 
-void	draw_line(t_vars *vars, int x0, int y0, int x1, int y1, t_color color)
+void	draw_line(t_vars *vars, t_line ln, t_color color)
 {
-	int	dx;
-	int	dy;
-	int	sx;
-	int	sy;
-	int	err;
-	int	e2;
-	int	w;
-	int	h;
+	t_vec2i	d;
+	t_vec2i	s;
+	int		err;
+	int		e2;
 
-	w = vars->scene->render->width;
-	h = vars->scene->render->height;
-	dx = abs(x1 - x0);
-	sx = 2 * (x0 < x1) - 1;
-	dy = -abs(y1 - y0);
-	sy = 2 * (y0 < y1) - 1;
-	err = dx + dy;
-	while (TRUE)
+	d.x = abs(ln.to.x - ln.from.x);
+	s.x = 2 * (ln.from.x < ln.to.x) - 1;
+	d.y = -abs(ln.to.y - ln.from.y);
+	s.y = 2 * (ln.from.y < ln.to.y) - 1;
+	err = d.x + d.y;
+	while (ln.from.x != ln.to.x || ln.from.y != ln.to.y)
 	{
-		if (x0 >= 0 && x0 < w && y0 >= 0 && y0 < h)
-			vars->set_pixel(vars->camera->render, x0, y0, color);
-		if (x0 == x1 && y0 == y1)
-			break ;
+		if (ln.from.x >= 0 && ln.from.x < vars->scene->render->width
+			&& ln.from.y >= 0 && ln.from.y < vars->scene->render->height)
+			vars->set_pixel(vars->camera->render, ln.from.x, ln.from.y, color);
 		e2 = 2 * err;
-		if (e2 >= dy)
+		if (e2 >= d.y)
 		{
-			err += dy;
-			x0 += sx;
+			err += d.y;
+			ln.from.x += s.x;
 		}
-		if (e2 <= dx)
+		if (e2 <= d.x)
 		{
-			err += dx;
-			y0 += sy;
+			err += d.x;
+			ln.from.y += s.y;
 		}
 	}
 }

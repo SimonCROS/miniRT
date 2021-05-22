@@ -82,8 +82,7 @@ t_object	*nearest_object(t_list *objects, t_ray *ray)
 	return (object);
 }
 
-static void	render_pixel(t_thread_data *data, t_scene *scene, size_t x,
-	size_t y)
+static void	render_pixel(t_thread_data *data, t_scene *scene, int x, int y)
 {
 	int			i;
 	t_ray		ray;
@@ -117,11 +116,11 @@ static void	render_pixel(t_thread_data *data, t_scene *scene, size_t x,
 		data->vars->set_pixel(data->camera->render, x, y, color);
 }
 
-static void	render_chunk(t_thread_data *data, size_t start_x, size_t start_y)
+static void	render_chunk(t_thread_data *data, int start_x, int start_y)
 {
-	t_scene		*scene;
-	size_t		x;
-	size_t		y;
+	t_scene	*scene;
+	int		x;
+	int		y;
 
 	scene = data->scene;
 	x = start_x;

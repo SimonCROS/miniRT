@@ -26,7 +26,7 @@ static void	*triangle_thread(t_thread_data *data, int *chunk)
 	chunk_x = *chunk % ratio * params->chunk_width;
 	chunk_y = *chunk / ratio * params->chunk_height;
 	render_triangles(data->vars, bounding_box_from((t_vec2i){chunk_x, chunk_y},
-		(t_vec2i){
+			(t_vec2i){
 			fminf(chunk_x + params->chunk_width, params->width),
 			fminf(chunk_y + params->chunk_height, params->height)
 		}));
@@ -43,10 +43,10 @@ static void	*render_thread(t_thread_data *data, int *chunk)
 }
 
 static void	render3(t_vars *vars, t_tpool *pool, t_thread_data *data,
-	size_t *chunks)
+	int *chunks)
 {
-	size_t	chunk;
-	int		has_triangles;
+	int	chunk;
+	int	has_triangles;
 
 	chunk = 0;
 	has_triangles = data->scene->triangles->size;
@@ -73,8 +73,8 @@ static void	render3(t_vars *vars, t_tpool *pool, t_thread_data *data,
 
 static void	fill_background(t_vars *vars, t_camera *camera, t_scene *scene)
 {
-	size_t		x;
-	size_t		y;
+	int		x;
+	int		y;
 
 	x = 0;
 	while (x < scene->render->width)
@@ -91,7 +91,7 @@ static void	render2(t_vars *vars, t_camera *camera, t_scene *scene)
 	t_tpool			*pool;
 	t_thread_data	data;
 	t_options		*params;
-	size_t			*chunks;
+	int				*chunks;
 
 	params = scene->render;
 	data.vars = vars;
@@ -104,7 +104,7 @@ static void	render2(t_vars *vars, t_camera *camera, t_scene *scene)
 		* ceilf(params->height / (float)params->chunk_height);
 	pool = tpool_new(params->threads);
 	camera->z_buffer = malloc(params->width * params->height * sizeof(float));
-	chunks = malloc(data.chunks * sizeof(size_t));
+	chunks = malloc(data.chunks * sizeof(int));
 	if (!camera->z_buffer || !camera->render || !pool || !chunks)
 	{
 		perror("Error\nAn error occurred while starting rendering");

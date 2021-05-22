@@ -76,9 +76,9 @@ void	project(t_vars *vars, t_object *obj, t_bounding_box chunk)
 	{
 		if (behind || !bounding_box_intersects(box, chunk))
 			return ;
-		draw_line(vars, s0.x, s0.y, s1.x, s1.y, color_new(224, 211, 25));
-		draw_line(vars, s1.x, s1.y, s2.x, s2.y, color_new(224, 211, 25));
-		draw_line(vars, s2.x, s2.y, s0.x, s0.y, color_new(224, 211, 25));
+		draw_line(vars, line_fromf(s0, s1), color_new(224, 211, 25));
+		draw_line(vars, line_fromf(s1, s2), color_new(224, 211, 25));
+		draw_line(vars, line_fromf(s2, s0), color_new(224, 211, 25));
 	}
 	else if (behind != 3)
 	{

@@ -93,6 +93,7 @@ override SRCS	:=									\
 				graphic/matrix/matrix44.c			\
 				graphic/bounding_box/new.c			\
 				graphic/bounding_box/intersecions.c	\
+				graphic/line/new.c		\
 				graphic/draw_line.c					\
 
 override OBJS	:= $(addprefix $(BIN)/, $(SRCS:.c=.o))

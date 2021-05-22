@@ -67,19 +67,3 @@ int	bounded_int_deserialize(char *str, int *result, int min, int max)
 	*result = res;
 	return (1);
 }
-
-int	ulong_deserialize(char *str, unsigned long *result)
-{
-	unsigned long	res;
-
-	if (!ft_atoul_full(str, &res))
-	{
-		errno = -1;
-		log_msg_arg(ERROR,
-			"Unable to parse the following part into an unsigned long \"%s\"",
-			str);
-		return (0);
-	}
-	*result = res;
-	return (1);
-}

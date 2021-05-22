@@ -7,6 +7,7 @@ typedef struct s_vector3f		t_vector3f;
 typedef struct s_quadric		t_quadric;
 typedef struct s_matrix44		t_matrix44;
 typedef struct s_bounding_box	t_bounding_box;
+typedef struct s_line			t_line;
 
 typedef t_vector2i				t_vec2i;
 typedef t_vector2f				t_vec2f;
@@ -132,5 +133,16 @@ t_bounding_box	bounding_box_fromf(t_vec2f v1, t_vec2f v2);
 t_bounding_box	bounding_box_fromf3(t_vec2f v1, t_vec2f v2, t_vec2f v3);
 int				bounding_box_intersects(t_bounding_box b1, t_bounding_box b2);
 t_bounding_box	bounding_box_intersection(t_bounding_box b1, t_bounding_box b2);
+
+/*** Lines ********************************************************************/
+
+struct s_line
+{
+	t_vector2i	from;
+	t_vector2i	to;
+};
+
+t_line			line_fromf(t_vec2f v1, t_vec2f v2);
+t_line			line_from(t_vec2i v1, t_vec2i v2);
 
 #endif

@@ -33,14 +33,14 @@ static void	init_window_size(t_vars *vars, t_scene *scene)
 	int		max_height;
 
 	mlx_get_screen_size(vars->mlx, &max_width, &max_height);
-	if (max_width > 0 && scene->render->width > (size_t)max_width)
+	if (max_width > 0 && scene->render->width > max_width)
 	{
-		scene->render->width = (size_t)max_width;
+		scene->render->width = max_width;
 		log_msg(WARN, "Width too long, using the window width.");
 	}
-	if (max_height > 0 && scene->render->height > (size_t)max_height)
+	if (max_height > 0 && scene->render->height > max_height)
 	{
-		scene->render->height = (size_t)max_height;
+		scene->render->height = max_height;
 		log_msg(WARN, "Height too long, using the window height.");
 	}
 }
