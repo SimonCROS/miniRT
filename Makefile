@@ -27,26 +27,6 @@ override CFLAGS			:= -Wall -Wextra -Werror
 override INCLUDES		:= -I$(INC) -I$(LIBFT_DIR)/$(INC) -I$(MINILIBX) -g3
 
 override SRCS	:=									\
-				graphic/vector3f/add.c				\
-				graphic/vector3f/angle.c			\
-				graphic/vector3f/cross.c			\
-				graphic/vector3f/distance.c			\
-				graphic/vector3f/div.c				\
-				graphic/vector3f/negate.c			\
-				graphic/vector3f/dot.c				\
-				graphic/vector3f/length.c			\
-				graphic/vector3f/mul.c				\
-				graphic/vector3f/rotate.c			\
-				graphic/vector3f/new.c				\
-				graphic/vector3f/normalize.c		\
-				graphic/vector3f/set.c				\
-				graphic/vector3f/sub.c				\
-				graphic/vector3f/deserialize.c		\
-				graphic/quadric/resolve.c			\
-				graphic/matrix/matrix44.c			\
-				graphic/bounding_box/new.c			\
-				graphic/bounding_box/intersecions.c	\
-				graphic/draw_line.c					\
 				main.c								\
 				exit.c								\
 				parsing/parser.c					\
@@ -72,10 +52,10 @@ override SRCS	:=									\
 				element/compound/cube.c				\
 				element/compound/pyramid.c			\
 				engine/ray.c						\
+				engine/project.c					\
 				engine/z_buffer.c					\
 				engine/renderer.c					\
 				engine/collision.c					\
-				engine/draw_line.c					\
 				engine/engine_manager.c				\
 				impl/bmp/bmp.c						\
 				impl/mlx/image.c					\
@@ -94,9 +74,26 @@ override SRCS	:=									\
 				util/scene.c						\
 				util/deserializers.c				\
 				util/deserializers2.c				\
-				)
-
-override VECTOR3_SRCS=	$(addprefix $(VECTOR3)/,\
+				graphic/vector3f/add.c				\
+				graphic/vector3f/angle.c			\
+				graphic/vector3f/cross.c			\
+				graphic/vector3f/distance.c			\
+				graphic/vector3f/div.c				\
+				graphic/vector3f/negate.c			\
+				graphic/vector3f/dot.c				\
+				graphic/vector3f/length.c			\
+				graphic/vector3f/mul.c				\
+				graphic/vector3f/rotate.c			\
+				graphic/vector3f/new.c				\
+				graphic/vector3f/normalize.c		\
+				graphic/vector3f/set.c				\
+				graphic/vector3f/sub.c				\
+				graphic/vector3f/deserialize.c		\
+				graphic/quadric/resolve.c			\
+				graphic/matrix/matrix44.c			\
+				graphic/bounding_box/new.c			\
+				graphic/bounding_box/intersecions.c	\
+				graphic/draw_line.c					\
 
 override OBJS	:= $(addprefix $(BIN)/, $(SRCS:.c=.o))
 

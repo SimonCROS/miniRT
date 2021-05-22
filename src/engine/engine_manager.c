@@ -5,13 +5,13 @@
 
 #include "tpool.h"
 
-static void	render_triangles(t_vars *vars, t_vec3f start, t_vec3f end)
+static void	render_triangles(t_vars *vars, t_bounding_box borders)
 {
 	t_iterator	obj_iterator;
 
 	obj_iterator = iterator_new(vars->scene->triangles);
 	while (iterator_has_next(&obj_iterator))
-		project(vars, iterator_next(&obj_iterator), start, end);
+		project(vars, iterator_next(&obj_iterator), borders);
 }
 
 static void	*triangle_thread(t_thread_data *data, int *chunk)
@@ -25,11 +25,11 @@ static void	*triangle_thread(t_thread_data *data, int *chunk)
 	ratio = (int)ceilf(params->width / (float)params->chunk_width);
 	chunk_x = *chunk % ratio * params->chunk_width;
 	chunk_y = *chunk / ratio * params->chunk_height;
-	render_triangles(data->vars, vec3_new(chunk_x, chunk_y, 0),
-		vec3_new(
+	render_triangles(data->vars, bounding_box_from((t_vec2i){chunk_x, chunk_y},
+		(t_vec2i){
 			fminf(chunk_x + params->chunk_width, params->width),
-			fminf(chunk_y + params->chunk_height, params->height), 0)
-		);
+			fminf(chunk_y + params->chunk_height, params->height)
+		}));
 	return (NULL);
 }
 
@@ -65,9 +65,9 @@ static void	render3(t_vars *vars, t_tpool *pool, t_thread_data *data,
 	tpool_wait(pool);
 	tpool_destroy(pool);
 	if (has_triangles && data->camera->show_triangles)
-		render_triangles(vars, vec3_new(0, 0, 0),
-			vec3_new(data->scene->render->width,
-				data->scene->render->height, 0));
+		render_triangles(vars, bounding_box_from((t_vec2i){},
+				(t_vec2i){data->scene->render->width,
+				data->scene->render->height}));
 	free(chunks);
 }
 

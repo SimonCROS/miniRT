@@ -1,4 +1,5 @@
-#include "minirt.h"
+#include <math.h>
+#include "renderer.h"
 #include "object.h"
 
 static int	convert_to_raster(t_vec2f *vertexRaster, t_options *render,
@@ -43,7 +44,7 @@ static void	ray_trace_clip(t_vars *vars, t_object *triangle, t_bounding_box box)
 			buf_z = get_z_buffer_value(camera->z_buffer, pixel.x, pixel.y,
 					scene->render->width);
 			ray = compute_ray(scene->render, camera, pixel.x, pixel.y);
-			if (collides_triangle(triangle, &ray) && ray.length < *buf_z)
+			if (triangle->collides(triangle, &ray) && ray.length < *buf_z)
 			{
 				*buf_z = ray.length;
 				render_light(scene, camera, triangle, &ray);

@@ -1,6 +1,6 @@
 #include "graphics.h"
 
-t_vec3f	vec3_subv(t_vec3f v1, t_vec3f v2)
+t_vec3f	vec3_sub(t_vec3f v1, t_vec3f v2)
 {
 	t_vec3f	vec;
 

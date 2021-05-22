@@ -315,7 +315,5 @@ int			gnl_init(char ***current, char **tmp_line, ssize_t *result);
 
 void		get_samples_template(int aa, void *buf);
 t_color		to_sepia(t_color in);
-float		fminf3(float a, float b, float c);
-float		fmaxf3(float a, float b, float c);
 
 #endif

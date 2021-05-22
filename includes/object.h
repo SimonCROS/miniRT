@@ -130,8 +130,7 @@ t_light		*new_light_laser(float s[2], t_vec3f position,
 
 int			collision(t_object *object, t_ray *ray);
 
-void		project(t_vars *vars, t_object *triangle, t_vec3f min,
-				t_vec3f max);
+void		project(t_vars *vars, t_object *obj, t_bounding_box chunk);
 
 void		render_light(t_scene *sc, t_camera *cam, t_object *obj, t_ray *ray);
 

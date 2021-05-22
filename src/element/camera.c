@@ -1,5 +1,5 @@
+#include <math.h>
 #include "minirt.h"
-#include "math.h"
 
 t_camera	*parse_camera(t_list *data, t_vec3f origin)
 {
