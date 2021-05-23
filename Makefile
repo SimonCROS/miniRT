@@ -57,6 +57,7 @@ override SRCS	:=									\
 				engine/z_buffer.c					\
 				engine/renderer.c					\
 				engine/collision.c					\
+				engine/thread_worker.c				\
 				engine/engine_manager.c				\
 				impl/bmp/bmp.c						\
 				impl/mlx/image.c					\

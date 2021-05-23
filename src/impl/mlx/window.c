@@ -134,6 +134,8 @@ int	loop(t_vars *vars)
 	t_camera	*camera;
 
 	camera = vars->camera;
+	if (!camera)
+		return (0);
 	launch_move_events(vars);
 	if (!vars->flush)
 		return (0);
