@@ -3,7 +3,7 @@
 
 #include <math.h>
 
-static int	generate_triangles(t_list *objects, float wh[2], t_vec3f pr[2],
+static int	generate_objects(t_list *objects, float wh[2], t_vec3f pr[2],
 	t_color c)
 {
 	t_object	*obj;
@@ -13,7 +13,7 @@ static int	generate_triangles(t_list *objects, float wh[2], t_vec3f pr[2],
 
 	w = wh[0];
 	top = vec3_add(pr[0], vec3_muld(pr[1], wh[1]));
-	obj = new_square(w, vec3_add(pr[0], vec3_muld(pr[1], w / 2)), pr[1], c);
+	obj = new_square(w, pr[0], pr[1], c);
 	if (!lst_unshift(objects, obj))
 		return (FALSE);
 	square = obj->data.square;
@@ -42,6 +42,6 @@ int	parse_pyramid(t_list *data, t_vec3f origin, t_list *objects)
 		|| !color_deserialize((char *)lst_get(data, 5), &color))
 		return (0);
 	width = fabsf(width);
-	return (generate_triangles(objects, (float [2]){width, height},
+	return (generate_objects(objects, (float [2]){width, height},
 		(t_vec3f [2]){vec3_add(pos, origin), rot}, color));
 }
