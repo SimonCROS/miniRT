@@ -24,6 +24,9 @@ t_matrix44		mat44_null(void);
 t_matrix44		mat44_inverse(t_matrix44 m);
 t_vector3f		mat44_mul_vec(t_matrix44 matrix, t_vector3f in);
 
+// To hide
+float			determin(float matrix[4][4], int k);
+
 /*** Quadrics implementation **************************************************/
 
 struct s_quadric

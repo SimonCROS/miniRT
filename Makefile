@@ -99,6 +99,7 @@ override SRCS	:=									\
 				graphic/matrix/init.c				\
 				graphic/matrix/mul.c				\
 				graphic/matrix/inverse.c			\
+				graphic/matrix/determin.c			\
 				graphic/bounding_box/new.c			\
 				graphic/bounding_box/intersecions.c	\
 				graphic/line/new.c					\
