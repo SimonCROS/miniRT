@@ -5,41 +5,13 @@
 
 #include "tpool.h"
 
-static void	render_triangles(t_vars *vars, t_bounding_box borders)
+void	render_triangles(t_vars *vars, t_bounding_box borders)
 {
 	t_iterator	obj_iterator;
 
 	obj_iterator = iterator_new(vars->scene->triangles);
 	while (iterator_has_next(&obj_iterator))
 		project(vars, iterator_next(&obj_iterator), borders);
-}
-
-static void	*triangle_thread(t_thread_data *data, int *chunk)
-{
-	t_options	*params;
-	int			chunk_x;
-	int			chunk_y;
-	int			ratio;
-
-	params = data->scene->render;
-	ratio = (int)ceilf(params->width / (float)params->chunk_width);
-	chunk_x = *chunk % ratio * params->chunk_width;
-	chunk_y = *chunk / ratio * params->chunk_height;
-	render_triangles(data->vars, bounding_box_from((t_vec2i){chunk_x, chunk_y},
-			(t_vec2i){
-			fminf(chunk_x + params->chunk_width, params->width),
-			fminf(chunk_y + params->chunk_height, params->height)
-		}));
-	return (NULL);
-}
-
-static void	*render_thread(t_thread_data *data, int *chunk)
-{
-	if (data->scene->triangles->size && !data->camera->show_triangles)
-		triangle_thread(data, chunk);
-	if (data->scene->objects->size)
-		object_thread(data, chunk);
-	return (NULL);
 }
 
 static void	render3(t_vars *vars, t_tpool *pool, t_thread_data *data,
@@ -113,7 +85,6 @@ static void	render2(t_vars *vars, t_camera *camera, t_scene *scene)
 	fill_z_buff(camera->z_buffer, params->width * params->height);
 	fill_background(vars, camera, scene);
 	render3(vars, pool, &data, chunks);
-	vars->on_finished(vars, camera->render);
 }
 
 int	render(t_vars *vars)
@@ -133,6 +104,7 @@ int	render(t_vars *vars)
 		get_samples_template(scene->render->samples,
 			scene->render->samples_template);
 		render2(vars, camera, scene);
+		vars->on_finished(vars, camera->render);
 		log_msg(DEBUG, "Image successfully rendered");
 	}
 	return (0);

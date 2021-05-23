@@ -1,70 +1,8 @@
 #include <math.h>
 
 #include "renderer.h"
-#include "object.h"
 
-static t_color	render_ray(t_thread_data *data, t_vec2i pixel, int sample,
-	int *changed)
-{
-	t_ray		ray;
-	t_object	*object;
-
-	ray = compute_ray(data->scene->render, data->camera,
-			pixel.x + data->scene->render->samples_template[sample][0],
-			pixel.y + data->scene->render->samples_template[sample][1]);
-	object = nearest_object(data->scene->objects, &ray);
-	if (object)
-	{
-		render_light(data->scene, data->camera, object, &ray);
-		*changed = 1;
-	}
-	else
-		ray.color = *(data->scene->background);
-	return (ray.color);
-}
-
-static void	render_pixel(t_thread_data *data, t_scene *scene, t_vec2i pixel)
-{
-	int			i;
-	int			changed;
-	t_color		color;
-
-	color = *(scene->background);
-	changed = 0;
-	i = 0;
-	while (i < scene->render->samples)
-	{
-		if (i == 0)
-			color = render_ray(data, pixel, i, &changed);
-		else
-			color = color_avg(color, render_ray(data, pixel, i, &changed));
-		i++;
-	}
-	if (changed)
-		data->vars->set_pixel(data->camera->render, pixel.x, pixel.y, color);
-}
-
-static void	render_chunk(t_thread_data *data, int start_x, int start_y)
-{
-	t_scene	*scene;
-	int		x;
-	int		y;
-
-	scene = data->scene;
-	x = start_x;
-	while (x < start_x + scene->render->chunk_width && x < data->width)
-	{
-		y = start_y;
-		while (y < start_y + scene->render->chunk_height && y < data->height)
-		{
-			render_pixel(data, scene, (t_vec2i){x, y});
-			y++;
-		}
-		x++;
-	}
-}
-
-void	*object_thread(t_thread_data *data, int *chunk)
+static void	*object_thread(t_thread_data *data, int *chunk)
 {
 	t_options	*params;
 	int			chunk_x;
@@ -81,5 +19,33 @@ void	*object_thread(t_thread_data *data, int *chunk)
 		printf("Rendering chunk (%d,%d)...", chunk_x, chunk_y);
 		log_nl();
 	}
+	return (NULL);
+}
+
+static void	*triangle_thread(t_thread_data *data, int *chunk)
+{
+	t_options	*params;
+	int			chunk_x;
+	int			chunk_y;
+	int			ratio;
+
+	params = data->scene->render;
+	ratio = (int)ceilf(params->width / (float)params->chunk_width);
+	chunk_x = *chunk % ratio * params->chunk_width;
+	chunk_y = *chunk / ratio * params->chunk_height;
+	render_triangles(data->vars, bounding_box_from((t_vec2i){chunk_x, chunk_y},
+			(t_vec2i){
+			fminf(chunk_x + params->chunk_width, params->width),
+			fminf(chunk_y + params->chunk_height, params->height)
+		}));
+	return (NULL);
+}
+
+void	*render_thread(t_thread_data *data, int *chunk)
+{
+	if (data->scene->triangles->size && !data->camera->show_triangles)
+		triangle_thread(data, chunk);
+	if (data->scene->objects->size)
+		object_thread(data, chunk);
 	return (NULL);
 }

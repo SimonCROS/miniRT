@@ -25,7 +25,9 @@ struct s_thread_dat
 
 /*** Engine *******************************************************************/
 
-void		*object_thread(t_thread_data *data, int *chunk);
+void		*render_thread(t_thread_data *data, int *chunk);
+void		render_triangles(t_vars *vars, t_bounding_box borders);
+void		render_chunk(t_thread_data *data, int start_x, int start_y);
 
 /*** Z-Buffer *****************************************************************/
 
