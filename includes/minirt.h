@@ -127,13 +127,16 @@ enum e_click_type
 };
 # endif
 
+void		launch_game(t_vars *vars);
+void		init_window(char *file, t_scene *scene);
+void		force_put_image(t_vars *vars, t_image *image);
+void		init_window_size(t_vars *vars, t_scene *scene);
 t_image		*mlx_init_image(t_vars *vars, t_options *params);
 void		mlx_set_pixel(t_image *image, int x, int y, t_color color);
-void		force_put_image(t_vars *vars, t_image *image);
-void		init_window(char *file, t_scene *scene);
 
 void		mlx_free_image(t_image *image, t_vars *vars);
 
+void		mlx_exit(t_vars *vars);
 void		reset_keys(t_vars *vars);
 
 /*== Hooks ==*/

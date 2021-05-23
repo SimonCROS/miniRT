@@ -42,11 +42,9 @@ static void	toggle_option(t_vars *vars, t_camera *camera, int i, t_scene *scene)
 	vars->flush = 1;
 }
 
-static void	move_pressed(t_vars *vars, t_camera *camera, int i)
+static void	move_pressed(t_vars *vars, int i)
 {
-	if (camera->shadows)
-		log_msg(ERROR, "You must disable shadows to move.");
-	else if (i == K_W)
+	if (i == K_W)
 		vars->forward = 1;
 	else if (i == K_S)
 		vars->backward = 1;
@@ -89,7 +87,7 @@ int	key_pressed_hook(int i, t_vars *vars)
 		else if (i == K_W || i == K_S || i == K_A || i == K_D || i == K_ESP
 			|| i == K_LSHIFT || i == K_LEFT || i == K_RIGHT || i == K_UP
 			|| i == K_DOWN)
-			move_pressed(vars, vars->camera, i);
+			move_pressed(vars, i);
 		else if (i == K_B || i == K_C || i == K_U || i == K_V || i == K_X
 			|| i == K_M || i == K_N)
 			toggle_option(vars, vars->camera, i, scene);

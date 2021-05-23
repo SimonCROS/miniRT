@@ -61,6 +61,8 @@ override SRCS	:=									\
 				engine/engine_manager.c				\
 				impl/bmp/bmp.c						\
 				impl/mlx/image.c					\
+				impl/mlx/init.c						\
+				impl/mlx/game.c						\
 				impl/mlx/window.c					\
 				impl/mlx/refresh.c					\
 				impl/mlx/hook/key_hook.c			\
