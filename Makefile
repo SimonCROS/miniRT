@@ -96,7 +96,9 @@ override SRCS	:=									\
 				graphic/vector3f/deserialize.c		\
 				graphic/quadric/resolve.c			\
 				graphic/quadric/resolve2.c			\
-				graphic/matrix/matrix44.c			\
+				graphic/matrix/init.c				\
+				graphic/matrix/mul.c				\
+				graphic/matrix/inverse.c			\
 				graphic/bounding_box/new.c			\
 				graphic/bounding_box/intersecions.c	\
 				graphic/line/new.c					\
