@@ -35,11 +35,11 @@ static void	ray_trace_clip(t_vars *vars, t_object *triangle, t_bounding_box box)
 
 	scene = vars->scene;
 	camera = vars->camera;
-	pixel.x = box.min.x;
-	while (pixel.x <= box.max.x - 1)
+	pixel.x = box.min.x - 1;
+	while (++pixel.x <= box.max.x - 1)
 	{
-		pixel.y = box.min.y;
-		while (pixel.y <= box.max.y - 1)
+		pixel.y = box.min.y - 1;
+		while (++pixel.y <= box.max.y - 1)
 		{
 			buf_z = get_z_buffer_value(camera->z_buffer, pixel.x, pixel.y,
 					scene->render->width);
@@ -50,35 +50,40 @@ static void	ray_trace_clip(t_vars *vars, t_object *triangle, t_bounding_box box)
 				render_light(scene, camera, triangle, &ray);
 				vars->set_pixel(camera->render, pixel.x, pixel.y, ray.color);
 			}
-			pixel.y++;
 		}
-		pixel.x++;
 	}
 }
 
-void	project(t_vars *vars, t_object *obj, t_bounding_box chunk)
+static int	get_points(t_vec2f *points, t_vars *vars, t_object *object)
 {
-	t_vec2f			s0;
-	t_vec2f			s1;
-	t_vec2f			s2;
-	t_scene			*scene;
-	t_camera		*cam;
-	int				behind;
-	t_bounding_box	box;
+	int	behind;
 
-	scene = vars->scene;
+	behind = convert_to_raster(points + 0, vars->scene->render, vars->camera,
+			object->data.triangle.p1);
+	behind += convert_to_raster(points + 1, vars->scene->render, vars->camera,
+			object->data.triangle.p2);
+	behind += convert_to_raster(points + 2, vars->scene->render, vars->camera,
+			object->data.triangle.p3);
+	return (behind);
+}
+
+void	project(t_vars *vars, t_object *object, t_bounding_box chunk)
+{
+	t_vec2f			p[3];
+	t_camera		*cam;
+	t_bounding_box	box;
+	int				behind;
+
 	cam = vars->camera;
-	behind = convert_to_raster(&s0, scene->render, cam, obj->data.triangle.p1);
-	behind += convert_to_raster(&s1, scene->render, cam, obj->data.triangle.p2);
-	behind += convert_to_raster(&s2, scene->render, cam, obj->data.triangle.p3);
-	box = bounding_box_fromf3(s0, s1, s2);
+	behind = get_points(p, vars, object);
+	box = bounding_box_fromf3(p[0], p[1], p[2]);
 	if (cam->show_triangles)
 	{
 		if (behind || !bounding_box_intersects(box, chunk))
 			return ;
-		draw_line(vars, line_fromf(s0, s1), color_new(224, 211, 25));
-		draw_line(vars, line_fromf(s1, s2), color_new(224, 211, 25));
-		draw_line(vars, line_fromf(s2, s0), color_new(224, 211, 25));
+		draw_line(vars, line_fromf(p[0], p[1]), color_new(224, 211, 25));
+		draw_line(vars, line_fromf(p[1], p[2]), color_new(224, 211, 25));
+		draw_line(vars, line_fromf(p[2], p[0]), color_new(224, 211, 25));
 	}
 	else if (behind != 3)
 	{
@@ -86,6 +91,6 @@ void	project(t_vars *vars, t_object *obj, t_bounding_box chunk)
 			box = chunk;
 		else
 			box = bounding_box_intersection(box, chunk);
-		ray_trace_clip(vars, obj, box);
+		ray_trace_clip(vars, object, box);
 	}
 }
