@@ -68,8 +68,8 @@ NAME				= miniRT
 
 override CC			:= gcc
 override RM			:= rm -rf
-override CFLAGS		:= -Wall -Wextra -Werror
-override INCLUDES	:= -I$(INC) -I$(LIBFT_DIR)/$(INC) -I$(MINILIBX_DIR) -g3
+override CFLAGS		:= -Wall -Wextra -Werror -O3
+override INCLUDES	:= -I$(INC) -I$(LIBFT_DIR)/$(INC) -I$(MINILIBX_DIR)
 
 # Sources
 
