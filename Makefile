@@ -166,17 +166,21 @@ ifeq ($(LINUX),1)
 LIBRARIES	+= -lm -lXext -lX11
 endif
 
-all:		$(NAME)
+all:		libs $(NAME)
+
+libs:
+			$(MAKE) -C $(LIBFT_DIR)
+			ln -sf $(LIBFT_DIR)/$(LIBFT)
+			$(MAKE) -C $(MINILIBX_DIR)
+			ln -sf $(MINILIBX_DIR)/$(MINILIBX)
+
+bonus:		all
 
 $(BIN)/%.o:	$(SRC)/%.c $(HEADERS)
 			@mkdir -p $(dir $@);
 			$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
-$(NAME):	$(OBJS)
-			$(MAKE) -C $(LIBFT_DIR)
-			ln -sf $(LIBFT_DIR)/$(LIBFT)
-			$(MAKE) -C $(MINILIBX_DIR)
-			ln -sf $(MINILIBX_DIR)/$(MINILIBX)
+$(NAME):	$(OBJS) $(LIBFT) $(MINILIBX)
 			$(CC) $(CFLAGS) $(OBJS) $(MINILIBX) $(LIBFT) -o $(NAME) $(LIBRARIES)
 
 clean:
@@ -193,4 +197,4 @@ fclean:		clean
 
 re:			fclean all
 
-.PHONY:		all clean fclean re
+.PHONY:		all libs bonus clean fclean re

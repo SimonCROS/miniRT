@@ -46,7 +46,7 @@ static int	read_lines(t_list *nodes, char *file, int fd)
 
 static int	validate(char *file, int depth)
 {
-	if (!ft_ends_with(file, ".rt"))
+	if (ft_strlen(file) < 4 || !ft_ends_with(file, ".rt"))
 	{
 		errno = -1;
 		log_msg(ERROR, "File is not a \".rt\" file.");

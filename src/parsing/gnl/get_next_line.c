@@ -74,14 +74,11 @@ static ssize_t	read_line(int fd, char **line, char ***current,
 	*current = ft_split_first(remain->content, '\n');
 	if (!*current)
 		return (-1);
-	if (result)
-	{
-		tmp = *line;
-		*line = ft_strjoin(tmp, (*current)[0]);
-		if (!line)
-			return (-1);
-		free(tmp);
-	}
+	tmp = *line;
+	*line = ft_strjoin(tmp, (*current)[0]);
+	if (!line)
+		return (-1);
+	free(tmp);
 	free((*current)[0]);
 	return (result);
 }

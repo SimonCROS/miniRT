@@ -20,7 +20,7 @@ int	parse_file(t_scene *scene, char *file, int depth, t_vec3f origin)
 	int			success;
 	int			parsing;
 
-	if (!read_file(file, depth, &nodes))
+	if (!read_file(file, depth, &nodes) || !nodes->size)
 		return (FALSE);
 	iterator = iterator_new(nodes);
 	success = 1;
