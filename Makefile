@@ -182,6 +182,7 @@ $(NAME):	$(OBJS)
 clean:
 			$(RM) $(OBJS)
 			find $(BIN) -type d -empty -delete
+			$(MAKE) -C $(LIBFT_DIR) clean
 
 fclean:		clean
 			$(RM) $(NAME)
