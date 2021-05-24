@@ -1,4 +1,4 @@
-LINUX				:= 1
+LINUX				:= 0
 
 # Styles
 
