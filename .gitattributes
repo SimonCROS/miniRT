@@ -1,2 +1,2 @@
-minilibx-macos/* linguist-vendored
-scenes/* linguist-vendored
+minilibx-macos/**/* linguist-vendored=true
+scenes/**/* linguist-vendored=true
