@@ -8,7 +8,6 @@ miniRT
 *.swiftmodule
 *.bmp
 *.dSYM
-minilibx-linux
 
 scenes/elements/marvel/
 scenes/marvel.rt
