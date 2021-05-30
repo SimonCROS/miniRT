@@ -6,6 +6,7 @@ miniRT
 *.dylib
 *.swiftdoc
 *.swiftmodule
+*.swiftsourceinfo
 *.bmp
 *.dSYM
 
