@@ -1,4 +1,4 @@
-LINUX				:= 0
+LINUX				:= 1
 
 # Folders
 

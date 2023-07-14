@@ -1,0 +1,13 @@
+R       960 540            4 960 135
+A       0.7                                                   255,255,255
+B                                                             0,0,0
+
+c       0,50,-150           0,0,1           60
+
+l       -300,150,-500                      0.8                  255,255,255
+
+ob      0,0,0              "scenes/elements/simoncros2022/2022.rt"
+ob      0,0,0              "scenes/elements/simoncros2022/github.rt"
+ob      0,0,0              "scenes/elements/simoncros2022/pedestal.rt"
+ob      0,0,0              "scenes/elements/simoncros2022/stats.rt"
+ob      0,0,0              "scenes/elements/simoncros2022/username.rt"
