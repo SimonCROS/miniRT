@@ -31,7 +31,13 @@ void	init_window_size(t_vars *vars, t_scene *scene)
 	int		max_width;
 	int		max_height;
 
+#if defined __APPLE__
+	(void)vars;
+	max_width = 4200;
+	max_height = 2400;
+#else
 	mlx_get_screen_size(vars->mlx, &max_width, &max_height);
+#endif
 	if (max_width > 0 && scene->render->width > max_width)
 	{
 		scene->render->width = max_width;

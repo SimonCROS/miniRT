@@ -11,12 +11,11 @@ override INC		:= includes
 override LIBFT_DIR	:= libft
 override LIBFT		:= libft.a
 ifeq ($(LINUX),0)
-override MINILIBX_DIR	:= minilibx-macos
-override MINILIBX		:= libmlx.dylib
+override MINILIBX_DIR	:= minilibx_opengl_20191021
 else
 override MINILIBX_DIR	:= minilibx-linux
-override MINILIBX		:= libmlx.a
 endif
+override MINILIBX		:= libmlx.a
 
 # Properties
 
@@ -119,7 +118,7 @@ override HEADERS	:= $(addprefix $(INC)/,				\
 				renderer.h								\
 				)
 
-LIBRARIES	:= -lpthread
+LIBRARIES	:= -lpthread -framework OpenGL -framework AppKit
 ifeq ($(LINUX),1)
 LIBRARIES	+= -lm -lXext -lX11
 endif
