@@ -58,10 +58,6 @@ static int	loop(t_vars *vars)
 	compute_move_keys(vars);
 	if (!vars->flush)
 		return (0);
-	vars->free_image(camera->render, vars);
-	free(camera->z_buffer);
-	camera->render = NULL;
-	camera->z_buffer = NULL;
 	if (log_msg(DEBUG, NULL))
 	{
 		printf("Camera position set to %.2f,%.2f,%.2f, direction set to \
