@@ -37,8 +37,7 @@ override SRCS		:=									\
 				parsing/reader.c						\
 				parsing/node_parser.c					\
 				parsing/misc_parser.c					\
-				parsing/gnl/get_next_line.c				\
-				parsing/gnl/get_next_line_utils.c		\
+				parsing/get_next_line.c					\
 				element/camera.c						\
 				element/archetype/plane.c				\
 				element/archetype/light.c				\
