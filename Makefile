@@ -117,8 +117,10 @@ override HEADERS	:= $(addprefix $(INC)/,				\
 				renderer.h								\
 				)
 
-LIBRARIES	:= -lpthread -framework OpenGL -framework AppKit
-ifeq ($(LINUX),1)
+LIBRARIES	:= -lpthread
+ifeq ($(LINUX),0)
+LIBRARIES	+= -framework OpenGL -framework AppKit
+else
 LIBRARIES	+= -lm -lXext -lX11
 endif
 
