@@ -12,6 +12,10 @@ static t_read_status	read_line(t_list *nds, int fd)
 	result = get_next_line(fd, &buffer);
 	if (result < 0)
 		return (READ_ERROR);
+	if (result == 0)
+		return (READ_EOF);
+	if (buffer[result - 1] == '\n')
+		buffer[result - 1] = '\0';
 	if (*buffer == '#')
 		free(buffer);
 	else if (!lst_unshift(nds, as_listf((void **)ft_splitf(buffer, ' '), free)))
@@ -19,8 +23,6 @@ static t_read_status	read_line(t_list *nds, int fd)
 		errno = -1;
 		return (READ_ERROR);
 	}
-	if (result == 0)
-		return (READ_EOF);
 	return (READ_SUCCESS);
 }
 

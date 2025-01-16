@@ -12,7 +12,9 @@
 
 # define MAX_THREADS 16
 
-# define BUFF_SIZE 50
+# ifndef BUFFER_SIZE
+#  define BUFFER_SIZE 256
+# endif
 
 # ifdef __APPLE__
 #  define K_LEFT 123
@@ -315,16 +317,14 @@ t_scene		*parse(char *file);
 
 /*** GNL **********************************************************************/
 
-struct s_gnl_entry
+typedef struct s_buffer
 {
-	void	*next;
-	int		fd;
-	char	*content;
-};
+	char	*data;
+	size_t	length;
+	size_t	capacity;
+}				t_buffer;
 
-char		**ft_split_first(char *s, char c);
 int			get_next_line(int fd, char **line);
-int			gnl_init(char ***current, char **tmp_line, ssize_t *result);
 
 /*** Misc *********************************************************************/
 

@@ -71,11 +71,15 @@ static void	render2(t_vars *vars, t_camera *camera, t_scene *scene)
 	data.height = params->height;
 	data.camera = camera;
 	data.scene = scene;
-	camera->render = vars->init_image(vars, params);
 	data.chunks = ceilf(params->width / (float)params->chunk_width)
 		* ceilf(params->height / (float)params->chunk_height);
+	if (camera->render == NULL) {
+		camera->render = vars->init_image(vars, params);
+	}
 	pool = tpool_new(params->threads);
-	camera->z_buffer = malloc(params->width * params->height * sizeof(float));
+	if (camera->z_buffer == NULL) {
+		camera->z_buffer = malloc(params->width * params->height * sizeof(float));
+	}
 	chunks = malloc(data.chunks * sizeof(int));
 	if (!camera->z_buffer || !camera->render || !pool || !chunks)
 	{
@@ -94,18 +98,10 @@ int	render(t_vars *vars)
 
 	scene = vars->scene;
 	camera = vars->camera;
-	if (camera->render)
-	{
-		vars->on_finished(vars, camera->render);
-		log_msg(DEBUG, "Image loaded from cache");
-	}
-	else
-	{
-		get_samples_template(scene->render->samples,
-			scene->render->samples_template);
-		render2(vars, camera, scene);
-		vars->on_finished(vars, camera->render);
-		log_msg(DEBUG, "Image successfully rendered");
-	}
+	get_samples_template(scene->render->samples,
+		scene->render->samples_template);
+	render2(vars, camera, scene);
+	vars->on_finished(vars, camera->render);
+	log_msg(DEBUG, "Image successfully rendered");
 	return (0);
 }
